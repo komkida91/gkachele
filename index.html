@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes" />
   <title>GKACHELE™ | Desarrollo Web Premium</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -78,9 +78,9 @@
                 <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://gkachele.duckdns.org" alt="QR Base">
                 <p>Comparte este plan</p>
               </div>
-              <a href="https://wa.me/5491123456789?text=Hola!%20Me%20interesa%20el%20Plan%20Base" target="_blank" class="plan-btn">
-                Contactar sobre Plan Base
-              </a>
+              <button type="button" class="plan-btn" onclick="openForm('base')">
+                Solicitar Plan Base
+              </button>
             </div>
           </div>
         </div>
@@ -117,15 +117,15 @@
                 <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://gkachele.duckdns.org#planes" alt="QR Pro">
                 <p>Comparte este plan</p>
               </div>
-              <a href="https://wa.me/5491123456789?text=Hola!%20Me%20interesa%20el%20Plan%20Pro" target="_blank" class="plan-btn">
-                Contactar sobre Plan Pro
-              </a>
+              <button type="button" class="plan-btn" onclick="openForm('pro')">
+                Solicitar Plan Pro
+              </button>
             </div>
           </div>
         </div>
 
         <!-- Premium Plan -->
-        <div class="plan-accordion-item active premium" data-plan="premium">
+        <div class="plan-accordion-item" data-plan="premium">
           <button class="plan-accordion-header">
             <div class="plan-header-content">
               <h3>Premium</h3>
@@ -155,15 +155,69 @@
                 <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://gkachele.duckdns.org#planes" alt="QR Premium">
                 <p>Comparte este plan</p>
               </div>
-              <a href="https://wa.me/5491123456789?text=Hola!%20Me%20interesa%20el%20Plan%20Premium" target="_blank" class="plan-btn premium-btn">
-                Contactar sobre Plan Premium
-              </a>
+              <button type="button" class="plan-btn premium-btn" onclick="openForm('premium')">
+                Solicitar Plan Premium
+              </button>
             </div>
           </div>
         </div>
       </div>
     </div>
   </section>
+
+  <!-- Formulario de Pedido de Plan -->
+  <div id="planFormModal" class="modal-form" style="display: none;">
+    <div class="modal-form-content">
+      <div class="modal-form-header">
+        <h2>Solicitar Plan <span id="selectedPlanName"></span></h2>
+        <button class="modal-close" onclick="closeForm()">&times;</button>
+      </div>
+      <form id="planRequestForm" onsubmit="handleFormSubmit(event)">
+        <input type="hidden" id="selectedPlan" name="plan" required>
+        
+        <div class="form-group">
+          <label for="nombre">Nombre Completo *</label>
+          <input type="text" id="nombre" name="nombre" required placeholder="Tu nombre completo">
+        </div>
+
+        <div class="form-group">
+          <label for="email">Email *</label>
+          <input type="email" id="email" name="email" required placeholder="tu@email.com">
+        </div>
+
+        <div class="form-group">
+          <label for="telefono">Teléfono *</label>
+          <input type="tel" id="telefono" name="telefono" required placeholder="+54 9 11 2345 6789">
+        </div>
+
+        <div class="form-group">
+          <label for="rubro">Rubro/Negocio *</label>
+          <input type="text" id="rubro" name="rubro" required placeholder="Ej: Restaurante, Danza, Cosmética">
+        </div>
+
+        <div class="form-group">
+          <label for="colores">Colores Preferidos</label>
+          <input type="text" id="colores" name="colores" placeholder="Ej: Azul y blanco, Naranja y negro">
+        </div>
+
+        <div class="form-group">
+          <label for="descripcion">Descripción de lo que necesitas</label>
+          <textarea id="descripcion" name="descripcion" rows="4" placeholder="Cuéntanos qué necesitas para tu sitio web..."></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="dominio">Nombre de dominio preferido (opcional)</label>
+          <input type="text" id="dominio" name="dominio" placeholder="mi-negocio">
+          <small>Se creará como: mi-negocio.duckdns.org (si está disponible)</small>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn-cancel" onclick="closeForm()">Cancelar</button>
+          <button type="submit" class="btn-submit">Enviar Solicitud</button>
+        </div>
+      </form>
+    </div>
+  </div>
 
   <!-- QR Section -->
   <section class="qr-section">
@@ -248,42 +302,107 @@
       header.addEventListener('click', () => {
         const isActive = item.classList.contains('active');
         
-        // Cerrar todos los items
+        // Cerrar todos los items con transición suave
         accordionItems.forEach(otherItem => {
           if (otherItem !== item) {
-            otherItem.classList.remove('active');
             const otherBody = otherItem.querySelector('.plan-accordion-body');
             const otherChevron = otherItem.querySelector('.plan-chevron');
-            otherBody.style.maxHeight = null;
-            otherChevron.style.transform = 'rotate(0deg)';
+            const wasOtherActive = otherItem.classList.contains('active');
+            
+            if (wasOtherActive) {
+              // Cerrar con transición
+              otherItem.classList.remove('active');
+              setTimeout(() => {
+                otherBody.style.maxHeight = null;
+                otherChevron.style.transform = 'rotate(0deg)';
+              }, 50);
+            }
           }
         });
         
-        // Toggle del item actual
+        // Toggle del item actual con transición
         if (isActive) {
+          // Cerrar el item actual
           item.classList.remove('active');
-          body.style.maxHeight = null;
-          chevron.style.transform = 'rotate(0deg)';
+          setTimeout(() => {
+            body.style.maxHeight = null;
+            chevron.style.transform = 'rotate(0deg)';
+          }, 50);
         } else {
+          // Abrir el item actual
           item.classList.add('active');
           body.style.maxHeight = body.scrollHeight + 'px';
           chevron.style.transform = 'rotate(180deg)';
           
-          // Smooth scroll al item expandido
+          // Smooth scroll al item expandido con delay para la transición
           setTimeout(() => {
             item.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-          }, 100);
+          }, 300);
         }
       });
     });
     
-    // Abrir el primero por defecto (Premium)
-    const firstActive = document.querySelector('.plan-accordion-item.active');
-    if (firstActive) {
-      const firstBody = firstActive.querySelector('.plan-accordion-body');
-      const firstChevron = firstActive.querySelector('.plan-chevron');
-      firstBody.style.maxHeight = firstBody.scrollHeight + 'px';
-      firstChevron.style.transform = 'rotate(180deg)';
+    // Asegurar que todos los acordeones empiecen cerrados
+    // Forzar que ningún item tenga 'active' al cargar la página
+    accordionItems.forEach(item => {
+      item.classList.remove('active');
+      const body = item.querySelector('.plan-accordion-body');
+      const chevron = item.querySelector('.plan-chevron');
+      body.style.maxHeight = null;
+      chevron.style.transform = 'rotate(0deg)';
+    });
+
+    // Formulario de Pedido de Plan
+    function openForm(planType) {
+      const modal = document.getElementById('planFormModal');
+      const selectedPlan = document.getElementById('selectedPlan');
+      const selectedPlanName = document.getElementById('selectedPlanName');
+      
+      const planNames = {
+        'base': 'Base',
+        'pro': 'Pro',
+        'premium': 'Premium'
+      };
+      
+      selectedPlan.value = planType;
+      selectedPlanName.textContent = planNames[planType];
+      modal.style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeForm() {
+      const modal = document.getElementById('planFormModal');
+      modal.style.display = 'none';
+      document.body.style.overflow = 'auto';
+      document.getElementById('planRequestForm').reset();
+    }
+
+    function handleFormSubmit(event) {
+      event.preventDefault();
+      
+      const formData = new FormData(event.target);
+      const data = Object.fromEntries(formData);
+      
+      // Mostrar mensaje de confirmación
+      alert('¡Solicitud enviada! Te contactaremos pronto para generar tu sitio web.');
+      
+      // Aquí se enviará a un backend/API que genere el repo automáticamente
+      // Por ahora, mostramos los datos
+      console.log('Datos del formulario:', data);
+      
+      // Cerrar formulario
+      closeForm();
+      
+      // TODO: Enviar a endpoint que genere repo automáticamente
+      // fetch('/api/create-site', { method: 'POST', body: JSON.stringify(data) })
+    }
+
+    // Cerrar modal al hacer click fuera
+    window.onclick = function(event) {
+      const modal = document.getElementById('planFormModal');
+      if (event.target == modal) {
+        closeForm();
+      }
     }
 
     // Scroll to Top Button
