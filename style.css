@@ -139,17 +139,36 @@ body {
 .nav-social a:hover .fa-youtube { background: #FF0000; }
 .nav-social a:hover .fa-tiktok { background: #000000; }
 
-/* Hero Section - Premium */
+/* Hero Section - Premium con Imagen Difuminada */
 .hero-section {
   margin-top: 100px;
   padding: 180px 0 140px;
   text-align: center;
   background: linear-gradient(to bottom, #ffffff 0%, var(--bg-light) 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-bg-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: url('https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?w=1920&h=1080&fit=crop&q=80');
+  background-size: cover;
+  background-position: center;
+  opacity: 0.08;
+  filter: blur(50px);
+  transform: scale(1.2);
+  z-index: 0;
 }
 
 .hero-content {
   max-width: 900px;
   margin: 0 auto;
+  position: relative;
+  z-index: 1;
 }
 
 .hero-title {
@@ -178,67 +197,126 @@ body {
   font-weight: 300;
 }
 
-/* Plans Section - Premium con Cards */
+/* Plans Section - Premium con Imagen Difuminada y Acordeón */
 .plans-section {
   padding: 150px 0;
   background: var(--bg-light);
+  position: relative;
+  overflow: hidden;
+}
+
+.plans-bg-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: url('https://images.unsplash.com/photo-1547153760-18fc86324498?w=1920&h=1080&fit=crop&q=80');
+  background-size: cover;
+  background-position: center;
+  opacity: 0.06;
+  filter: blur(60px);
+  transform: scale(1.3);
+  z-index: 0;
+}
+
+.plans-section .container-large {
+  position: relative;
+  z-index: 1;
 }
 
 .section-title {
   font-size: 4rem;
   font-weight: 300;
   letter-spacing: -2.5px;
-  margin-bottom: 100px;
+  margin-bottom: 80px;
   color: var(--text-primary);
   text-align: center;
 }
 
-/* Plans Grid - Cards como Blow-dance */
-.plans-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
-  gap: 50px;
-  margin-top: 60px;
+/* Plans Accordion - Desplegable Premium */
+.plans-accordion {
+  max-width: 1000px;
+  margin: 0 auto;
 }
 
-.plan-card {
+.plan-accordion-item {
   background: var(--card-bg);
   border-radius: 20px;
+  margin-bottom: 25px;
   overflow: hidden;
   transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: var(--shadow-sm);
   border: 1px solid var(--border-light);
 }
 
-.plan-card:hover {
-  transform: translateY(-15px);
+.plan-accordion-item.active {
   box-shadow: var(--shadow-lg);
-  border-color: rgba(0, 0, 0, 0.12);
+  border-color: rgba(0, 0, 0, 0.15);
+  transform: translateY(-5px);
 }
 
-.plan-card.premium-card {
+.plan-accordion-item.premium {
   border: 2px solid var(--text-primary);
 }
 
-.plan-card-header {
-  padding: 50px 40px 40px;
-  text-align: center;
+.plan-accordion-header {
+  width: 100%;
+  padding: 45px 50px;
   background: linear-gradient(135deg, #fafafa 0%, #ffffff 100%);
-  border-bottom: 1px solid var(--border-light);
+  border: none;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  text-align: left;
 }
 
-.plan-card-header h3 {
-  font-size: 2.8rem;
+.plan-accordion-item.active .plan-accordion-header {
+  background: linear-gradient(135deg, #ffffff 0%, #fafafa 100%);
+  padding-bottom: 40px;
+}
+
+.plan-accordion-header:hover {
+  background: linear-gradient(135deg, #f5f5f5 0%, #ffffff 100%);
+}
+
+.plan-header-content {
+  flex: 1;
+}
+
+.plan-accordion-header h3 {
+  font-size: 2.5rem;
   font-weight: 600;
   letter-spacing: -1px;
-  margin-bottom: 15px;
+  margin-bottom: 12px;
   color: var(--text-primary);
 }
 
-.plan-card-header .plan-tagline {
+.plan-accordion-header .plan-tagline {
   font-size: 1.2rem;
   color: var(--text-secondary);
   font-weight: 300;
+}
+
+.plan-chevron {
+  font-size: 1.2rem;
+  color: var(--text-secondary);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  margin-left: 30px;
+  transform: rotate(0deg);
+}
+
+.plan-accordion-item.active .plan-chevron {
+  color: var(--text-primary);
+  transform: rotate(180deg);
+}
+
+.plan-accordion-body {
+  max-height: 0;
+  overflow: hidden;
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .plan-card-body {
@@ -349,10 +427,32 @@ body {
   background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%);
 }
 
-/* QR Section - Premium Card */
+/* QR Section - Premium Card con Imagen Difuminada */
 .qr-section {
   padding: 150px 0;
   background: #ffffff;
+  position: relative;
+  overflow: hidden;
+}
+
+.qr-bg-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: url('https://images.unsplash.com/photo-1518834107812-67b0b7c58434?w=1920&h=1080&fit=crop&q=80');
+  background-size: cover;
+  background-position: center;
+  opacity: 0.05;
+  filter: blur(50px);
+  transform: scale(1.2);
+  z-index: 0;
+}
+
+.qr-section .container-large {
+  position: relative;
+  z-index: 1;
 }
 
 .qr-card {
@@ -399,10 +499,32 @@ body {
   font-weight: 300;
 }
 
-/* Contact Section - Premium Cards */
+/* Contact Section - Premium Cards con Imagen Difuminada */
 .contact-section {
   padding: 150px 0;
   background: var(--bg-light);
+  position: relative;
+  overflow: hidden;
+}
+
+.contact-bg-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: url('https://images.unsplash.com/photo-1545128485-c400e7702796?w=1920&h=1080&fit=crop&q=80');
+  background-size: cover;
+  background-position: center;
+  opacity: 0.06;
+  filter: blur(60px);
+  transform: scale(1.3);
+  z-index: 0;
+}
+
+.contact-section .container-large {
+  position: relative;
+  z-index: 1;
 }
 
 .contact-grid {
@@ -803,13 +925,22 @@ footer p {
     margin-bottom: 60px;
   }
 
-  .plans-grid {
-    grid-template-columns: 1fr;
-    gap: 40px;
+  .plan-accordion-header {
+    padding: 35px 30px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
   }
 
-  .plan-card-header {
-    padding: 40px 30px 30px;
+  .plan-accordion-header h3 {
+    font-size: 2rem;
+  }
+
+  .plan-chevron {
+    position: absolute;
+    top: 35px;
+    right: 30px;
+    margin: 0;
   }
 
   .plan-card-body {

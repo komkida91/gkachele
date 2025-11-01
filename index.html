@@ -30,6 +30,7 @@
 
   <!-- Hero Section -->
   <section class="hero-section">
+    <div class="hero-bg-overlay"></div>
     <div class="hero-content">
       <h1 class="hero-title">GKACHELE™</h1>
       <p class="hero-subtitle">Desarrollo Web Premium</p>
@@ -37,111 +38,127 @@
     </div>
   </section>
 
-  <!-- Plans Section -->
+  <!-- Plans Section - Acordeón Desplegable -->
   <section id="planes" class="plans-section">
+    <div class="plans-bg-overlay"></div>
     <div class="container-large">
       <h2 class="section-title">Nuestros Planes</h2>
       
-      <!-- Plans Cards Grid -->
-      <div class="plans-grid">
-        <!-- Base Plan Card -->
-        <div class="plan-card" data-plan="base">
-          <div class="plan-card-header">
-            <h3>Base</h3>
-            <p class="plan-tagline">Simple, efectivo y profesional</p>
-          </div>
-          <div class="plan-card-body">
-            <h4>¿Qué incluye?</h4>
-            <ul>
-              <li>✅ Sitio web de una página</li>
-              <li>✅ Diseño limpio y profesional</li>
-              <li>✅ Información de contacto</li>
-              <li>✅ Enlaces a redes sociales</li>
-              <li>✅ Responsive (móvil y desktop)</li>
-              <li>✅ Hosting gratuito</li>
-              <li>✅ Dominio personalizado</li>
-            </ul>
-            <h4>Personalización</h4>
-            <ul>
-              <li>🎨 Color principal personalizado</li>
-              <li>✍️ Tipografía a elección</li>
-              <li>📝 Textos personalizados</li>
-            </ul>
-            <p class="plan-ideal"><strong>Ideal para:</strong> Profesionales independientes, pequeños comercios, páginas institucionales básicas.</p>
-            <div class="qr-mini-card">
-              <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://gkachele.duckdns.org" alt="QR Base">
-              <p>Comparte este plan</p>
+      <!-- Plans Accordion -->
+      <div class="plans-accordion">
+        <!-- Base Plan -->
+        <div class="plan-accordion-item" data-plan="base">
+          <button class="plan-accordion-header">
+            <div class="plan-header-content">
+              <h3>Base</h3>
+              <p class="plan-tagline">Simple, efectivo y profesional</p>
             </div>
-            <a href="https://wa.me/5491123456789?text=Hola!%20Me%20interesa%20el%20Plan%20Base" target="_blank" class="plan-btn">
-              Contactar sobre Plan Base
-            </a>
+            <i class="fas fa-chevron-down plan-chevron"></i>
+          </button>
+          <div class="plan-accordion-body">
+            <div class="plan-card-body">
+              <h4>¿Qué incluye?</h4>
+              <ul>
+                <li>✅ Sitio web de una página</li>
+                <li>✅ Diseño limpio y profesional</li>
+                <li>✅ Información de contacto</li>
+                <li>✅ Enlaces a redes sociales</li>
+                <li>✅ Responsive (móvil y desktop)</li>
+                <li>✅ Hosting gratuito</li>
+                <li>✅ Dominio personalizado</li>
+              </ul>
+              <h4>Personalización</h4>
+              <ul>
+                <li>🎨 Color principal personalizado</li>
+                <li>✍️ Tipografía a elección</li>
+                <li>📝 Textos personalizados</li>
+              </ul>
+              <p class="plan-ideal"><strong>Ideal para:</strong> Profesionales independientes, pequeños comercios, páginas institucionales básicas.</p>
+              <div class="qr-mini-card">
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://gkachele.duckdns.org" alt="QR Base">
+                <p>Comparte este plan</p>
+              </div>
+              <a href="https://wa.me/5491123456789?text=Hola!%20Me%20interesa%20el%20Plan%20Base" target="_blank" class="plan-btn">
+                Contactar sobre Plan Base
+              </a>
+            </div>
           </div>
         </div>
 
-        <!-- Pro Plan Card -->
-        <div class="plan-card" data-plan="pro">
-          <div class="plan-card-header">
-            <h3>Pro</h3>
-            <p class="plan-tagline">Visual, dinámico y moderno</p>
-          </div>
-          <div class="plan-card-body">
-            <h4>¿Qué incluye?</h4>
-            <ul>
-              <li>✅ Sitio web multipágina</li>
-              <li>✅ Animaciones suaves y efectos visuales</li>
-              <li>✅ Galería de imágenes o portafolio</li>
-              <li>✅ Formulario de contacto funcional</li>
-              <li>✅ Responsive avanzado</li>
-              <li>✅ Hosting gratuito</li>
-              <li>✅ Dominio personalizado</li>
-            </ul>
-            <h4>Personalización</h4>
-            <ul>
-              <li>🎨 Paleta de colores personalizada</li>
-              <li>✍️ Tipografía profesional</li>
-              <li>🧩 Secciones a medida</li>
-            </ul>
-            <p class="plan-ideal"><strong>Ideal para:</strong> Marcas personales, portfolios creativos, negocios que quieren destacar visualmente.</p>
-            <div class="qr-mini-card">
-              <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://gkachele.duckdns.org#planes" alt="QR Pro">
-              <p>Comparte este plan</p>
+        <!-- Pro Plan -->
+        <div class="plan-accordion-item" data-plan="pro">
+          <button class="plan-accordion-header">
+            <div class="plan-header-content">
+              <h3>Pro</h3>
+              <p class="plan-tagline">Visual, dinámico y moderno</p>
             </div>
-            <a href="https://wa.me/5491123456789?text=Hola!%20Me%20interesa%20el%20Plan%20Pro" target="_blank" class="plan-btn">
-              Contactar sobre Plan Pro
-            </a>
+            <i class="fas fa-chevron-down plan-chevron"></i>
+          </button>
+          <div class="plan-accordion-body">
+            <div class="plan-card-body">
+              <h4>¿Qué incluye?</h4>
+              <ul>
+                <li>✅ Sitio web multipágina</li>
+                <li>✅ Animaciones suaves y efectos visuales</li>
+                <li>✅ Galería de imágenes o portafolio</li>
+                <li>✅ Formulario de contacto funcional</li>
+                <li>✅ Responsive avanzado</li>
+                <li>✅ Hosting gratuito</li>
+                <li>✅ Dominio personalizado</li>
+              </ul>
+              <h4>Personalización</h4>
+              <ul>
+                <li>🎨 Paleta de colores personalizada</li>
+                <li>✍️ Tipografía profesional</li>
+                <li>🧩 Secciones a medida</li>
+              </ul>
+              <p class="plan-ideal"><strong>Ideal para:</strong> Marcas personales, portfolios creativos, negocios que quieren destacar visualmente.</p>
+              <div class="qr-mini-card">
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://gkachele.duckdns.org#planes" alt="QR Pro">
+                <p>Comparte este plan</p>
+              </div>
+              <a href="https://wa.me/5491123456789?text=Hola!%20Me%20interesa%20el%20Plan%20Pro" target="_blank" class="plan-btn">
+                Contactar sobre Plan Pro
+              </a>
+            </div>
           </div>
         </div>
 
-        <!-- Premium Plan Card -->
-        <div class="plan-card premium-card" data-plan="premium">
-          <div class="plan-card-header">
-            <h3>Premium</h3>
-            <p class="plan-tagline">Experiencia completa y profesional</p>
-          </div>
-          <div class="plan-card-body">
-            <h4>¿Qué incluye?</h4>
-            <ul>
-              <li>✅ Sitio web completo y escalable</li>
-              <li>✅ Integración con redes sociales y herramientas externas</li>
-              <li>✅ SEO optimizado</li>
-              <li>✅ Panel de administración (opcional)</li>
-              <li>✅ Hosting y dominio incluidos</li>
-              <li>✅ Soporte técnico personalizado</li>
-            </ul>
-            <h4>Personalización</h4>
-            <ul>
-              <li>🎨 Diseño a medida</li>
-              <li>📊 Integración con analítica</li>
-              <li>🔒 Seguridad avanzada</li>
-            </ul>
-            <p class="plan-ideal"><strong>Ideal para:</strong> Empresas, proyectos grandes, tiendas online, instituciones con necesidades específicas.</p>
-            <div class="qr-mini-card">
-              <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://gkachele.duckdns.org#planes" alt="QR Premium">
-              <p>Comparte este plan</p>
+        <!-- Premium Plan -->
+        <div class="plan-accordion-item active" data-plan="premium">
+          <button class="plan-accordion-header">
+            <div class="plan-header-content">
+              <h3>Premium</h3>
+              <p class="plan-tagline">Experiencia completa y profesional</p>
             </div>
-            <a href="https://wa.me/5491123456789?text=Hola!%20Me%20interesa%20el%20Plan%20Premium" target="_blank" class="plan-btn premium-btn">
-              Contactar sobre Plan Premium
-            </a>
+            <i class="fas fa-chevron-down plan-chevron"></i>
+          </button>
+          <div class="plan-accordion-body">
+            <div class="plan-card-body">
+              <h4>¿Qué incluye?</h4>
+              <ul>
+                <li>✅ Sitio web completo y escalable</li>
+                <li>✅ Integración con redes sociales y herramientas externas</li>
+                <li>✅ SEO optimizado</li>
+                <li>✅ Panel de administración (opcional)</li>
+                <li>✅ Hosting y dominio incluidos</li>
+                <li>✅ Soporte técnico personalizado</li>
+              </ul>
+              <h4>Personalización</h4>
+              <ul>
+                <li>🎨 Diseño a medida</li>
+                <li>📊 Integración con analítica</li>
+                <li>🔒 Seguridad avanzada</li>
+              </ul>
+              <p class="plan-ideal"><strong>Ideal para:</strong> Empresas, proyectos grandes, tiendas online, instituciones con necesidades específicas.</p>
+              <div class="qr-mini-card">
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://gkachele.duckdns.org#planes" alt="QR Premium">
+                <p>Comparte este plan</p>
+              </div>
+              <a href="https://wa.me/5491123456789?text=Hola!%20Me%20interesa%20el%20Plan%20Premium" target="_blank" class="plan-btn premium-btn">
+                Contactar sobre Plan Premium
+              </a>
+            </div>
           </div>
         </div>
       </div>
@@ -150,6 +167,7 @@
 
   <!-- QR Section -->
   <section class="qr-section">
+    <div class="qr-bg-overlay"></div>
     <div class="container-large">
       <div class="qr-card">
         <h3>Comparte tu sitio</h3>
@@ -161,6 +179,7 @@
 
   <!-- Contact Section -->
   <section id="contacto" class="contact-section">
+    <div class="contact-bg-overlay"></div>
     <div class="container-large">
       <h2 class="section-title">Contacto</h2>
       <div class="contact-grid">
@@ -218,6 +237,55 @@
   </footer>
 
   <script>
+    // Plan Accordion - Desplegable Premium
+    const accordionItems = document.querySelectorAll('.plan-accordion-item');
+    
+    accordionItems.forEach(item => {
+      const header = item.querySelector('.plan-accordion-header');
+      const body = item.querySelector('.plan-accordion-body');
+      const chevron = item.querySelector('.plan-chevron');
+      
+      header.addEventListener('click', () => {
+        const isActive = item.classList.contains('active');
+        
+        // Cerrar todos los items
+        accordionItems.forEach(otherItem => {
+          if (otherItem !== item) {
+            otherItem.classList.remove('active');
+            const otherBody = otherItem.querySelector('.plan-accordion-body');
+            const otherChevron = otherItem.querySelector('.plan-chevron');
+            otherBody.style.maxHeight = null;
+            otherChevron.style.transform = 'rotate(0deg)';
+          }
+        });
+        
+        // Toggle del item actual
+        if (isActive) {
+          item.classList.remove('active');
+          body.style.maxHeight = null;
+          chevron.style.transform = 'rotate(0deg)';
+        } else {
+          item.classList.add('active');
+          body.style.maxHeight = body.scrollHeight + 'px';
+          chevron.style.transform = 'rotate(180deg)';
+          
+          // Smooth scroll al item expandido
+          setTimeout(() => {
+            item.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          }, 100);
+        }
+      });
+    });
+    
+    // Abrir el primero por defecto (Premium)
+    const firstActive = document.querySelector('.plan-accordion-item.active');
+    if (firstActive) {
+      const firstBody = firstActive.querySelector('.plan-accordion-body');
+      const firstChevron = firstActive.querySelector('.plan-chevron');
+      firstBody.style.maxHeight = firstBody.scrollHeight + 'px';
+      firstChevron.style.transform = 'rotate(180deg)';
+    }
+
     // Scroll to Top Button
     const scrollToTopBtn = document.getElementById('scrollToTop');
     
