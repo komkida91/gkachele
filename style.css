@@ -1298,15 +1298,23 @@ footer p {
     max-width: 100%;
   }
 
+  /* Footer override - asegurar visibilidad */
   .footer-main {
-    padding: 60px 0 40px;
-    overflow: visible;
-    min-height: auto;
-    position: relative;
+    padding: 60px 0 40px !important;
+    overflow: visible !important;
+    min-height: auto !important;
+    position: relative !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    display: block !important;
+    visibility: visible !important;
   }
   
   .footer-main .container-large {
-    padding: 0 20px;
+    padding: 0 20px !important;
+    width: 100% !important;
+    max-width: 100% !important;
   }
 
   /* Horizontal móvil */
