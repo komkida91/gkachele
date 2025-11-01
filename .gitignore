@@ -1,0 +1,59 @@
+# GitHub Token y datos sensibles
+.github-token
+*.key
+*.pem
+*.env
+.env
+
+# Logs y archivos temporales
+*.log
+tmp/
+temp/
+
+# Archivos del sistema operativo
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE y editores
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Node modules (si se usa en el futuro)
+node_modules/
+package-lock.json
+
+# Build files
+dist/
+build/
+
+# Documentación interna
+CONTROL-VERSIONES.md
+VERSION.txt
+README.md
+
+# Scripts de herramientas locales
+actualizar-version.ps1
+actualizar-version.sh
+
+# AWS
+.aws/
+credentials
+config
+
+# Terraform
+*.tfstate
+*.tfstate.*
+.terraform/
+.terraform.lock.hcl
+terraform.tfvars
+*.tfvars
+
+# Helm
+charts/
+*.tgz
+.helmignore
+
