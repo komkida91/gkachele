@@ -557,19 +557,83 @@ body {
   }
 }
 
-/* Footer - Premium */
+/* Footer - Premium con Imagen Difuminada */
 .footer-main {
-  padding: 100px 0;
+  padding: 150px 0 100px;
   background: #1a1a1a;
   color: #ffffff;
   text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.footer-bg-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: url('https://images.unsplash.com/photo-1518834107812-67b0b7c58434?w=1920&h=1080&fit=crop&q=80');
+  background-size: cover;
+  background-position: center;
+  opacity: 0.15;
+  filter: blur(40px);
+  transform: scale(1.1);
+  z-index: 0;
+}
+
+.footer-main .container-large {
+  position: relative;
+  z-index: 1;
 }
 
 .footer-main p {
   font-size: 0.95rem;
-  color: rgba(255, 255, 255, 0.5);
+  color: rgba(255, 255, 255, 0.6);
   font-weight: 300;
   letter-spacing: 0.5px;
+}
+
+/* Scroll to Top Button */
+.scroll-to-top {
+  position: fixed;
+  bottom: 120px;
+  right: 40px;
+  width: 60px;
+  height: 60px;
+  background: var(--text-primary);
+  color: #ffffff;
+  border: none;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 1.3rem;
+  z-index: 998;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.scroll-to-top.show {
+  opacity: 1;
+  visibility: visible;
+}
+
+.scroll-to-top:hover {
+  background: #000000;
+  transform: translateY(-5px) scale(1.1);
+  box-shadow: 0 6px 30px rgba(0, 0, 0, 0.3);
+}
+
+.scroll-to-top i {
+  transition: transform 0.3s ease;
+}
+
+.scroll-to-top:hover i {
+  transform: translateY(-2px);
 }
 
 /* Old Styles for Plan Pages */
@@ -769,7 +833,19 @@ footer p {
     font-size: 1.7rem;
   }
 
+  .scroll-to-top {
+    width: 50px;
+    height: 50px;
+    bottom: 100px;
+    right: 25px;
+    font-size: 1.1rem;
+  }
+
   .qr-card {
     padding: 60px 40px;
+  }
+
+  .footer-main {
+    padding: 120px 0 80px;
   }
 }
