@@ -210,11 +210,15 @@ body::before {
   left: 0;
   right: 0;
   bottom: 0;
+  width: 100%;
+  max-width: 100%;
   background-image: url('https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1920&h=1080&fit=crop&q=80');
   background-size: cover;
   background-position: center;
   opacity: 0.2;
   z-index: 0;
+  margin: 0;
+  padding: 0;
 }
 
 .hero-content {
@@ -271,11 +275,15 @@ body::before {
   left: 0;
   right: 0;
   bottom: 0;
+  width: 100%;
+  max-width: 100%;
   background-image: url('https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1920&h=1080&fit=crop&q=80');
   background-size: cover;
   background-position: center;
   opacity: 0.18;
   z-index: 0;
+  margin: 0;
+  padding: 0;
 }
 
 .plans-section .container-large {
