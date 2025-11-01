@@ -1,240 +1,56 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Plan Premium - gkachele™</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Poppins', 'Segoe UI', sans-serif;
-            background: #111;
-            color: #fff;
-            line-height: 1.6;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-
-        header {
-            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
-            padding: 60px 20px;
-            text-align: center;
-            border-bottom: 3px solid #FFD700;
-        }
-
-        header h1 {
-            font-size: 3.5rem;
-            margin-bottom: 15px;
-            background: linear-gradient(135deg, #FFD700, #FFA500);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
-        }
-
-        .tagline {
-            font-size: 1.3rem;
-            color: #FFD700;
-            font-weight: 300;
-        }
-
-        main {
-            background: #1a1a1a;
-            margin: 40px auto;
-            padding: 50px;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(255, 215, 0, 0.1);
-            border: 1px solid #2d2d2d;
-        }
-
-        .plan-details h2 {
-            font-size: 2.5rem;
-            color: #FFD700;
-            margin-bottom: 30px;
-            text-align: center;
-        }
-
-        .plan-details ul {
-            list-style: none;
-            max-width: 800px;
-            margin: 30px auto;
-        }
-
-        .plan-details li {
-            padding: 18px 0;
-            font-size: 1.2rem;
-            border-bottom: 1px solid #2d2d2d;
-            color: #ddd;
-        }
-
-        .plan-details h3 {
-            color: #FFD700;
-            margin: 40px 0 20px 0;
-            font-size: 1.8rem;
-            text-align: center;
-        }
-
-        .plan-details p {
-            font-size: 1.1rem;
-            color: #bbb;
-            text-align: center;
-            max-width: 800px;
-            margin: 0 auto;
-        }
-
-        .benefits {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 30px;
-            margin: 40px 0;
-        }
-
-        .benefit-card {
-            background: #2d2d2d;
-            padding: 30px;
-            border-radius: 15px;
-            text-align: center;
-            border: 2px solid transparent;
-            transition: all 0.3s;
-        }
-
-        .benefit-card:hover {
-            border-color: #FFD700;
-            transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(255, 215, 0, 0.2);
-        }
-
-        .benefit-card .icon {
-            font-size: 3rem;
-            margin-bottom: 15px;
-        }
-
-        .benefit-card h4 {
-            color: #FFD700;
-            margin-bottom: 10px;
-            font-size: 1.3rem;
-        }
-
-        .benefit-card p {
-            color: #bbb;
-            font-size: 0.95rem;
-        }
-
-        .contacto {
-            text-align: center;
-            padding: 40px;
-            background: #2d2d2d;
-            border-radius: 15px;
-            margin-top: 40px;
-            border: 2px solid #FFD700;
-        }
-
-        .contacto h3 {
-            color: #FFD700;
-            margin-bottom: 20px;
-            font-size: 2rem;
-        }
-
-        .contacto a {
-            color: #FFD700;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 1.2rem;
-        }
-
-        .contacto a:hover {
-            text-decoration: underline;
-        }
-
-        footer {
-            text-align: center;
-            padding: 30px;
-            color: #666;
-            background: #0a0a0a;
-        }
-
-        @media (max-width: 768px) {
-            header h1 {
-                font-size: 2.5rem;
-            }
-
-            main {
-                padding: 30px 20px;
-            }
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Plan Premium - gkachele™</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <header>
-        <div class="container">
-            <h1>Plan Premium</h1>
-            <p class="tagline">La experiencia completa y profesional</p>
-        </div>
-    </header>
+  <header>
+    <div class="container">
+      <h1>Plan Premium</h1>
+      <p class="tagline">Experiencia completa y profesional</p>
+    </div>
+  </header>
 
-    <main class="container">
-        <section class="plan-details">
-            <h2>¿Qué incluye el Plan Premium?</h2>
-            <ul>
-                <li>✅ Todo lo del Plan Pro +</li>
-                <li>✅ Diseño personalizado de alta calidad</li>
-                <li>✅ Galería de imágenes optimizada</li>
-                <li>✅ Formulario de contacto avanzado</li>
-                <li>✅ Panel de administración completo</li>
-                <li>✅ Sistema de publicación automática</li>
-                <li>✅ Integración con múltiples plataformas</li>
-                <li>✅ Animaciones y efectos premium</li>
-                <li>✅ Optimización SEO avanzada</li>
-                <li>✅ Soporte prioritario</li>
-            </ul>
+  <main class="container">
+    <section class="plan-details">
+      <h2>¿Qué incluye el Plan Premium?</h2>
+      <ul>
+        <li>✅ Sitio web completo y escalable</li>
+        <li>✅ Integración con redes sociales y herramientas externas</li>
+        <li>✅ SEO optimizado</li>
+        <li>✅ Panel de administración (opcional)</li>
+        <li>✅ Hosting y dominio incluidos</li>
+        <li>✅ Soporte técnico personalizado</li>
+      </ul>
 
-            <h3>Beneficios Exclusivos</h3>
-            <div class="benefits">
-                <div class="benefit-card">
-                    <div class="icon">🚀</div>
-                    <h4>Publicación Automática</h4>
-                    <p>Tu contenido se replica automáticamente en las principales redes sociales</p>
-                </div>
-                <div class="benefit-card">
-                    <div class="icon">📊</div>
-                    <h4>Estadísticas</h4>
-                    <p>Panel con métricas de visitas y engagement</p>
-                </div>
-                <div class="benefit-card">
-                    <div class="icon">🎨</div>
-                    <h4>Diseño Único</h4>
-                    <p>Diseño 100% personalizado para tu marca</p>
-                </div>
-                <div class="benefit-card">
-                    <div class="icon">⚡</div>
-                    <h4>Soporte 24/7</h4>
-                    <p>Asistencia prioritaria y actualizaciones incluidas</p>
-                </div>
-            </div>
+      <h3>Personalización</h3>
+      <ul>
+        <li>🎨 Diseño a medida</li>
+        <li>📊 Integración con analítica</li>
+        <li>🔒 Seguridad avanzada</li>
+      </ul>
 
-            <h3>Ideal para:</h3>
-            <p>Empresas, consultores profesionales, negocios establecidos que buscan la mejor presencia digital sin compromisos.</p>
-        </section>
+      <h3>Ideal para:</h3>
+      <p>Empresas, proyectos grandes, tiendas online, instituciones con necesidades específicas.</p>
 
-        <section class="contacto">
-            <h3>¿Te interesa el Plan Premium?</h3>
-            <p>Contactame para una consulta personalizada:</p>
-            <p>WhatsApp: <a href="https://wa.me/5493755646531?text=Hola!%20Me%20interesa%20el%20Plan%20Premium" target="_blank">+54 9 3755 64-6531</a></p>
-            <p style="margin-top: 20px;"><a href="../index.html">← Volver a planes</a></p>
-        </section>
-    </main>
+      <div class="qr-mini">
+        <img src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=https://gkachele.duckdns.org" alt="QR GKACHELE™">
+      </div>
+    </section>
 
-    <footer>
-        <p>&copy; 2025 gkachele™. Todos los derechos reservados.</p>
-    </footer>
+    <section class="contacto">
+      <h3>¿Te interesa el Plan Premium?</h3>
+      <p>Contactame para empezar:</p>
+      <p>WhatsApp: <a href="https://wa.me/5491123456789?text=Hola!%20Me%20interesa%20el%20Plan%20Premium" target="_blank">+54 9 11 2345 6789</a></p>
+      <p><a href="index.html">← Volver a planes</a></p>
+    </section>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 gkachele™. Todos los derechos reservados.</p>
+  </footer>
 </body>
 </html>
-

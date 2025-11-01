@@ -3,455 +3,59 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>GKACHELE™ | Desarrollo Web Premium</title>
-  <meta name="description" content="GKACHELE™ - Sitios web modernos, rápidos y personalizados.">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
+  <title>GKACHELE™ | Contacto</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <script>
+    function redirigirPlan() {
+      const plan = document.getElementById("plan").value;
+      window.location.href = plan + ".html";
     }
-    :root {
-      --bg-dark: #0a0a0a;
-      --bg-card: #1a1a1a;
-      --text-light: #f5f5f5;
-      --text-gray: #999;
-      --accent: #ff4081;
-      --accent-hover: #e91e63;
-    }
-    body {
-      font-family: 'Inter', sans-serif;
-      background: var(--bg-dark);
-      color: var(--text-light);
-      line-height: 1.6;
-    }
-    .container {
-      max-width: 1400px;
-      margin: 0 auto;
-      padding: 0 40px;
-    }
-    header {
-      position: sticky;
-      top: 0;
-      background: rgba(10, 10, 10, 0.95);
-      backdrop-filter: blur(10px);
-      padding: 20px 0;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-      z-index: 1000;
-    }
-    nav {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .logo {
-      font-size: 1.5rem;
-      font-weight: 700;
-      color: var(--accent);
-      letter-spacing: 1px;
-    }
-    .nav-links {
-      list-style: none;
-      display: flex;
-      gap: 3rem;
-    }
-    .nav-links li a {
-      color: var(--text-light);
-      text-decoration: none;
-      font-weight: 400;
-      font-size: 0.95rem;
-      transition: color 0.3s;
-    }
-    .nav-links li a:hover {
-      color: var(--accent);
-    }
-    .hero {
-      min-height: 90vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      padding: 4rem 2rem;
-    }
-    .hero-content h1 {
-      font-size: 4rem;
-      font-weight: 700;
-      margin-bottom: 1.5rem;
-      background: linear-gradient(135deg, #fff, #ccc);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      line-height: 1.2;
-    }
-    .hero-content p {
-      font-size: 1.3rem;
-      color: var(--text-gray);
-      margin-bottom: 3rem;
-      max-width: 600px;
-      margin-left: auto;
-      margin-right: auto;
-    }
-    .cta-button {
-      background: var(--accent);
-      color: white;
-      padding: 1rem 2.5rem;
-      border-radius: 50px;
-      text-decoration: none;
-      font-weight: 600;
-      font-size: 1rem;
-      display: inline-block;
-      transition: background 0.3s, transform 0.3s;
-    }
-    .cta-button:hover {
-      background: var(--accent-hover);
-      transform: translateY(-2px);
-    }
-    .planes-selector {
-      padding: 6rem 0;
-      text-align: center;
-    }
-    .planes-selector h2 {
-      font-size: 3rem;
-      font-weight: 700;
-      margin-bottom: 3rem;
-      color: var(--text-light);
-    }
-    #planForm {
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-      max-width: 500px;
-      margin: 0 auto;
-    }
-    label {
-      font-weight: 600;
-      color: var(--text-light);
-      text-align: left;
-    }
-    select {
-      padding: 18px;
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      border-radius: 8px;
-      background: var(--bg-card);
-      color: var(--text-light);
-      font-size: 1rem;
-      font-family: 'Inter', sans-serif;
-      transition: border-color 0.3s;
-    }
-    select:focus {
-      outline: none;
-      border-color: var(--accent);
-    }
-    button {
-      padding: 18px 30px;
-      background: var(--accent);
-      color: white;
-      border: none;
-      border-radius: 8px;
-      font-size: 1rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background 0.3s, transform 0.3s;
-    }
-    button:hover {
-      background: var(--accent-hover);
-      transform: translateY(-2px);
-    }
-    .contacto {
-      padding: 6rem 0;
-      background: var(--bg-card);
-    }
-    .contacto-wrapper {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 4rem;
-      align-items: start;
-    }
-    .contacto-title {
-      font-size: 3rem;
-      font-weight: 700;
-      color: var(--accent);
-      margin-bottom: 3rem;
-    }
-    .contact-info {
-      display: flex;
-      flex-direction: column;
-      gap: 1.5rem;
-    }
-    .contact-card {
-      background: var(--bg-dark);
-      padding: 1.5rem;
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      gap: 1.5rem;
-      text-decoration: none;
-      color: var(--text-light);
-      transition: transform 0.3s, background 0.3s;
-      border: 1px solid rgba(255, 255, 255, 0.05);
-    }
-    .contact-card:hover {
-      transform: translateX(5px);
-      background: rgba(255, 64, 129, 0.1);
-      border-color: var(--accent);
-    }
-    .contact-card i {
-      font-size: 1.5rem;
-      color: var(--accent);
-      width: 30px;
-      text-align: center;
-    }
-    .contact-card span {
-      flex: 1;
-      font-size: 1rem;
-    }
-    .social-section {
-      margin-top: 2rem;
-    }
-    .social-title {
-      font-size: 1.2rem;
-      font-weight: 600;
-      margin-bottom: 1.5rem;
-      color: var(--text-light);
-    }
-    .social-cards {
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-    }
-    .social-card {
-      background: var(--bg-dark);
-      padding: 1.5rem;
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      gap: 1.5rem;
-      text-decoration: none;
-      color: var(--text-light);
-      transition: transform 0.3s, background 0.3s;
-      border: 1px solid rgba(255, 255, 255, 0.05);
-    }
-    .social-card:hover {
-      transform: translateX(5px);
-      background: rgba(255, 64, 129, 0.1);
-      border-color: var(--accent);
-    }
-    .social-card i {
-      font-size: 1.5rem;
-      width: 30px;
-      text-align: center;
-    }
-    .social-card .fab.fa-instagram {
-      color: #E4405F;
-    }
-    .social-card .fab.fa-linkedin {
-      color: #0077B5;
-    }
-    .social-card .fab.fa-github {
-      color: #fff;
-    }
-    .social-card .fas.fa-envelope {
-      color: var(--accent);
-    }
-    .social-card span {
-      flex: 1;
-      font-size: 1rem;
-    }
-    .social-card .social-link {
-      color: var(--text-gray);
-      font-size: 0.9rem;
-      text-decoration: underline;
-    }
-    .qr-section {
-      text-align: center;
-      padding: 2rem;
-      background: var(--bg-dark);
-      border-radius: 12px;
-      border: 1px solid rgba(255, 255, 255, 0.05);
-    }
-    .qr-section h3 {
-      font-size: 1.2rem;
-      font-weight: 600;
-      margin-bottom: 1rem;
-      color: var(--text-light);
-    }
-    .qr-section img {
-      width: 180px;
-      height: 180px;
-      border-radius: 12px;
-      margin-bottom: 1rem;
-    }
-    .qr-section p {
-      color: var(--text-gray);
-      font-size: 0.9rem;
-    }
-    .whatsapp-float {
-      position: fixed;
-      bottom: 30px;
-      right: 30px;
-      background: #25D366;
-      color: white;
-      font-size: 2rem;
-      width: 60px;
-      height: 60px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 5px 20px rgba(37, 211, 102, 0.4);
-      transition: transform 0.3s ease;
-      z-index: 999;
-      text-decoration: none;
-    }
-    .whatsapp-float:hover {
-      transform: scale(1.1);
-    }
-    footer {
-      text-align: center;
-      padding: 3rem 0;
-      color: var(--text-gray);
-      font-size: 0.9rem;
-      border-top: 1px solid rgba(255, 255, 255, 0.1);
-    }
-    @media (max-width: 968px) {
-      .contacto-wrapper {
-        grid-template-columns: 1fr;
-      }
-      .hero-content h1 {
-        font-size: 2.5rem;
-      }
-      .nav-links {
-        gap: 1.5rem;
-      }
-      .container {
-        padding: 0 20px;
-      }
-    }
-    @media (max-width: 768px) {
-      nav {
-        flex-direction: column;
-        gap: 1rem;
-      }
-      .nav-links {
-        flex-direction: column;
-        gap: 1rem;
-        text-align: center;
-      }
-      .hero-content h1 {
-        font-size: 2rem;
-      }
-      .planes-selector h2,
-      .contacto-title {
-        font-size: 2rem;
-      }
-    }
-  </style>
+  </script>
 </head>
 <body>
   <header>
-    <nav class="container">
-      <div class="logo">GKACHELE™</div>
-      <ul class="nav-links">
-        <li><a href="#inicio">Inicio</a></li>
-        <li><a href="#planes">Planes</a></li>
-        <li><a href="#contacto">Contacto</a></li>
-      </ul>
-    </nav>
+    <div class="container">
+      <h1>GKACHELE™</h1>
+      <p class="tagline">Desarrollo Web Premium</p>
+    </div>
   </header>
 
-  <section class="hero" id="inicio">
-    <div class="hero-content">
-      <h1>Desarrollo Web Premium</h1>
-      <p>Sitios modernos, rápidos y personalizados. Creados con tecnología de vanguardia.</p>
-      <a href="#planes" class="cta-button">Ver planes</a>
-    </div>
-  </section>
+  <main>
+    <section class="hero">
+      <h2>Contacto directo</h2>
+      <p>Estamos listos para ayudarte a crear tu sitio moderno, rápido y personalizado.</p>
+    </section>
 
-  <section class="planes-selector container" id="planes">
-    <h2>Elegí tu plan</h2>
-    <form id="planForm">
-      <label for="plan">Seleccioná el nivel que necesitás:</label>
-      <select id="plan" name="plan">
-        <option value="base">Base - Sitio simple y efectivo</option>
-        <option value="pro">Pro - Visual y dinámico</option>
-        <option value="premium">Premium - Experiencia completa</option>
-      </select>
-      <button type="submit">Ver detalles del plan</button>
-    </form>
-  </section>
+    <section class="planes">
+      <h3 class="planes-title">Nuestros planes</h3>
+      <form id="planForm" onsubmit="event.preventDefault(); redirigirPlan();">
+        <label for="plan">Seleccioná tu plan:</label>
+        <select id="plan" name="plan">
+          <option value="base">Base</option>
+          <option value="pro">Pro</option>
+          <option value="premium">Premium</option>
+        </select>
+        <button type="submit">Ir al plan</button>
+      </form>
+    </section>
 
-  <section class="contacto" id="contacto">
-    <div class="container">
-      <h2 class="contacto-title">Contacto</h2>
-      <div class="contacto-wrapper">
-        <div>
-          <div class="contact-info">
-            <a href="https://www.google.com/maps/search/?api=1&query=Oberá,+Misiones,+Argentina" target="_blank" class="contact-card">
-              <i class="fas fa-map-marker-alt"></i>
-              <span>Oberá, Misiones, Argentina</span>
-            </a>
+    <section class="contacto">
+      <h3>Información de contacto</h3>
+      <a href="mailto:contacto@gkachele.com">contacto@gkachele.com</a><br>
+      <a href="https://www.google.com/maps/search/?api=1&query=Oberá,+Misiones,+Argentina" target="_blank">Ubicación: Oberá, Misiones</a><br>
+      <a href="https://wa.me/5491123456789" target="_blank">WhatsApp: +54 9 11 2345 6789</a>
 
-            <a href="https://wa.me/5493755646531?text=Hola!%20Me%20interesa%20saber%20m%C3%A1s%20sobre%20los%20planes" target="_blank" class="contact-card">
-              <i class="fab fa-whatsapp"></i>
-              <span>+54 9 3755 64-6531</span>
-            </a>
-
-            <a href="mailto:contacto@gkachele.com" class="contact-card">
-              <i class="fas fa-envelope"></i>
-              <span>contacto@gkachele.com</span>
-            </a>
-
-            <div class="contact-card" style="cursor: default;">
-              <i class="fas fa-clock"></i>
-              <span>Lun - Sáb: Consultar por WhatsApp</span>
-            </div>
-          </div>
-
-          <div class="social-section">
-            <div class="social-title">Redes sociales</div>
-            <div class="social-cards">
-              <a href="https://www.instagram.com/gkachele" target="_blank" class="social-card">
-                <i class="fab fa-instagram"></i>
-                <span>Instagram</span>
-                <span class="social-link">instagram.com/gkachele</span>
-              </a>
-              <a href="https://www.linkedin.com/in/gkachele" target="_blank" class="social-card">
-                <i class="fab fa-linkedin"></i>
-                <span>LinkedIn</span>
-                <span class="social-link">linkedin.com/in/gkachele</span>
-              </a>
-              <a href="https://github.com/gkachele" target="_blank" class="social-card">
-                <i class="fab fa-github"></i>
-                <span>GitHub</span>
-                <span class="social-link">github.com/gkachele</span>
-              </a>
-              <a href="mailto:contacto@gkachele.com" class="social-card">
-                <i class="fas fa-envelope"></i>
-                <span>Email</span>
-                <span class="social-link">contacto@gkachele.com</span>
-              </a>
-            </div>
-          </div>
-        </div>
-
-        <div class="qr-section">
-          <h3>Escaneá el QR</h3>
-          <img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=https://gkachele.duckdns.org" alt="QR GKACHELE™">
-          <p>Guardá nuestra página</p>
-        </div>
+      <div class="redes">
+        <a href="https://www.instagram.com/gkachele" target="_blank">Instagram</a>
+        <a href="https://www.linkedin.com/in/gkachele" target="_blank">LinkedIn</a>
+        <a href="https://github.com/gkachele" target="_blank">GitHub</a>
       </div>
-    </div>
-  </section>
-
-  <a href="https://wa.me/5493755646531?text=Hola!%20Me%20interesa%20saber%20m%C3%A1s%20sobre%20los%20planes" class="whatsapp-float" target="_blank">
-    <i class="fab fa-whatsapp"></i>
-  </a>
+    </section>
+  </main>
 
   <footer>
     <p>&copy; 2025 GKACHELE™. Todos los derechos reservados.</p>
   </footer>
-
-  <script src="script.js"></script>
 </body>
 </html>
