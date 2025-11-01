@@ -4,12 +4,12 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>GKACHELE™ | Desarrollo Web Premium</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <!-- Navigation Sticky - Centrada -->
+  <!-- Navigation Sticky -->
   <nav class="nav-sticky">
     <div class="nav-container">
       <div class="nav-logo">
@@ -39,26 +39,19 @@
 
   <!-- Plans Section -->
   <section id="planes" class="plans-section">
-    <div class="container">
+    <div class="container-large">
       <h2 class="section-title">Nuestros Planes</h2>
       
-      <!-- Plan Tabs -->
-      <div class="plans-tabs">
-        <button class="tab-btn active" data-plan="base">Base</button>
-        <button class="tab-btn" data-plan="pro">Pro</button>
-        <button class="tab-btn" data-plan="premium">Premium</button>
-      </div>
-
-      <!-- Plan Content -->
-      <div class="plan-content-wrapper">
-        <!-- Base Plan -->
-        <div class="plan-content active" id="plan-base">
-          <div class="plan-header">
-            <h3>Plan Base</h3>
+      <!-- Plans Cards Grid -->
+      <div class="plans-grid">
+        <!-- Base Plan Card -->
+        <div class="plan-card" data-plan="base">
+          <div class="plan-card-header">
+            <h3>Base</h3>
             <p class="plan-tagline">Simple, efectivo y profesional</p>
           </div>
-          <div class="plan-details-content">
-            <h4>¿Qué incluye el Plan Base?</h4>
+          <div class="plan-card-body">
+            <h4>¿Qué incluye?</h4>
             <ul>
               <li>✅ Sitio web de una página</li>
               <li>✅ Diseño limpio y profesional</li>
@@ -66,7 +59,7 @@
               <li>✅ Enlaces a redes sociales</li>
               <li>✅ Responsive (móvil y desktop)</li>
               <li>✅ Hosting gratuito</li>
-              <li>✅ Dominio personalizado (.duckdns.org)</li>
+              <li>✅ Dominio personalizado</li>
             </ul>
             <h4>Personalización</h4>
             <ul>
@@ -74,28 +67,25 @@
               <li>✍️ Tipografía a elección</li>
               <li>📝 Textos personalizados</li>
             </ul>
-            <h4>Ideal para:</h4>
-            <p>Profesionales independientes, pequeños comercios, páginas institucionales básicas.</p>
-            <div class="qr-mini">
+            <p class="plan-ideal"><strong>Ideal para:</strong> Profesionales independientes, pequeños comercios, páginas institucionales básicas.</p>
+            <div class="qr-mini-card">
               <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://gkachele.duckdns.org" alt="QR Base">
-              <p class="qr-text">Comparte este plan</p>
+              <p>Comparte este plan</p>
             </div>
-            <div style="text-align: center;">
-              <a href="https://wa.me/5491123456789?text=Hola!%20Me%20interesa%20el%20Plan%20Base" target="_blank" class="plan-contact-btn">
-                Contactar sobre Plan Base
-              </a>
-            </div>
+            <a href="https://wa.me/5491123456789?text=Hola!%20Me%20interesa%20el%20Plan%20Base" target="_blank" class="plan-btn">
+              Contactar sobre Plan Base
+            </a>
           </div>
         </div>
 
-        <!-- Pro Plan -->
-        <div class="plan-content" id="plan-pro">
-          <div class="plan-header">
-            <h3>Plan Pro</h3>
+        <!-- Pro Plan Card -->
+        <div class="plan-card" data-plan="pro">
+          <div class="plan-card-header">
+            <h3>Pro</h3>
             <p class="plan-tagline">Visual, dinámico y moderno</p>
           </div>
-          <div class="plan-details-content">
-            <h4>¿Qué incluye el Plan Pro?</h4>
+          <div class="plan-card-body">
+            <h4>¿Qué incluye?</h4>
             <ul>
               <li>✅ Sitio web multipágina</li>
               <li>✅ Animaciones suaves y efectos visuales</li>
@@ -103,7 +93,7 @@
               <li>✅ Formulario de contacto funcional</li>
               <li>✅ Responsive avanzado</li>
               <li>✅ Hosting gratuito</li>
-              <li>✅ Dominio personalizado (.duckdns.org)</li>
+              <li>✅ Dominio personalizado</li>
             </ul>
             <h4>Personalización</h4>
             <ul>
@@ -111,28 +101,25 @@
               <li>✍️ Tipografía profesional</li>
               <li>🧩 Secciones a medida</li>
             </ul>
-            <h4>Ideal para:</h4>
-            <p>Marcas personales, portfolios creativos, negocios que quieren destacar visualmente.</p>
-            <div class="qr-mini">
+            <p class="plan-ideal"><strong>Ideal para:</strong> Marcas personales, portfolios creativos, negocios que quieren destacar visualmente.</p>
+            <div class="qr-mini-card">
               <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://gkachele.duckdns.org#planes" alt="QR Pro">
-              <p class="qr-text">Comparte este plan</p>
+              <p>Comparte este plan</p>
             </div>
-            <div style="text-align: center;">
-              <a href="https://wa.me/5491123456789?text=Hola!%20Me%20interesa%20el%20Plan%20Pro" target="_blank" class="plan-contact-btn">
-                Contactar sobre Plan Pro
-              </a>
-            </div>
+            <a href="https://wa.me/5491123456789?text=Hola!%20Me%20interesa%20el%20Plan%20Pro" target="_blank" class="plan-btn">
+              Contactar sobre Plan Pro
+            </a>
           </div>
         </div>
 
-        <!-- Premium Plan -->
-        <div class="plan-content" id="plan-premium">
-          <div class="plan-header">
-            <h3>Plan Premium</h3>
+        <!-- Premium Plan Card -->
+        <div class="plan-card premium-card" data-plan="premium">
+          <div class="plan-card-header">
+            <h3>Premium</h3>
             <p class="plan-tagline">Experiencia completa y profesional</p>
           </div>
-          <div class="plan-details-content">
-            <h4>¿Qué incluye el Plan Premium?</h4>
+          <div class="plan-card-body">
+            <h4>¿Qué incluye?</h4>
             <ul>
               <li>✅ Sitio web completo y escalable</li>
               <li>✅ Integración con redes sociales y herramientas externas</li>
@@ -147,17 +134,14 @@
               <li>📊 Integración con analítica</li>
               <li>🔒 Seguridad avanzada</li>
             </ul>
-            <h4>Ideal para:</h4>
-            <p>Empresas, proyectos grandes, tiendas online, instituciones con necesidades específicas.</p>
-            <div class="qr-mini">
+            <p class="plan-ideal"><strong>Ideal para:</strong> Empresas, proyectos grandes, tiendas online, instituciones con necesidades específicas.</p>
+            <div class="qr-mini-card">
               <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://gkachele.duckdns.org#planes" alt="QR Premium">
-              <p class="qr-text">Comparte este plan</p>
+              <p>Comparte este plan</p>
             </div>
-            <div style="text-align: center;">
-              <a href="https://wa.me/5491123456789?text=Hola!%20Me%20interesa%20el%20Plan%20Premium" target="_blank" class="plan-contact-btn">
-                Contactar sobre Plan Premium
-              </a>
-            </div>
+            <a href="https://wa.me/5491123456789?text=Hola!%20Me%20interesa%20el%20Plan%20Premium" target="_blank" class="plan-btn premium-btn">
+              Contactar sobre Plan Premium
+            </a>
           </div>
         </div>
       </div>
@@ -166,40 +150,51 @@
 
   <!-- QR Section -->
   <section class="qr-section">
-    <div class="container">
-      <div class="qr-container">
-        <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://gkachele.duckdns.org" alt="QR Code GKACHELE™" class="qr-image">
-        <p class="qr-text">Comparte tu sitio</p>
+    <div class="container-large">
+      <div class="qr-card">
+        <h3>Comparte tu sitio</h3>
+        <img src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=https://gkachele.duckdns.org" alt="QR Code GKACHELE™" class="qr-image">
+        <p>Escanea el código QR para compartir</p>
       </div>
     </div>
   </section>
 
   <!-- Contact Section -->
   <section id="contacto" class="contact-section">
-    <div class="container">
+    <div class="container-large">
       <h2 class="section-title">Contacto</h2>
-      <div class="contact-info">
-        <p class="contact-item">T : <a href="tel:+5491123456789">+54 9 11 2345 6789</a></p>
-        <p class="contact-item">E : <a href="mailto:contacto@gkachele.com">contacto@gkachele.com</a></p>
-        
-        <div class="social-links-large">
-          <a href="https://www.facebook.com/gkachele" target="_blank" class="social-btn" title="Facebook">
-            <i class="fab fa-facebook-f"></i>
+      <div class="contact-grid">
+        <div class="contact-cards">
+          <a href="tel:+5491123456789" class="contact-card">
+            <i class="fas fa-phone"></i>
+            <span>+54 9 11 2345 6789</span>
           </a>
-          <a href="https://www.instagram.com/gkachele" target="_blank" class="social-btn" title="Instagram">
-            <i class="fab fa-instagram"></i>
+          <a href="mailto:contacto@gkachele.com" class="contact-card">
+            <i class="fas fa-envelope"></i>
+            <span>contacto@gkachele.com</span>
           </a>
-          <a href="https://www.youtube.com/@gkachele" target="_blank" class="social-btn" title="YouTube">
-            <i class="fab fa-youtube"></i>
-          </a>
-          <a href="https://www.tiktok.com/@gkachele" target="_blank" class="social-btn" title="TikTok">
-            <i class="fab fa-tiktok"></i>
+          <a href="https://wa.me/5491123456789?text=Hola!%20Me%20interesa%20conocer%20más%20sobre%20GKACHELE" target="_blank" class="contact-card whatsapp-card">
+            <i class="fab fa-whatsapp"></i>
+            <span>WhatsApp</span>
           </a>
         </div>
-
-        <a href="https://wa.me/5491123456789?text=Hola!%20Me%20interesa%20conocer%20más%20sobre%20GKACHELE" target="_blank" class="whatsapp-btn">
-          Contactar por WhatsApp
-        </a>
+        <div class="social-card">
+          <h3>Redes Sociales</h3>
+          <div class="social-links-grid">
+            <a href="https://www.facebook.com/gkachele" target="_blank" class="social-link" title="Facebook">
+              <i class="fab fa-facebook-f"></i>
+            </a>
+            <a href="https://www.instagram.com/gkachele" target="_blank" class="social-link" title="Instagram">
+              <i class="fab fa-instagram"></i>
+            </a>
+            <a href="https://www.youtube.com/@gkachele" target="_blank" class="social-link" title="YouTube">
+              <i class="fab fa-youtube"></i>
+            </a>
+            <a href="https://www.tiktok.com/@gkachele" target="_blank" class="social-link" title="TikTok">
+              <i class="fab fa-tiktok"></i>
+            </a>
+          </div>
+        </div>
       </div>
     </div>
   </section>
@@ -211,29 +206,9 @@
 
   <!-- Footer -->
   <footer class="footer-main">
-    <div class="container">
+    <div class="container-large">
       <p>&copy; 2025 GKACHELE™. Todos los derechos reservados.</p>
     </div>
   </footer>
-
-  <script>
-    // Plan Tabs Interactive
-    const tabButtons = document.querySelectorAll('.tab-btn');
-    const planContents = document.querySelectorAll('.plan-content');
-
-    tabButtons.forEach(button => {
-      button.addEventListener('click', () => {
-        const planType = button.getAttribute('data-plan');
-        
-        // Remove active class from all buttons and contents
-        tabButtons.forEach(btn => btn.classList.remove('active'));
-        planContents.forEach(content => content.classList.remove('active'));
-        
-        // Add active class to clicked button and corresponding content
-        button.classList.add('active');
-        document.getElementById(`plan-${planType}`).classList.add('active');
-      });
-    });
-  </script>
 </body>
 </html>
