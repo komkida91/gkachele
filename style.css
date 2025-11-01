@@ -125,47 +125,172 @@ body {
   text-align: center;
 }
 
-.plans-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 40px;
+/* Plan Tabs */
+.plans-tabs {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-bottom: 50px;
+  flex-wrap: wrap;
 }
 
-.plan-card {
-  padding: 50px 40px;
-  background: #ffffff;
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  text-decoration: none;
-  color: inherit;
+.tab-btn {
+  padding: 15px 40px;
+  background: transparent;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  color: #666;
+  font-size: 1rem;
+  font-weight: 400;
+  cursor: pointer;
   transition: all 0.3s ease;
-  position: relative;
+  font-family: 'Inter', sans-serif;
+  border-radius: 0;
 }
 
-.plan-card:hover {
+.tab-btn:hover {
+  color: #1a1a1a;
   border-color: #1a1a1a;
-  transform: translateY(-5px);
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05);
 }
 
-.plan-card h3 {
-  font-size: 2rem;
+.tab-btn.active {
+  color: #1a1a1a;
+  border-color: #1a1a1a;
+  background: #ffffff;
+  font-weight: 500;
+}
+
+/* Plan Content Wrapper */
+.plan-content-wrapper {
+  position: relative;
+  min-height: 500px;
+}
+
+.plan-content {
+  display: none;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  max-width: 900px;
+  margin: 0 auto;
+  background: #ffffff;
+  padding: 60px 50px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.plan-content.active {
+  display: block;
+  opacity: 1;
+  animation: fadeIn 0.4s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.plan-header {
+  text-align: center;
+  margin-bottom: 50px;
+  padding-bottom: 30px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.plan-header h3 {
+  font-size: 2.5rem;
   font-weight: 600;
-  margin-bottom: 10px;
   letter-spacing: -0.5px;
+  margin-bottom: 15px;
   color: #1a1a1a;
 }
 
-.plan-tagline {
+.plan-header .plan-tagline {
+  font-size: 1.2rem;
+  color: #666;
+  font-weight: 400;
+}
+
+.plan-details-content {
+  line-height: 1.8;
+}
+
+.plan-details-content h4 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 40px 0 20px;
+  color: #1a1a1a;
+  letter-spacing: -0.3px;
+}
+
+.plan-details-content h4:first-child {
+  margin-top: 0;
+}
+
+.plan-details-content ul {
+  list-style: none;
+  padding: 0;
+  margin-bottom: 30px;
+}
+
+.plan-details-content li {
+  padding: 12px 0;
+  font-size: 1.1rem;
+  color: #666;
+  line-height: 1.8;
+}
+
+.plan-details-content p {
+  font-size: 1.1rem;
+  color: #666;
+  line-height: 1.8;
+  margin-bottom: 30px;
+}
+
+.plan-details-content .qr-mini {
+  text-align: center;
+  margin: 50px 0;
+  padding: 30px 0;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.plan-details-content .qr-mini img {
+  width: 150px;
+  height: 150px;
+  border-radius: 12px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+  margin-bottom: 15px;
+}
+
+.plan-details-content .qr-mini .qr-text {
   font-size: 1rem;
   color: #666;
-  margin-bottom: 20px;
 }
 
-.plan-link {
-  font-size: 0.95rem;
-  font-weight: 500;
-  color: #1a1a1a;
+.plan-contact-btn {
+  display: inline-block;
+  padding: 18px 40px;
+  background: #25D366;
+  color: #ffffff;
   text-decoration: none;
+  border-radius: 50px;
+  font-weight: 600;
+  font-size: 1.1rem;
+  margin-top: 30px;
+  transition: all 0.3s ease;
+  box-shadow: 0 5px 20px rgba(37, 211, 102, 0.3);
+  text-align: center;
+  max-width: 400px;
+}
+
+.plan-contact-btn:hover {
+  background: #20BA5A;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(37, 211, 102, 0.4);
 }
 
 /* QR Section */
@@ -449,9 +574,40 @@ footer p {
     font-size: 2rem;
   }
 
-  .plans-grid {
-    grid-template-columns: 1fr;
-    gap: 30px;
+  .plans-tabs {
+    gap: 15px;
+  }
+
+  .tab-btn {
+    padding: 12px 25px;
+    font-size: 0.9rem;
+  }
+
+  .plan-content {
+    padding: 40px 25px;
+  }
+
+  .plan-header h3 {
+    font-size: 2rem;
+  }
+
+  .plan-header .plan-tagline {
+    font-size: 1rem;
+  }
+
+  .plan-details-content h4 {
+    font-size: 1.3rem;
+  }
+
+  .plan-details-content li,
+  .plan-details-content p {
+    font-size: 1rem;
+  }
+
+  .plan-contact-btn {
+    padding: 15px 30px;
+    font-size: 1rem;
+    width: 100%;
   }
 
   .whatsapp-float {

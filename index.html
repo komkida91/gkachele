@@ -40,22 +40,125 @@
   <section id="planes" class="plans-section">
     <div class="container">
       <h2 class="section-title">Nuestros Planes</h2>
-      <div class="plans-grid">
-        <a href="planes/base.html" class="plan-card">
-          <h3>Base</h3>
-          <p class="plan-tagline">Simple, efectivo y profesional</p>
-          <span class="plan-link">Ver detalles →</span>
-        </a>
-        <a href="planes/pro.html" class="plan-card">
-          <h3>Pro</h3>
-          <p class="plan-tagline">Visual, dinámico y moderno</p>
-          <span class="plan-link">Ver detalles →</span>
-        </a>
-        <a href="planes/premium.html" class="plan-card">
-          <h3>Premium</h3>
-          <p class="plan-tagline">Experiencia completa y profesional</p>
-          <span class="plan-link">Ver detalles →</span>
-        </a>
+      
+      <!-- Plan Tabs -->
+      <div class="plans-tabs">
+        <button class="tab-btn active" data-plan="base">Base</button>
+        <button class="tab-btn" data-plan="pro">Pro</button>
+        <button class="tab-btn" data-plan="premium">Premium</button>
+      </div>
+
+      <!-- Plan Content -->
+      <div class="plan-content-wrapper">
+        <!-- Base Plan -->
+        <div class="plan-content active" id="plan-base">
+          <div class="plan-header">
+            <h3>Plan Base</h3>
+            <p class="plan-tagline">Simple, efectivo y profesional</p>
+          </div>
+          <div class="plan-details-content">
+            <h4>¿Qué incluye el Plan Base?</h4>
+            <ul>
+              <li>✅ Sitio web de una página</li>
+              <li>✅ Diseño limpio y profesional</li>
+              <li>✅ Información de contacto</li>
+              <li>✅ Enlaces a redes sociales</li>
+              <li>✅ Responsive (móvil y desktop)</li>
+              <li>✅ Hosting gratuito</li>
+              <li>✅ Dominio personalizado (.duckdns.org)</li>
+            </ul>
+            <h4>Personalización</h4>
+            <ul>
+              <li>🎨 Color principal personalizado</li>
+              <li>✍️ Tipografía a elección</li>
+              <li>📝 Textos personalizados</li>
+            </ul>
+            <h4>Ideal para:</h4>
+            <p>Profesionales independientes, pequeños comercios, páginas institucionales básicas.</p>
+            <div class="qr-mini">
+              <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://gkachele.duckdns.org" alt="QR Base">
+              <p class="qr-text">Comparte este plan</p>
+            </div>
+            <div style="text-align: center;">
+              <a href="https://wa.me/5491123456789?text=Hola!%20Me%20interesa%20el%20Plan%20Base" target="_blank" class="plan-contact-btn">
+                Contactar sobre Plan Base
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pro Plan -->
+        <div class="plan-content" id="plan-pro">
+          <div class="plan-header">
+            <h3>Plan Pro</h3>
+            <p class="plan-tagline">Visual, dinámico y moderno</p>
+          </div>
+          <div class="plan-details-content">
+            <h4>¿Qué incluye el Plan Pro?</h4>
+            <ul>
+              <li>✅ Sitio web multipágina</li>
+              <li>✅ Animaciones suaves y efectos visuales</li>
+              <li>✅ Galería de imágenes o portafolio</li>
+              <li>✅ Formulario de contacto funcional</li>
+              <li>✅ Responsive avanzado</li>
+              <li>✅ Hosting gratuito</li>
+              <li>✅ Dominio personalizado (.duckdns.org)</li>
+            </ul>
+            <h4>Personalización</h4>
+            <ul>
+              <li>🎨 Paleta de colores personalizada</li>
+              <li>✍️ Tipografía profesional</li>
+              <li>🧩 Secciones a medida</li>
+            </ul>
+            <h4>Ideal para:</h4>
+            <p>Marcas personales, portfolios creativos, negocios que quieren destacar visualmente.</p>
+            <div class="qr-mini">
+              <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://gkachele.duckdns.org#planes" alt="QR Pro">
+              <p class="qr-text">Comparte este plan</p>
+            </div>
+            <div style="text-align: center;">
+              <a href="https://wa.me/5491123456789?text=Hola!%20Me%20interesa%20el%20Plan%20Pro" target="_blank" class="plan-contact-btn">
+                Contactar sobre Plan Pro
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Premium Plan -->
+        <div class="plan-content" id="plan-premium">
+          <div class="plan-header">
+            <h3>Plan Premium</h3>
+            <p class="plan-tagline">Experiencia completa y profesional</p>
+          </div>
+          <div class="plan-details-content">
+            <h4>¿Qué incluye el Plan Premium?</h4>
+            <ul>
+              <li>✅ Sitio web completo y escalable</li>
+              <li>✅ Integración con redes sociales y herramientas externas</li>
+              <li>✅ SEO optimizado</li>
+              <li>✅ Panel de administración (opcional)</li>
+              <li>✅ Hosting y dominio incluidos</li>
+              <li>✅ Soporte técnico personalizado</li>
+            </ul>
+            <h4>Personalización</h4>
+            <ul>
+              <li>🎨 Diseño a medida</li>
+              <li>📊 Integración con analítica</li>
+              <li>🔒 Seguridad avanzada</li>
+            </ul>
+            <h4>Ideal para:</h4>
+            <p>Empresas, proyectos grandes, tiendas online, instituciones con necesidades específicas.</p>
+            <div class="qr-mini">
+              <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://gkachele.duckdns.org#planes" alt="QR Premium">
+              <p class="qr-text">Comparte este plan</p>
+            </div>
+            <div style="text-align: center;">
+              <a href="https://wa.me/5491123456789?text=Hola!%20Me%20interesa%20el%20Plan%20Premium" target="_blank" class="plan-contact-btn">
+                Contactar sobre Plan Premium
+              </a>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </section>
@@ -105,5 +208,25 @@
       <p>&copy; 2025 GKACHELE™. Todos los derechos reservados.</p>
     </div>
   </footer>
+
+  <script>
+    // Plan Tabs Interactive
+    const tabButtons = document.querySelectorAll('.tab-btn');
+    const planContents = document.querySelectorAll('.plan-content');
+
+    tabButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        const planType = button.getAttribute('data-plan');
+        
+        // Remove active class from all buttons and contents
+        tabButtons.forEach(btn => btn.classList.remove('active'));
+        planContents.forEach(content => content.classList.remove('active'));
+        
+        // Add active class to clicked button and corresponding content
+        button.classList.add('active');
+        document.getElementById(`plan-${planType}`).classList.add('active');
+      });
+    });
+  </script>
 </body>
 </html>
