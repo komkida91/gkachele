@@ -92,11 +92,10 @@ body::before {
   backdrop-filter: blur(20px);
   border-bottom: 1px solid var(--border-light);
   z-index: 1000;
-  transition: transform 0.3s ease-in-out;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   padding: 25px 0;
   box-sizing: border-box;
   margin: 0;
-  transform: translateY(0);
 }
 
 .nav-container {
@@ -1127,14 +1126,9 @@ footer p {
     text-align: center;
   }
 
-  .nav-sticky {
-    padding: 8px 0 !important;
-  }
-
   .hero-section {
-    padding: 60px 20px 50px 20px;
+    padding: 80px 20px;
     min-height: auto;
-    margin-top: 0 !important;
   }
 
   .hero-title {

@@ -401,29 +401,6 @@
         });
       });
       
-      // Nav sticky hide/show on scroll - Funciona en horizontal y vertical
-      let lastScrollTop = 0;
-      const navSticky = document.querySelector('.nav-sticky');
-      
-      if (navSticky) {
-        window.addEventListener('scroll', function() {
-          try {
-            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-            
-            if (scrollTop > lastScrollTop && scrollTop > 50) {
-              // Scrolling down - hide nav
-              navSticky.style.transform = 'translateY(-100%)';
-            } else if (scrollTop < lastScrollTop) {
-              // Scrolling up - show nav
-              navSticky.style.transform = 'translateY(0)';
-            }
-            
-            lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
-          } catch (e) {
-            console.error('Error en nav scroll:', e);
-          }
-        }, false);
-      }
     }); // Fin de DOMContentLoaded
 
     // Formulario de Pedido de Plan (funciones globales)
