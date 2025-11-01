@@ -400,6 +400,26 @@
           }
         });
       });
+      
+      // Nav sticky hide/show on scroll
+      let lastScrollTop = 0;
+      const navSticky = document.querySelector('.nav-sticky');
+      
+      if (navSticky) {
+        window.addEventListener('scroll', () => {
+          const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+          
+          if (scrollTop > lastScrollTop && scrollTop > 100) {
+            // Scrolling down - hide nav
+            navSticky.style.transform = 'translateY(-100%)';
+          } else {
+            // Scrolling up - show nav
+            navSticky.style.transform = 'translateY(0)';
+          }
+          
+          lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
+        });
+      }
     }); // Fin de DOMContentLoaded
 
     // Formulario de Pedido de Plan (funciones globales)
