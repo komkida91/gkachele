@@ -1,0 +1,39 @@
+# Archivos del sistema
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+
+# Dependencias (si usás Node.js)
+node_modules/
+
+# Archivos temporales
+*.tmp
+*.swp
+
+# Archivos de compilación
+dist/
+build/
+
+# Configuración local
+.env
+.vscode/
+.idea/
+
+# Archivos de sistema operativo
+*.bak
+*.old
+
+# Archivos de despliegue
+*.zip
+*.tar.gz
+
+# Imágenes generadas o temporales
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.svg
+
