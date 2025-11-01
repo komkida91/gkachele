@@ -1,39 +1,31 @@
-# Archivos del sistema
+# GitHub Token y datos sensibles
+.github-token
+*.key
+*.pem
+*.env
+.env
+
+# Logs y archivos temporales
+*.log
+tmp/
+temp/
+
+# Archivos del sistema operativo
 .DS_Store
 Thumbs.db
+desktop.ini
 
-# Logs
-*.log
-npm-debug.log*
-
-# Dependencias (si usás Node.js)
-node_modules/
-
-# Archivos temporales
-*.tmp
-*.swp
-
-# Archivos de compilación
-dist/
-build/
-
-# Configuración local
-.env
+# IDE y editores
 .vscode/
 .idea/
+*.swp
+*.swo
+*~
 
-# Archivos de sistema operativo
-*.bak
-*.old
+# Node modules (si se usa en el futuro)
+node_modules/
+package-lock.json
 
-# Archivos de despliegue
-*.zip
-*.tar.gz
-
-# Imágenes generadas o temporales
-*.png
-*.jpg
-*.jpeg
-*.gif
-*.svg
-
+# Build files
+dist/
+build/
