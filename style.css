@@ -98,6 +98,11 @@ body::before {
   margin: 0;
 }
 
+/* Ajustar hero para que no quede detrás del nav */
+.hero-section {
+  margin-top: 100px;
+}
+
 .nav-container {
   max-width: 1600px;
   margin: 0 auto;
@@ -193,7 +198,6 @@ body::before {
 
 /* Hero Section - Premium con Imagen Difuminada */
 .hero-section {
-  margin-top: 100px;
   padding: 180px 0 140px;
   text-align: center;
   background: linear-gradient(to bottom, #ffffff 0%, var(--bg-light) 100%);
@@ -203,6 +207,7 @@ body::before {
   max-width: 100%;
   box-sizing: border-box;
   min-height: auto;
+  margin-top: 100px;
 }
 
 .hero-bg-overlay {
@@ -1100,37 +1105,66 @@ footer p {
   }
 
   .hero-section {
-    padding: 60px 20px !important;
+    padding: 100px 20px 60px 20px !important;
     min-height: auto !important;
     width: 100% !important;
     max-width: 100% !important;
-    margin-top: 70px !important;
+    margin-top: 0 !important;
     margin-left: 0 !important;
     margin-right: 0 !important;
     box-sizing: border-box !important;
     overflow: visible !important;
     position: relative !important;
+    display: block !important;
+    visibility: visible !important;
+  }
+  
+  .hero-bg-overlay {
+    width: 100% !important;
+    max-width: 100% !important;
+    left: 0 !important;
+    right: 0 !important;
   }
   
   .hero-content {
-    padding: 0 10px;
-    width: 100%;
-    max-width: 100%;
+    padding: 20px 10px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 auto !important;
+    position: relative !important;
+    z-index: 10 !important;
+    display: block !important;
+    visibility: visible !important;
   }
 
   .hero-title {
-    font-size: 3.5rem;
-    letter-spacing: -1px;
-    line-height: 1.1;
+    font-size: 3rem !important;
+    letter-spacing: -1px !important;
+    line-height: 1.2 !important;
+    margin-bottom: 20px !important;
+    color: var(--text-primary) !important;
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
   }
 
   .hero-subtitle {
-    font-size: 1.2rem;
+    font-size: 1.3rem !important;
+    margin-bottom: 25px !important;
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    color: var(--primary-orange) !important;
+    -webkit-text-fill-color: var(--primary-orange) !important;
   }
 
   .hero-description {
-    font-size: 1rem;
-    padding: 0 10px;
+    font-size: 1rem !important;
+    padding: 0 10px !important;
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    color: var(--text-light) !important;
   }
 
   .section-title {
