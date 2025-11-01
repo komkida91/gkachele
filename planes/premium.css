@@ -1,0 +1,442 @@
+/* Premium Page Styles - Inspired by nove.eu */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: #ffffff;
+  color: #1a1a1a;
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 40px;
+}
+
+/* Navigation Sticky */
+.nav-sticky {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: rgba(255, 255, 255, 0.98);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  z-index: 1000;
+  transition: all 0.3s ease;
+}
+
+.nav-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.nav-logo a {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  text-decoration: none;
+  letter-spacing: -0.5px;
+}
+
+.nav-menu {
+  display: flex;
+  gap: 40px;
+  align-items: center;
+}
+
+.nav-menu a {
+  font-size: 0.95rem;
+  font-weight: 400;
+  color: #666;
+  text-decoration: none;
+  transition: color 0.3s ease;
+  position: relative;
+}
+
+.nav-menu a:hover,
+.nav-menu a.active {
+  color: #1a1a1a;
+}
+
+.nav-menu a.active::after {
+  content: '';
+  position: absolute;
+  bottom: -5px;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: #1a1a1a;
+}
+
+/* Hero Section */
+.hero-premium {
+  margin-top: 80px;
+  padding: 120px 0 80px;
+  text-align: center;
+}
+
+.hero-content {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.hero-title {
+  font-size: 6rem;
+  font-weight: 300;
+  letter-spacing: -2px;
+  margin-bottom: 20px;
+  color: #1a1a1a;
+}
+
+.hero-subtitle {
+  font-size: 1.5rem;
+  font-weight: 400;
+  color: #666;
+  letter-spacing: -0.3px;
+}
+
+/* Services Section */
+.services-section {
+  padding: 100px 0;
+  background: #fafafa;
+}
+
+.services-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 60px;
+}
+
+.service-item {
+  padding: 40px 0;
+}
+
+.service-item h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 15px;
+  color: #1a1a1a;
+  letter-spacing: -0.5px;
+}
+
+.service-item p {
+  font-size: 1rem;
+  line-height: 1.8;
+  color: #666;
+}
+
+/* Customization Section */
+.customization-section {
+  padding: 100px 0;
+}
+
+.section-title {
+  font-size: 3rem;
+  font-weight: 300;
+  letter-spacing: -1.5px;
+  margin-bottom: 60px;
+  color: #1a1a1a;
+  text-align: center;
+}
+
+.custom-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 60px;
+  text-align: center;
+}
+
+.custom-item {
+  padding: 30px 0;
+}
+
+.custom-icon {
+  font-size: 3rem;
+  display: block;
+  margin-bottom: 20px;
+}
+
+.custom-item p {
+  font-size: 1.1rem;
+  color: #666;
+  font-weight: 400;
+}
+
+/* Ideal Section */
+.ideal-section {
+  padding: 100px 0;
+  background: #fafafa;
+}
+
+.ideal-text {
+  font-size: 1.3rem;
+  line-height: 1.8;
+  color: #666;
+  text-align: center;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+/* Plans Navigation */
+.plans-nav-section {
+  padding: 100px 0;
+}
+
+.plans-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 40px;
+}
+
+.plan-card {
+  padding: 50px 40px;
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  text-decoration: none;
+  color: inherit;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.plan-card:hover {
+  border-color: #1a1a1a;
+  transform: translateY(-5px);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05);
+}
+
+.plan-card.active-card {
+  border-color: #1a1a1a;
+  background: #1a1a1a;
+  color: #ffffff;
+}
+
+.plan-card h3 {
+  font-size: 2rem;
+  font-weight: 600;
+  margin-bottom: 10px;
+  letter-spacing: -0.5px;
+}
+
+.plan-card p {
+  font-size: 1rem;
+  color: #666;
+  margin-bottom: 20px;
+}
+
+.plan-card.active-card p {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.plan-link {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #1a1a1a;
+  text-decoration: none;
+}
+
+.plan-card.active-card .plan-link {
+  color: #ffffff;
+}
+
+/* QR Section */
+.qr-section {
+  padding: 100px 0;
+  background: #fafafa;
+  text-align: center;
+}
+
+.qr-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 30px;
+}
+
+.qr-image {
+  width: 200px;
+  height: 200px;
+  border-radius: 12px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+}
+
+.qr-text {
+  font-size: 1.1rem;
+  color: #666;
+}
+
+/* Contact Section */
+.contact-section {
+  padding: 100px 0;
+}
+
+.contact-info {
+  text-align: center;
+}
+
+.contact-item {
+  font-size: 1.2rem;
+  margin-bottom: 30px;
+  color: #666;
+}
+
+.whatsapp-btn {
+  display: inline-block;
+  padding: 18px 40px;
+  background: #25D366;
+  color: #ffffff;
+  text-decoration: none;
+  border-radius: 50px;
+  font-weight: 600;
+  font-size: 1.1rem;
+  margin-bottom: 20px;
+  transition: all 0.3s ease;
+  box-shadow: 0 5px 20px rgba(37, 211, 102, 0.3);
+}
+
+.whatsapp-btn:hover {
+  background: #20BA5A;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(37, 211, 102, 0.4);
+}
+
+.email-link {
+  display: block;
+  font-size: 1.1rem;
+  color: #1a1a1a;
+  text-decoration: none;
+  margin-top: 20px;
+  transition: color 0.3s ease;
+}
+
+.email-link:hover {
+  color: #666;
+}
+
+/* WhatsApp Float Button */
+.whatsapp-float {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  width: 60px;
+  height: 60px;
+  background: #25D366;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  text-decoration: none;
+  box-shadow: 0 5px 25px rgba(37, 211, 102, 0.4);
+  z-index: 999;
+  transition: all 0.3s ease;
+  animation: pulse 2s infinite;
+}
+
+.whatsapp-float:hover {
+  background: #20BA5A;
+  transform: scale(1.1);
+  box-shadow: 0 8px 30px rgba(37, 211, 102, 0.5);
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 5px 25px rgba(37, 211, 102, 0.4);
+  }
+  50% {
+    box-shadow: 0 5px 35px rgba(37, 211, 102, 0.6);
+  }
+  100% {
+    box-shadow: 0 5px 25px rgba(37, 211, 102, 0.4);
+  }
+}
+
+/* Footer */
+.footer-premium {
+  padding: 60px 0;
+  background: #1a1a1a;
+  color: #ffffff;
+  text-align: center;
+}
+
+.footer-premium p {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 10px;
+}
+
+.footer-link a {
+  color: rgba(255, 255, 255, 0.7);
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.footer-link a:hover {
+  color: #ffffff;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .nav-container {
+    padding: 15px 20px;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .nav-menu {
+    gap: 20px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .hero-title {
+    font-size: 3.5rem;
+  }
+
+  .hero-subtitle {
+    font-size: 1.2rem;
+  }
+
+  .container {
+    padding: 0 20px;
+  }
+
+  .section-title {
+    font-size: 2rem;
+  }
+
+  .services-grid,
+  .plans-grid {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+
+  .custom-grid {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+
+  .whatsapp-float {
+    width: 50px;
+    height: 50px;
+    bottom: 20px;
+    right: 20px;
+  }
+
+  .whatsapp-float svg {
+    width: 24px;
+    height: 24px;
+  }
+}
+
