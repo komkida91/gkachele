@@ -403,31 +403,26 @@
       
       // Nav sticky hide/show on scroll - Funciona en horizontal y vertical
       let lastScrollTop = 0;
-      let ticking = false;
       const navSticky = document.querySelector('.nav-sticky');
       
       if (navSticky) {
-        function updateNav() {
-          const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-          
-          if (scrollTop > lastScrollTop && scrollTop > 50) {
-            // Scrolling down - hide nav
-            navSticky.style.transform = 'translateY(-100%)';
-          } else if (scrollTop < lastScrollTop) {
-            // Scrolling up - show nav
-            navSticky.style.transform = 'translateY(0)';
+        window.addEventListener('scroll', function() {
+          try {
+            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            
+            if (scrollTop > lastScrollTop && scrollTop > 50) {
+              // Scrolling down - hide nav
+              navSticky.style.transform = 'translateY(-100%)';
+            } else if (scrollTop < lastScrollTop) {
+              // Scrolling up - show nav
+              navSticky.style.transform = 'translateY(0)';
+            }
+            
+            lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
+          } catch (e) {
+            console.error('Error en nav scroll:', e);
           }
-          
-          lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
-          ticking = false;
-        }
-        
-        window.addEventListener('scroll', () => {
-          if (!ticking) {
-            window.requestAnimationFrame(updateNav);
-            ticking = true;
-          }
-        }, { passive: true });
+        }, false);
       }
     }); // Fin de DOMContentLoaded
 
