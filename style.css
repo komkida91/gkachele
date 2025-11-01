@@ -21,8 +21,19 @@
   --shadow-md: 0 5px 25px rgba(0, 0, 0, 0.1);
   --shadow-lg: 0 10px 40px rgba(0, 0, 0, 0.15);
   --shadow-orange: 0 5px 25px rgba(255, 107, 53, 0.2);
+  
+  /* Social Media Colors */
   --whatsapp: #25D366;
   --whatsapp-hover: #20BA5A;
+  --facebook: #1877F2;
+  --facebook-hover: #0d65d9;
+  --instagram-start: #833AB4;
+  --instagram-mid: #E1306C;
+  --instagram-end: #FD1D1D;
+  --youtube: #FF0000;
+  --youtube-hover: #CC0000;
+  --tiktok: #000000;
+  --tiktok-hover: #00F2EA;
 }
 
 body {
@@ -148,19 +159,61 @@ body::before {
   color: var(--text-secondary);
   text-decoration: none;
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 50%;
+  background: transparent;
+  position: relative;
   font-size: 1rem;
   border-radius: 50%;
 }
 
 .nav-social a:hover {
-  color: #ffffff;
-  transform: translateY(-3px) scale(1.1);
+  transform: translateY(-3px) scale(1.15);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
 }
 
-.nav-social a:hover .fa-facebook-f { background: #1877F2; }
-.nav-social a:hover .fa-instagram { background: linear-gradient(45deg, #E4405F, #F56040, #FCAF45); }
-.nav-social a:hover .fa-youtube { background: #FF0000; }
-.nav-social a:hover .fa-tiktok { background: #000000; }
+/* Facebook - Celeste Premium */
+.nav-social a[title="Facebook"] {
+  color: var(--facebook);
+}
+
+.nav-social a[title="Facebook"]:hover {
+  background: var(--facebook);
+  color: white;
+  box-shadow: 0 8px 25px rgba(24, 119, 242, 0.4);
+}
+
+/* Instagram - Gradiente Icónico */
+.nav-social a[title="Instagram"] {
+  color: var(--instagram-mid);
+}
+
+.nav-social a[title="Instagram"]:hover {
+  background: linear-gradient(135deg, var(--instagram-start) 0%, var(--instagram-mid) 50%, var(--instagram-end) 100%);
+  color: white;
+  box-shadow: 0 8px 25px rgba(225, 48, 108, 0.5);
+}
+
+/* YouTube - Rojo Premium */
+.nav-social a[title="YouTube"] {
+  color: var(--youtube);
+}
+
+.nav-social a[title="YouTube"]:hover {
+  background: var(--youtube);
+  color: white;
+  box-shadow: 0 8px 25px rgba(255, 0, 0, 0.4);
+}
+
+/* TikTok - Negro con Efecto Cyan */
+.nav-social a[title="TikTok"] {
+  color: var(--tiktok);
+}
+
+.nav-social a[title="TikTok"]:hover {
+  background: var(--tiktok);
+  color: var(--tiktok-hover);
+  box-shadow: 0 8px 25px rgba(0, 242, 234, 0.5);
+}
 
 /* Hero Section - Premium con Imagen Difuminada */
 .hero-section {
@@ -691,6 +744,8 @@ body::before {
   color: var(--text-secondary);
   text-decoration: none;
   font-size: 1.5rem;
+  position: relative;
+  overflow: hidden;
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   border: 1px solid var(--border-light);
 }
@@ -698,13 +753,48 @@ body::before {
 .social-link:hover {
   transform: translateY(-5px) scale(1.05);
   color: #ffffff;
-  box-shadow: var(--shadow-md);
 }
 
-.social-link:hover .fa-facebook-f { background: #1877F2; }
-.social-link:hover .fa-instagram { background: linear-gradient(45deg, #E4405F, #F56040, #FCAF45); }
-.social-link:hover .fa-youtube { background: #FF0000; }
-.social-link:hover .fa-tiktok { background: #000000; }
+/* Facebook - Celeste Premium en Contacto */
+.social-link[title="Facebook"] .fa-facebook-f {
+  color: var(--facebook);
+}
+
+.social-link[title="Facebook"]:hover {
+  background: var(--facebook);
+  box-shadow: 0 10px 30px rgba(24, 119, 242, 0.4);
+}
+
+/* Instagram - Gradiente Premium en Contacto */
+.social-link[title="Instagram"] .fa-instagram {
+  color: var(--instagram-mid);
+}
+
+.social-link[title="Instagram"]:hover {
+  background: linear-gradient(135deg, var(--instagram-start) 0%, var(--instagram-mid) 50%, var(--instagram-end) 100%);
+  box-shadow: 0 10px 30px rgba(225, 48, 108, 0.5);
+}
+
+/* YouTube - Rojo Premium en Contacto */
+.social-link[title="YouTube"] .fa-youtube {
+  color: var(--youtube);
+}
+
+.social-link[title="YouTube"]:hover {
+  background: var(--youtube);
+  box-shadow: 0 10px 30px rgba(255, 0, 0, 0.4);
+}
+
+/* TikTok - Negro con Cyan en Contacto */
+.social-link[title="TikTok"] .fa-tiktok {
+  color: var(--tiktok);
+}
+
+.social-link[title="TikTok"]:hover {
+  background: var(--tiktok);
+  color: var(--tiktok-hover);
+  box-shadow: 0 10px 30px rgba(0, 242, 234, 0.5);
+}
 
 /* WhatsApp Float Button */
 .whatsapp-float {
