@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>GKACHELE™ | Desarrollo Web Premium</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -291,72 +291,127 @@
   </footer>
 
   <script>
-    // Plan Accordion - Desplegable Premium
-    const accordionItems = document.querySelectorAll('.plan-accordion-item');
-    
-    accordionItems.forEach(item => {
-      const header = item.querySelector('.plan-accordion-header');
-      const body = item.querySelector('.plan-accordion-body');
-      const chevron = item.querySelector('.plan-chevron');
+    // Esperar a que el DOM esté completamente cargado
+    document.addEventListener('DOMContentLoaded', function() {
+      // Plan Accordion - Desplegable Premium
+      const accordionItems = document.querySelectorAll('.plan-accordion-item');
       
-      header.addEventListener('click', () => {
-        const isActive = item.classList.contains('active');
+      // Verificar que existen elementos antes de continuar
+      if (accordionItems.length === 0) {
+        console.warn('No se encontraron elementos del acordeón');
+        return;
+      }
+      
+      accordionItems.forEach(item => {
+        const header = item.querySelector('.plan-accordion-header');
+        const body = item.querySelector('.plan-accordion-body');
+        const chevron = item.querySelector('.plan-chevron');
         
-        // Cerrar todos los items con transición suave
-        accordionItems.forEach(otherItem => {
-          if (otherItem !== item) {
-            const otherBody = otherItem.querySelector('.plan-accordion-body');
-            const otherChevron = otherItem.querySelector('.plan-chevron');
-            const wasOtherActive = otherItem.classList.contains('active');
-            
-            if (wasOtherActive) {
-              // Cerrar con transición
-              otherItem.classList.remove('active');
-              setTimeout(() => {
-                otherBody.style.maxHeight = null;
-                otherChevron.style.transform = 'rotate(0deg)';
-              }, 50);
+        if (!header || !body || !chevron) {
+          console.warn('Elementos del acordeón no encontrados');
+          return;
+        }
+        
+        header.addEventListener('click', () => {
+          const isActive = item.classList.contains('active');
+          
+          // Cerrar todos los items con transición suave
+          accordionItems.forEach(otherItem => {
+            if (otherItem !== item) {
+              const otherBody = otherItem.querySelector('.plan-accordion-body');
+              const otherChevron = otherItem.querySelector('.plan-chevron');
+              const wasOtherActive = otherItem.classList.contains('active');
+              
+              if (wasOtherActive && otherBody && otherChevron) {
+                // Cerrar con transición
+                otherItem.classList.remove('active');
+                setTimeout(() => {
+                  otherBody.style.maxHeight = null;
+                  otherChevron.style.transform = 'rotate(0deg)';
+                }, 50);
+              }
             }
+          });
+          
+          // Toggle del item actual con transición
+          if (isActive) {
+            // Cerrar el item actual
+            item.classList.remove('active');
+            setTimeout(() => {
+              if (body) body.style.maxHeight = null;
+              if (chevron) chevron.style.transform = 'rotate(0deg)';
+            }, 50);
+          } else {
+            // Abrir el item actual
+            item.classList.add('active');
+            if (body) body.style.maxHeight = body.scrollHeight + 'px';
+            if (chevron) chevron.style.transform = 'rotate(180deg)';
+            
+            // Smooth scroll al item expandido con delay para la transición
+            setTimeout(() => {
+              if (item && typeof item.scrollIntoView === 'function') {
+                item.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+              }
+            }, 300);
           }
         });
-        
-        // Toggle del item actual con transición
-        if (isActive) {
-          // Cerrar el item actual
-          item.classList.remove('active');
-          setTimeout(() => {
-            body.style.maxHeight = null;
-            chevron.style.transform = 'rotate(0deg)';
-          }, 50);
-        } else {
-          // Abrir el item actual
-          item.classList.add('active');
-          body.style.maxHeight = body.scrollHeight + 'px';
-          chevron.style.transform = 'rotate(180deg)';
-          
-          // Smooth scroll al item expandido con delay para la transición
-          setTimeout(() => {
-            item.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-          }, 300);
-        }
       });
-    });
     
-    // Asegurar que todos los acordeones empiecen cerrados
-    // Forzar que ningún item tenga 'active' al cargar la página
-    accordionItems.forEach(item => {
-      item.classList.remove('active');
-      const body = item.querySelector('.plan-accordion-body');
-      const chevron = item.querySelector('.plan-chevron');
-      body.style.maxHeight = null;
-      chevron.style.transform = 'rotate(0deg)';
-    });
+      // Asegurar que todos los acordeones empiecen cerrados
+      // Forzar que ningún item tenga 'active' al cargar la página
+      accordionItems.forEach(item => {
+        item.classList.remove('active');
+        const body = item.querySelector('.plan-accordion-body');
+        const chevron = item.querySelector('.plan-chevron');
+        if (body) body.style.maxHeight = null;
+        if (chevron) chevron.style.transform = 'rotate(0deg)';
+      });
 
-    // Formulario de Pedido de Plan
+      // Scroll to Top Button
+      const scrollToTopBtn = document.getElementById('scrollToTop');
+      
+      if (scrollToTopBtn) {
+        window.addEventListener('scroll', () => {
+          if (window.pageYOffset > 300) {
+            scrollToTopBtn.classList.add('show');
+          } else {
+            scrollToTopBtn.classList.remove('show');
+          }
+        });
+
+        scrollToTopBtn.addEventListener('click', () => {
+          window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+          });
+        });
+      }
+
+      // Smooth scroll for anchor links
+      document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+          e.preventDefault();
+          const target = document.querySelector(this.getAttribute('href'));
+          if (target && typeof target.scrollIntoView === 'function') {
+            target.scrollIntoView({
+              behavior: 'smooth',
+              block: 'start'
+            });
+          }
+        });
+      });
+    }); // Fin de DOMContentLoaded
+
+    // Formulario de Pedido de Plan (funciones globales)
     function openForm(planType) {
       const modal = document.getElementById('planFormModal');
       const selectedPlan = document.getElementById('selectedPlan');
       const selectedPlanName = document.getElementById('selectedPlanName');
+      
+      if (!modal || !selectedPlan || !selectedPlanName) {
+        console.warn('Elementos del formulario no encontrados');
+        return;
+      }
       
       const planNames = {
         'base': 'Base',
@@ -365,16 +420,17 @@
       };
       
       selectedPlan.value = planType;
-      selectedPlanName.textContent = planNames[planType];
+      selectedPlanName.textContent = planNames[planType] || planType;
       modal.style.display = 'flex';
-      document.body.style.overflow = 'hidden';
+      if (document.body) document.body.style.overflow = 'hidden';
     }
 
     function closeForm() {
       const modal = document.getElementById('planFormModal');
-      modal.style.display = 'none';
-      document.body.style.overflow = 'auto';
-      document.getElementById('planRequestForm').reset();
+      if (modal) modal.style.display = 'none';
+      if (document.body) document.body.style.overflow = 'auto';
+      const form = document.getElementById('planRequestForm');
+      if (form) form.reset();
     }
 
     function handleFormSubmit(event) {
@@ -398,43 +454,13 @@
     }
 
     // Cerrar modal al hacer click fuera
-    window.onclick = function(event) {
-      const modal = document.getElementById('planFormModal');
-      if (event.target == modal) {
-        closeForm();
-      }
-    }
-
-    // Scroll to Top Button
-    const scrollToTopBtn = document.getElementById('scrollToTop');
-    
-    window.addEventListener('scroll', () => {
-      if (window.pageYOffset > 300) {
-        scrollToTopBtn.classList.add('show');
-      } else {
-        scrollToTopBtn.classList.remove('show');
-      }
-    });
-
-    scrollToTopBtn.addEventListener('click', () => {
-      window.scrollTo({
-        top: 0,
-        behavior: 'smooth'
-      });
-    });
-
-    // Smooth scroll for anchor links
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-      anchor.addEventListener('click', function (e) {
-        e.preventDefault();
-        const target = document.querySelector(this.getAttribute('href'));
-        if (target) {
-          target.scrollIntoView({
-            behavior: 'smooth',
-            block: 'start'
-          });
+    document.addEventListener('DOMContentLoaded', function() {
+      window.onclick = function(event) {
+        const modal = document.getElementById('planFormModal');
+        if (modal && event.target == modal) {
+          closeForm();
         }
-      });
+      };
     });
   </script>
 </body>
