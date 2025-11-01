@@ -264,10 +264,11 @@ body::before {
   padding: 150px 0;
   background: var(--bg-light);
   position: relative;
-  overflow: hidden;
+  overflow: visible;
   width: 100%;
   max-width: 100%;
   box-sizing: border-box;
+  min-height: auto;
 }
 
 .plans-bg-overlay {
