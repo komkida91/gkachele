@@ -1,66 +1,293 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>gkachele™ - Desarrollo Web Profesional</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GKACHELE™ | Desarrollo Web Premium</title>
+  <meta name="description" content="GKACHELE™ - Sitios web modernos, rápidos y personalizados.">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    :root {
+      --color-primario: #0077cc;
+      --color-secundario: #f4f6f8;
+      --color-texto: #333;
+      --color-acento: #ff9800;
+      --transicion: all 0.3s ease-in-out;
+    }
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: var(--color-texto);
+      line-height: 1.6;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    header {
+      background: rgba(0, 0, 0, 0.85);
+      color: white;
+      padding: 20px 0;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    }
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .logo h1 {
+      font-size: 2rem;
+      font-weight: bold;
+    }
+    .tagline {
+      font-size: 0.9rem;
+      color: #ccc;
+    }
+    .nav-links {
+      list-style: none;
+      display: flex;
+      gap: 1.5rem;
+    }
+    .nav-links li a {
+      color: white;
+      text-decoration: none;
+      font-weight: 500;
+      transition: color 0.3s;
+    }
+    .nav-links li a:hover {
+      color: var(--color-acento);
+    }
+    .social-links a {
+      color: white;
+      margin-left: 1rem;
+      font-size: 1.2rem;
+      transition: color 0.3s;
+    }
+    .social-links a:hover {
+      color: var(--color-acento);
+    }
+    .hero {
+      text-align: center;
+      padding: 4rem 2rem;
+      background: linear-gradient(135deg, #0077cc, #00bfff);
+      color: white;
+    }
+    .hero h2 {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+    }
+    .hero p {
+      font-size: 1.2rem;
+      margin-bottom: 2rem;
+    }
+    .cta-button {
+      background: white;
+      color: #0077cc;
+      padding: 1rem 2rem;
+      border-radius: 50px;
+      text-decoration: none;
+      font-weight: bold;
+      transition: var(--transicion);
+    }
+    .cta-button:hover {
+      background: var(--color-acento);
+      color: white;
+    }
+    .planes-selector,
+    .premium-formulario,
+    .contacto {
+      background: white;
+      margin: 40px auto;
+      padding: 40px;
+      border-radius: 15px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    }
+    h3 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #764ba2;
+    }
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    label {
+      font-weight: 600;
+      color: #333;
+    }
+    input, textarea, select {
+      padding: 15px;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      font-size: 1rem;
+      background: white;
+      transition: border-color 0.3s;
+    }
+    input:focus, textarea:focus, select:focus {
+      outline: none;
+      border-color: #764ba2;
+    }
+    button {
+      padding: 15px 30px;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1.1rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+    }
+    .redes {
+      margin-top: 20px;
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+    }
+    .redes a {
+      padding: 10px 20px;
+      background: #667eea;
+      color: white;
+      border-radius: 5px;
+      text-decoration: none;
+      transition: background 0.3s;
+    }
+    .redes a:hover {
+      background: #764ba2;
+    }
+    .qr-container {
+      text-align: center;
+      margin-top: 2rem;
+    }
+    .qr-container img {
+      width: 150px;
+      height: 150px;
+      border-radius: 10px;
+    }
+    .whatsapp-float {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #25D366;
+      color: white;
+      font-size: 2rem;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+      transition: transform 0.3s ease;
+      z-index: 999;
+    }
+    .whatsapp-float:hover {
+      transform: scale(1.1);
+    }
+    footer {
+      text-align: center;
+      padding: 30px;
+      color: white;
+      background: rgba(0, 0, 0, 0.8);
+    }
+    @media (max-width: 768px) {
+      nav {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .nav-links {
+        flex-direction: column;
+        gap: 0.5rem;
+        margin-top: 1rem;
+      }
+      .hero h2 {
+        font-size: 1.8rem;
+      }
+      .container {
+        padding: 20px;
+      }
+    }
+  </style>
 </head>
 <body>
-    <header>
-        <div class="container">
-            <h1>gkachele™</h1>
-            <p class="tagline">Desarrollo Web Profesional</p>
-        </div>
-    </header>
+  <header>
+    <nav class="container">
+      <div class="logo">
+        <h1>GKACHELE™</h1>
+        <span class="tagline">Desarrollo Web Profesional</span>
+      </div>
+      <ul class="nav-links">
+        <li><a href="#inicio">Inicio</a></li>
+        <li><a href="#planes">Planes</a></li>
+        <li><a href="#personaliza">Personaliza</a></li>
+        <li><a href="#contacto">Contacto</a></li>
+      </ul>
+      <div class="social-links">
+        <a href="https://www.instagram.com/gkachele" target="_blank"><i class="fab fa-instagram"></i></a>
+        <a href="https://www.linkedin.com/in/gkachele" target="_blank"><i class="fab fa-linkedin"></i></a>
+        <a href="https://github.com/gkachele" target="_blank"><i class="fab fa-github"></i></a>
+        <a href="mailto:contacto@gkachele.com"><i class="fas fa-envelope"></i></a>
+      </div>
+    </nav>
+  </header>
+  <section class="hero" id="inicio">
+    <div class="container hero-content">
+      <h2>Creá tu presencia digital premium</h2>
+      <p>Subí tu logo y generá tu sitio personalizado con GKACHELE™</p>
+      <a href="#planes" class="cta-button">Ver planes</a>
+    </div>
+  </section>
 
-    <main class="container">
-        <section class="hero">
-            <h2>Creá tu presencia digital profesional</h2>
-            <p>Sitios web modernos, rápidos y a tu medida. Sin costos ocultos.</p>
-        </section>
+  <section class="planes-selector container" id="planes">
+    <h3>Elegí tu plan</h3>
+    <form id="planForm">
+      <label for="plan">Seleccioná el nivel que necesitás:</label>
+      <select id="plan" name="plan">
+        <option value="base">Base - Sitio simple y efectivo</option>
+        <option value="pro">Pro - Visual y dinámico</option>
+        <option value="premium">Premium - Experiencia completa</option>
+      </select>
+      <button type="submit">Ver detalles del plan</button>
+    </form>
+  </section>
 
-        <section class="planes-selector">
-            <h3>Elegí tu plan</h3>
-            <form id="planForm">
-                <label for="plan">Seleccioná el nivel que necesitás:</label>
-                <select id="plan" name="plan">
-                    <option value="base">Base - Sitio simple y efectivo</option>
-                    <option value="pro">Pro - Visual y dinámico</option>
-                    <option value="premium">Premium - Experiencia completa</option>
-                </select>
-                <button type="submit">Ver detalles del plan</button>
-            </form>
-        </section>
+  <section class="contacto container" id="contacto">
+    <h3>Contacto</h3>
+    <p>Email: <a href="mailto:contacto@gkachele.com">contacto@gkachele.com</a></p>
+    <p>WhatsApp: <a href="https://wa.me/5493755646531" target="_blank">+54 9 3755 64-6531</a></p>
+    <div class="redes">
+      <a href="#" target="_blank">Instagram</a>
+      <a href="#" target="_blank">LinkedIn</a>
+      <a href="#" target="_blank">GitHub</a>
+    </div>
+  </section>
 
-        <section class="info">
-            <h3>¿Por qué elegir gkachele?</h3>
-            <ul>
-                <li>✅ Hosting gratuito incluido</li>
-                <li>✅ Dominio personalizado</li>
-                <li>✅ Panel de administración</li>
-                <li>✅ Responsive (móvil y desktop)</li>
-                <li>✅ Sin costos mensuales</li>
-            </ul>
-        </section>
+  <a href="https://wa.me/5493755646531?text=Hola!%20Me%20interesa%20saber%20m%C3%A1s%20sobre%20los%20planes" class="whatsapp-float" target="_blank">
+    <i class="fab fa-whatsapp"></i>
+  </a>
 
-        <section class="contacto">
-            <h3>Contacto</h3>
-            <p>Email: <a href="mailto:contacto@gkachele.com">contacto@gkachele.com</a></p>
-            <p>WhatsApp: <a href="https://wa.me/5493755646531" target="_blank">+54 9 3755 64-6531</a></p>
-            <div class="redes">
-                <a href="#" target="_blank">Instagram</a>
-                <a href="#" target="_blank">LinkedIn</a>
-                <a href="#" target="_blank">GitHub</a>
-            </div>
-        </section>
-    </main>
+  <footer>
+    <p>&copy; 2025 GKACHELE™. Todos los derechos reservados.</p>
+  </footer>
 
-    <footer>
-        <p>&copy; 2025 gkachele™. Todos los derechos reservados.</p>
-    </footer>
-
-    <script src="script.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>
-
