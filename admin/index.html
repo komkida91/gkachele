@@ -366,9 +366,14 @@
             <div class="logo">
                 <i class="fas fa-chart-line"></i> GKACHELE Dashboard
             </div>
-            <button class="refresh-btn" onclick="refreshData()">
-                <i class="fas fa-sync-alt"></i> Actualizar
-            </button>
+            <div style="display: flex; gap: 0.5rem;">
+                <button class="refresh-btn" onclick="refreshData()">
+                    <i class="fas fa-sync-alt"></i> Actualizar
+                </button>
+                <button class="refresh-btn" onclick="logout()" style="background: #ef4444;">
+                    <i class="fas fa-sign-out-alt"></i> Salir
+                </button>
+            </div>
         </div>
     </div>
 
@@ -431,6 +436,38 @@
     </div>
 
     <script>
+        // 🔐 VERIFICAR AUTENTICACIÓN
+        (function checkAuth() {
+            const session = localStorage.getItem('gkachele_session');
+            
+            if (!session) {
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            const sessionData = JSON.parse(session);
+            const now = new Date().getTime();
+            const sevenDays = 7 * 24 * 60 * 60 * 1000;
+            
+            // Verificar si la sesión expiró
+            if (now - sessionData.timestamp > sevenDays) {
+                localStorage.removeItem('gkachele_session');
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            // Sesión válida
+            console.log('✅ Sesión válida:', sessionData.user);
+        })();
+
+        // Función para cerrar sesión
+        function logout() {
+            if (confirm('¿Cerrar sesión?')) {
+                localStorage.removeItem('gkachele_session');
+                window.location.href = 'login.html';
+            }
+        }
+
         // Datos de los sitios
         const sitiosData = [
             {
