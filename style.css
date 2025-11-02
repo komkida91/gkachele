@@ -536,6 +536,203 @@ body::before {
   box-shadow: 0 8px 35px rgba(255, 107, 53, 0.5);
 }
 
+/* Demos Section */
+.demos-section {
+  position: relative;
+  padding: 5rem 0;
+  background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+  overflow: hidden;
+}
+
+.demos-bg-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at 50% 50%, rgba(255, 107, 53, 0.05) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.section-subtitle {
+  text-align: center;
+  color: #888;
+  font-size: 1.1rem;
+  margin-bottom: 3rem;
+}
+
+.demos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 2rem;
+  margin-bottom: 4rem;
+}
+
+.demo-card {
+  background: rgba(30, 30, 30, 0.8);
+  border-radius: 15px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  border: 1px solid rgba(255, 107, 53, 0.1);
+}
+
+.demo-card:hover {
+  transform: translateY(-10px);
+  border-color: #ff6b35;
+  box-shadow: 0 20px 40px rgba(255, 107, 53, 0.3);
+}
+
+.demo-image {
+  position: relative;
+  width: 100%;
+  height: 250px;
+  overflow: hidden;
+}
+
+.demo-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.demo-card:hover .demo-image img {
+  transform: scale(1.1);
+}
+
+.demo-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.demo-card:hover .demo-overlay {
+  opacity: 1;
+}
+
+.demo-btn {
+  background: #ff6b35;
+  color: white;
+  padding: 0.8rem 1.5rem;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.3s ease;
+}
+
+.demo-btn:hover {
+  background: #ff8555;
+  transform: scale(1.05);
+}
+
+.demo-info {
+  padding: 1.5rem;
+}
+
+.demo-info h3 {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+  color: #ff6b35;
+}
+
+.demo-category {
+  font-size: 0.95rem;
+  color: #888;
+  margin-bottom: 0.5rem;
+}
+
+.demo-plan {
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+}
+
+.demo-plan .badge-premium,
+.demo-plan .badge-pro,
+.demo-plan .badge-base {
+  padding: 0.3rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.demo-plan .badge-premium {
+  background: linear-gradient(135deg, #ff6b35, #ff8555);
+  color: white;
+}
+
+.demo-plan .badge-pro {
+  background: linear-gradient(135deg, #3b82f6, #60a5fa);
+  color: white;
+}
+
+.demo-plan .badge-base {
+  background: rgba(255, 255, 255, 0.1);
+  color: #888;
+}
+
+.demo-description {
+  color: #ccc;
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+/* Video Demo */
+.video-demo-section {
+  margin-top: 4rem;
+  text-align: center;
+}
+
+.video-demo-section h3 {
+  font-size: 2rem;
+  margin-bottom: 2rem;
+  color: #ff6b35;
+}
+
+.video-container {
+  max-width: 900px;
+  margin: 0 auto;
+  border-radius: 15px;
+  overflow: hidden;
+  background: rgba(30, 30, 30, 0.8);
+  border: 2px solid rgba(255, 107, 53, 0.2);
+}
+
+.video-placeholder {
+  padding: 6rem 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.video-placeholder i {
+  font-size: 4rem;
+  color: #ff6b35;
+  opacity: 0.5;
+}
+
+.video-placeholder p {
+  font-size: 1.2rem;
+  color: #888;
+}
+
+.video-placeholder small {
+  font-size: 0.9rem;
+  color: #666;
+}
+
 /* QR Section - Premium Card con Imagen Difuminada */
 .qr-section {
   padding: 150px 0;
