@@ -409,8 +409,8 @@
                 <div class="stat-header">
                     <span class="stat-icon">📊</span>
                 </div>
-                <div class="stat-value" id="total-visits">1,247</div>
-                <div class="stat-label">Visitas Totales</div>
+                <div class="stat-value" id="total-visits">--</div>
+                <div class="stat-label">Visitas (próximamente)</div>
             </div>
 
             <div class="stat-card">
@@ -425,8 +425,8 @@
                 <div class="stat-header">
                     <span class="stat-icon">🔄</span>
                 </div>
-                <div class="stat-value" id="today-visits">47</div>
-                <div class="stat-label">Visitas Hoy</div>
+                <div class="stat-value" id="today-visits">--</div>
+                <div class="stat-label">Visitas Hoy (próximamente)</div>
             </div>
         </div>
 
@@ -452,14 +452,12 @@
     </div>
 
     <script>
-        // 🔐 VERIFICAR AUTENTICACIÓN (opcional - comentado para desarrollo)
-        /*
+        // 🔐 VERIFICAR AUTENTICACIÓN - OBLIGATORIO
         (function checkAuth() {
             const session = localStorage.getItem('gkachele_session');
             
             if (!session) {
-                // Comentado para acceso directo en desarrollo
-                // window.location.href = 'login.html';
+                window.location.href = 'login.html';
                 return;
             }
             
@@ -470,14 +468,13 @@
             // Verificar si la sesión expiró
             if (now - sessionData.timestamp > sevenDays) {
                 localStorage.removeItem('gkachele_session');
-                // window.location.href = 'login.html';
+                window.location.href = 'login.html';
                 return;
             }
             
             // Sesión válida
             console.log('✅ Sesión válida:', sessionData.user);
         })();
-        */
 
         // Función para cerrar sesión
         function logout() {
