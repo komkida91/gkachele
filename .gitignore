@@ -1,0 +1,76 @@
+# .gitignore para repositorios de sitios web estáticos
+# Archivos que NO deben estar visibles en GitHub
+
+# Scripts locales de deploy/desarrollo
+*.sh
+!deploy-prod.yml
+!deploy-staging.yml
+
+# Archivos de backup
+*.backup
+*.bak
+*~
+*.old
+
+# Archivos temporales
+*.tmp
+*.temp
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+*.log.*
+
+# Archivos de configuración sensibles
+.env
+.env.local
+.env.*.local
+config.json
+secrets.json
+*.key
+*.pem
+*.p12
+
+# Archivos de editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Archivos de desarrollo
+node_modules/
+.npm
+.pnpm-store
+
+# Archivos de compilación (si usas build tools)
+dist/
+build/
+*.min.js.map
+*.min.css.map
+
+# Archivos personales/notas
+NOTAS.md
+TODO.md
+PRIVADO.md
+*.personal
+
+# Archivos de test que no se usan en producción
+test/
+tests/
+__tests__/
+*.test.html
+*.test.js
+*.spec.js
+
+# Mantener siempre visibles (estos NO se ignoran):
+# - index.html
+# - *.html (archivos del sitio)
+# - *.css
+# - *.js (archivos del sitio)
+# - CNAME
+# - assets/ (imágenes, videos, etc.)
+# - .github/workflows/ (workflows necesarios)
+
