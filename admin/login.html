@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔐 Login - GKACHELE Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --naranja: #ff6b35;
+            --naranja-hover: #ff8555;
+            --bg-dark: #0a0a0a;
+            --bg-card: #1a1a1a;
+            --text: #ffffff;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: var(--text);
+        }
+
+        .login-container {
+            background: var(--bg-card);
+            border: 2px solid var(--naranja);
+            border-radius: 20px;
+            padding: 3rem;
+            width: 90%;
+            max-width: 450px;
+            box-shadow: 0 20px 60px rgba(255, 107, 53, 0.3);
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .logo-icon {
+            font-size: 4rem;
+            background: linear-gradient(135deg, var(--naranja), var(--naranja-hover));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+        }
+
+        .logo-text {
+            font-size: 2rem;
+            font-weight: bold;
+            background: linear-gradient(135deg, var(--naranja), var(--naranja-hover));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #888;
+            margin-bottom: 2rem;
+            font-size: 0.9rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #ccc;
+            font-size: 0.9rem;
+        }
+
+        input {
+            width: 100%;
+            padding: 1rem;
+            background: var(--bg-dark);
+            border: 1px solid #333;
+            border-radius: 10px;
+            color: var(--text);
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--naranja);
+            box-shadow: 0 0 20px rgba(255, 107, 53, 0.2);
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 1rem;
+            background: var(--naranja);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn-login:hover {
+            background: var(--naranja-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(255, 107, 53, 0.4);
+        }
+
+        .btn-login:active {
+            transform: translateY(0);
+        }
+
+        .error-message {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+            padding: 0.8rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            display: none;
+            font-size: 0.9rem;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .remember-me {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            color: #888;
+            font-size: 0.9rem;
+        }
+
+        .remember-me input[type="checkbox"] {
+            width: auto;
+            cursor: pointer;
+        }
+
+        @media (max-width: 768px) {
+            .login-container {
+                padding: 2rem 1.5rem;
+            }
+
+            .logo-text {
+                font-size: 1.5rem;
+            }
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 2rem;
+            color: #666;
+            font-size: 0.8rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="logo">
+            <div class="logo-icon">
+                <i class="fas fa-chart-line"></i>
+            </div>
+            <div class="logo-text">GKACHELE</div>
+        </div>
+        
+        <div class="subtitle">Dashboard de Administración</div>
+
+        <div class="error-message" id="error-message">
+            <i class="fas fa-exclamation-circle"></i> Usuario o contraseña incorrectos
+        </div>
+
+        <form id="login-form">
+            <div class="form-group">
+                <label for="username">
+                    <i class="fas fa-user"></i> Usuario (Email)
+                </label>
+                <input 
+                    type="email" 
+                    id="username" 
+                    placeholder="tu@email.com"
+                    required
+                    autocomplete="username"
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="password">
+                    <i class="fas fa-lock"></i> Contraseña
+                </label>
+                <input 
+                    type="password" 
+                    id="password" 
+                    placeholder="••••••••••"
+                    required
+                    autocomplete="current-password"
+                >
+            </div>
+
+            <div class="remember-me">
+                <input type="checkbox" id="remember" checked>
+                <label for="remember">Recordar sesión (7 días)</label>
+            </div>
+
+            <button type="submit" class="btn-login">
+                <i class="fas fa-sign-in-alt"></i>
+                Ingresar al Dashboard
+            </button>
+        </form>
+
+        <div class="footer">
+            <strong>GKACHELE™</strong> | Misiones, Argentina 🇦🇷
+        </div>
+    </div>
+
+    <script>
+        // Credenciales (en producción estarían en backend)
+        const VALID_USERS = {
+            'gkachele91@gmail.com': 'GK@ch3l3-M1s10n3s-2025!#$'
+        };
+
+        const form = document.getElementById('login-form');
+        const errorMessage = document.getElementById('error-message');
+
+        // Verificar si ya está logueado
+        window.addEventListener('DOMContentLoaded', () => {
+            const session = localStorage.getItem('gkachele_session');
+            if (session) {
+                const sessionData = JSON.parse(session);
+                const now = new Date().getTime();
+                
+                // Sesión válida por 7 días
+                if (now - sessionData.timestamp < 7 * 24 * 60 * 60 * 1000) {
+                    window.location.href = 'index.html';
+                } else {
+                    localStorage.removeItem('gkachele_session');
+                }
+            }
+        });
+
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value;
+            const remember = document.getElementById('remember').checked;
+            
+            // Validar credenciales
+            if (VALID_USERS[username] && VALID_USERS[username] === password) {
+                // Login exitoso
+                if (remember) {
+                    const sessionData = {
+                        user: username,
+                        timestamp: new Date().getTime()
+                    };
+                    localStorage.setItem('gkachele_session', JSON.stringify(sessionData));
+                }
+                
+                // Redireccionar al dashboard
+                window.location.href = 'index.html';
+            } else {
+                // Login fallido
+                errorMessage.classList.add('show');
+                document.getElementById('password').value = '';
+                
+                setTimeout(() => {
+                    errorMessage.classList.remove('show');
+                }, 3000);
+            }
+        });
+    </script>
+</body>
+</html>
+

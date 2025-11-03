@@ -1,0 +1,127 @@
+name: Configurar GitHub Pages Automáticamente
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'CNAME'
+      - '.github/workflows/configurar-pages-automatico.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  configurar-pages:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      
+      - name: Configurar GitHub Pages
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          REPO_NAME="${{ github.repository }}"
+          REPO_OWNER=$(echo $REPO_NAME | cut -d'/' -f1)
+          REPO_REPO=$(echo $REPO_NAME | cut -d'/' -f2)
+          
+          echo "🔧 Configurando Pages para: $REPO_REPO"
+          
+          # Leer CNAME del repositorio
+          if [ -f "CNAME" ]; then
+            CNAME_DOMAIN=$(cat CNAME | tr -d '\n\r ' | head -1)
+            echo "📄 CNAME encontrado en repo: $CNAME_DOMAIN"
+          else
+            echo "⚠️  No se encontró archivo CNAME"
+            CNAME_DOMAIN=""
+          fi
+          
+          # Paso 1: Verificar si Pages está habilitado
+          echo "🔍 Verificando estado de Pages..."
+          PAGES_STATUS=$(gh api "repos/$REPO_OWNER/$REPO_REPO/pages" 2>/dev/null || echo "{}")
+          
+          # Paso 2: Configurar Pages para usar GitHub Actions SIN CNAME
+          echo "🚀 Configurando Pages para GitHub Actions (sin CNAME)..."
+          
+          # Método 1: Intentar POST con build_type workflow Y cname vacío
+          echo "   📝 Método 1: Intentando crear Pages con GitHub Actions..."
+          if gh api "repos/$REPO_OWNER/$REPO_REPO/pages" \
+            -X POST \
+            -f build_type=workflow \
+            -f cname='' \
+            2>/dev/null; then
+            echo "   ✅ Pages creado: build_type=workflow, cname=vacío"
+          # Método 2: Intentar PUT con build_type workflow Y cname vacío
+          elif gh api "repos/$REPO_OWNER/$REPO_REPO/pages" \
+            -X PUT \
+            -f build_type=workflow \
+            -f cname='' \
+            2>/dev/null; then
+            echo "   ✅ Pages actualizado: build_type=workflow, cname=vacío"
+          # Método 3: Si Pages existe pero está configurado con branch, cambiar a workflow
+          elif echo "$PAGES_STATUS" | grep -q '"build_type"'; then
+            echo "   📝 Pages existe con otra configuración, cambiando a workflow..."
+            # Primero eliminar CNAME si existe
+            gh api "repos/$REPO_OWNER/$REPO_REPO/pages" \
+              -X PUT \
+              -f cname='' \
+              2>/dev/null || true
+            # Luego cambiar build_type a workflow
+            gh api "repos/$REPO_OWNER/$REPO_REPO/pages" \
+              -X PUT \
+              -f build_type=workflow \
+              -f cname='' \
+              2>/dev/null && echo "   ✅ Pages configurado: build_type=workflow, cname=vacío" || echo "   ⚠️  Error al cambiar configuración"
+          else
+            echo "   ⚠️  No se pudo configurar Pages automáticamente"
+            echo "   📝 Pages debe habilitarse manualmente primero:"
+            echo "      https://github.com/$REPO_OWNER/$REPO_REPO/settings/pages"
+            echo "      → Build and deployment: 'GitHub Actions'"
+            echo "      → Custom domain: DEJAR VACÍO"
+          fi
+          
+          # Paso 3: Verificar y forzar que CNAME esté vacío
+          echo "🗑️  Verificando que CNAME esté vacío..."
+          sleep 2  # Esperar un poco para que GitHub procese
+          
+          PAGES_FINAL=$(gh api "repos/$REPO_OWNER/$REPO_REPO/pages" 2>/dev/null || echo "{}")
+          CNAME_FINAL=$(echo "$PAGES_FINAL" | grep -o '"cname":"[^"]*"' | cut -d'"' -f4 || echo "")
+          
+          if [ -n "$CNAME_FINAL" ] && [ "$CNAME_FINAL" != "null" ] && [ "$CNAME_FINAL" != "" ]; then
+            echo "   ⚠️  CNAME todavía tiene valor: $CNAME_FINAL"
+            echo "   🔄 Eliminando CNAME..."
+            gh api "repos/$REPO_OWNER/$REPO_REPO/pages" \
+              -X PUT \
+              -f cname='' \
+              2>/dev/null && echo "   ✅ CNAME eliminado" || echo "   ⚠️  Error al eliminar CNAME"
+          else
+            echo "   ✅ CNAME ya está vacío"
+          fi
+          
+          echo ""
+          echo "✅ Configuración completada:"
+          echo "   - Build type: workflow (GitHub Actions)"
+          echo "   - CNAME en Settings: VACÍO (no redirige github.io)"
+          if [ -n "$CNAME_DOMAIN" ]; then
+            echo "   - CNAME en repo: $CNAME_DOMAIN (para DuckDNS)"
+          fi
+          echo ""
+          echo "⚠️  IMPORTANTE: DuckDNS funcionará por el archivo CNAME en el repo"
+          echo "   github.io NO funcionará ni redirigirá porque CNAME no está en Settings"
+      
+      - name: Verificar configuración
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          REPO_NAME="${{ github.repository }}"
+          REPO_OWNER=$(echo $REPO_NAME | cut -d'/' -f1)
+          REPO_REPO=$(echo $REPO_NAME | cut -d'/' -f2)
+          
+          echo "🔍 Verificando configuración..."
+          gh api "repos/$REPO_OWNER/$REPO_REPO/pages" \
+            --jq '{build_type, cname, status}'
+

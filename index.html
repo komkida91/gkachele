@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+  <title>GKACHELE™ | Desarrollo Web Premium</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="style.css?v=20251102-2450">
+</head>
+<body>
+  <!-- Navigation Sticky -->
+  <nav class="nav-sticky">
+    <div class="nav-container">
+      <div class="nav-logo">
+        <a href="index.html">GKACHELE™</a>
+      </div>
+      <div class="nav-menu">
+      <a href="#planes" class="nav-link">Planes</a>
+      <a href="#demos" class="nav-link">Demos</a>
+      <a href="#contacto" class="nav-link">Contacto</a>
+      </div>
+      <div class="nav-social">
+        <a href="https://www.facebook.com/gkachele" target="_blank" title="Facebook"><i class="fab fa-facebook-f"></i></a>
+        <a href="https://www.instagram.com/gkachele" target="_blank" title="Instagram"><i class="fab fa-instagram"></i></a>
+        <a href="https://www.youtube.com/@gkachele" target="_blank" title="YouTube"><i class="fab fa-youtube"></i></a>
+        <a href="https://www.tiktok.com/@gkachele" target="_blank" title="TikTok"><i class="fab fa-tiktok"></i></a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="hero-section">
+    <div class="hero-bg-overlay"></div>
+    <div class="hero-content">
+      <h1 class="hero-title">GKACHELE™</h1>
+      <p class="hero-subtitle">Desarrollo Web Premium</p>
+      <p class="hero-description">Estamos listos para ayudarte a crear tu sitio moderno, rápido y personalizado.</p>
+    </div>
+  </section>
+
+  <!-- Plans Section - Acordeón Desplegable -->
+  <section id="planes" class="plans-section">
+    <div class="plans-bg-overlay"></div>
+    <div class="container-large">
+      <h2 class="section-title">Nuestros Planes</h2>
+      
+      <!-- Plans Accordion -->
+      <div class="plans-accordion">
+        <!-- Base Plan -->
+        <div class="plan-accordion-item" data-plan="base">
+          <button class="plan-accordion-header">
+            <div class="plan-header-content">
+              <h3>Base</h3>
+              <p class="plan-tagline">Simple, efectivo y profesional</p>
+            </div>
+            <i class="fas fa-chevron-down plan-chevron"></i>
+          </button>
+          <div class="plan-accordion-body">
+            <div class="plan-card-body">
+              <h4>¿Qué incluye?</h4>
+              <ul>
+                <li>✅ Sitio web de una página</li>
+                <li>✅ Diseño limpio y profesional</li>
+                <li>✅ Información de contacto</li>
+                <li>✅ Enlaces a redes sociales</li>
+                <li>✅ Responsive (móvil y desktop)</li>
+                <li>✅ Hosting gratuito</li>
+                <li>✅ Dominio personalizado</li>
+              </ul>
+              <h4>Personalización</h4>
+              <ul>
+                <li>🎨 Color principal personalizado</li>
+                <li>✍️ Tipografía a elección</li>
+                <li>📝 Textos personalizados</li>
+              </ul>
+              <p class="plan-ideal"><strong>Ideal para:</strong> Profesionales independientes, pequeños comercios, páginas institucionales básicas.</p>
+              <div class="qr-mini-card">
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://gkachele.duckdns.org" alt="QR Base">
+                <p>Comparte este plan</p>
+              </div>
+              <button type="button" class="plan-btn" onclick="openForm('base')">
+                Solicitar Plan Base
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pro Plan -->
+        <div class="plan-accordion-item" data-plan="pro">
+          <button class="plan-accordion-header">
+            <div class="plan-header-content">
+              <h3>Pro</h3>
+              <p class="plan-tagline">Visual, dinámico y moderno</p>
+            </div>
+            <i class="fas fa-chevron-down plan-chevron"></i>
+          </button>
+          <div class="plan-accordion-body">
+            <div class="plan-card-body">
+              <h4>¿Qué incluye?</h4>
+              <ul>
+                <li>✅ Sitio web multipágina</li>
+                <li>✅ Animaciones suaves y efectos visuales</li>
+                <li>✅ Galería de imágenes o portafolio</li>
+                <li>✅ Formulario de contacto funcional</li>
+                <li>✅ Responsive avanzado</li>
+                <li>✅ Hosting gratuito</li>
+                <li>✅ Dominio personalizado</li>
+              </ul>
+              <h4>Personalización</h4>
+              <ul>
+                <li>🎨 Paleta de colores personalizada</li>
+                <li>✍️ Tipografía profesional</li>
+                <li>🧩 Secciones a medida</li>
+              </ul>
+              <p class="plan-ideal"><strong>Ideal para:</strong> Marcas personales, portfolios creativos, negocios que quieren destacar visualmente.</p>
+              <div class="qr-mini-card">
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://gkachele.duckdns.org#planes" alt="QR Pro">
+                <p>Comparte este plan</p>
+              </div>
+              <button type="button" class="plan-btn" onclick="openForm('pro')">
+                Solicitar Plan Pro
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Premium Plan -->
+        <div class="plan-accordion-item" data-plan="premium">
+          <button class="plan-accordion-header">
+            <div class="plan-header-content">
+              <h3>Premium</h3>
+              <p class="plan-tagline">Experiencia completa y profesional</p>
+            </div>
+            <i class="fas fa-chevron-down plan-chevron"></i>
+          </button>
+          <div class="plan-accordion-body">
+            <div class="plan-card-body">
+              <h4>¿Qué incluye?</h4>
+              <ul>
+                <li>✅ Sitio web completo y escalable</li>
+                <li>✅ Integración con redes sociales y herramientas externas</li>
+                <li>✅ SEO optimizado</li>
+                <li>✅ Panel de administración (opcional)</li>
+                <li>✅ Hosting y dominio incluidos</li>
+                <li>✅ Soporte técnico personalizado</li>
+              </ul>
+              <h4>Personalización</h4>
+              <ul>
+                <li>🎨 Diseño a medida</li>
+                <li>📊 Integración con analítica</li>
+                <li>🔒 Seguridad avanzada</li>
+              </ul>
+              <p class="plan-ideal"><strong>Ideal para:</strong> Empresas, proyectos grandes, tiendas online, instituciones con necesidades específicas.</p>
+              <div class="qr-mini-card">
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://gkachele.duckdns.org#planes" alt="QR Premium">
+                <p>Comparte este plan</p>
+              </div>
+              <button type="button" class="plan-btn premium-btn" onclick="openForm('premium')">
+                Solicitar Plan Premium
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Formulario de Pedido de Plan -->
+  <div id="planFormModal" class="modal-form" style="display: none;">
+    <div class="modal-form-content">
+      <div class="modal-form-header">
+        <h2>Solicitar Plan <span id="selectedPlanName"></span></h2>
+        <button class="modal-close" onclick="closeForm()">&times;</button>
+      </div>
+      <form id="planRequestForm" onsubmit="handleFormSubmit(event)">
+        <input type="hidden" id="selectedPlan" name="plan" required>
+        
+        <div class="form-group">
+          <label for="nombre">Nombre Completo *</label>
+          <input type="text" id="nombre" name="nombre" required placeholder="Tu nombre completo">
+        </div>
+
+        <div class="form-group">
+          <label for="email">Email *</label>
+          <input type="email" id="email" name="email" required placeholder="tu@email.com">
+        </div>
+
+        <div class="form-group">
+          <label for="telefono">Teléfono *</label>
+          <input type="tel" id="telefono" name="telefono" required placeholder="+54 9 11 2345 6789">
+        </div>
+
+        <div class="form-group">
+          <label for="rubro">Rubro/Negocio *</label>
+          <input type="text" id="rubro" name="rubro" required placeholder="Ej: Restaurante, Danza, Cosmética">
+        </div>
+
+        <div class="form-group">
+          <label for="colores">Colores Preferidos</label>
+          <input type="text" id="colores" name="colores" placeholder="Ej: Azul y blanco, Naranja y negro">
+        </div>
+
+        <div class="form-group">
+          <label for="descripcion">Descripción de lo que necesitas</label>
+          <textarea id="descripcion" name="descripcion" rows="4" placeholder="Cuéntanos qué necesitas para tu sitio web..."></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="dominio">Nombre de dominio preferido (opcional)</label>
+          <input type="text" id="dominio" name="dominio" placeholder="mi-negocio">
+          <small>Se creará como: mi-negocio.duckdns.org (si está disponible)</small>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn-cancel" onclick="closeForm()">Cancelar</button>
+          <button type="submit" class="btn-submit">Enviar Solicitud</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Demos Section -->
+  <section id="demos" class="demos-section">
+    <div class="demos-bg-overlay"></div>
+    <div class="container-large">
+      <h2 class="section-title">Proyectos Demo</h2>
+      <p class="section-subtitle">Ejemplos de sitios web que hemos creado</p>
+      
+      <div class="demos-grid">
+        <!-- Demo 1: Blow Dance -->
+        <div class="demo-card">
+          <div class="demo-image">
+            <div style="width:100%;height:300px;background:linear-gradient(135deg,#e91e63 0%,#c2185b 100%);display:flex;align-items:center;justify-content:center;color:white;font-size:2rem;font-weight:bold;">💃 Blow Dance</div>
+            <div class="demo-overlay">
+              <a href="https://blowdance.duckdns.org" target="_blank" class="demo-btn">
+                <i class="fas fa-external-link-alt"></i> Ver Sitio
+              </a>
+            </div>
+          </div>
+          <div class="demo-info">
+            <h3>Blow Dance</h3>
+            <p class="demo-category">💃 Escuela de Danza</p>
+            <p class="demo-plan">Plan: <span class="badge-pro">Pro</span></p>
+            <p class="demo-description">Sitio web profesional para escuela de danza con galerías, videos y sistema de inscripción.</p>
+          </div>
+        </div>
+
+        <!-- Demo 2: Dalmau Intendente -->
+        <div class="demo-card">
+          <div class="demo-image">
+            <div style="width:100%;height:300px;background:linear-gradient(135deg,#1e40af 0%,#1e3a8a 100%);display:flex;align-items:center;justify-content:center;color:white;font-size:2rem;font-weight:bold;">🗳️ Dalmau</div>
+            <div class="demo-overlay">
+              <a href="https://dalmau-intendente.duckdns.org" target="_blank" class="demo-btn">
+                <i class="fas fa-external-link-alt"></i> Ver Sitio
+              </a>
+            </div>
+          </div>
+          <div class="demo-info">
+            <h3>Dalmau Intendente</h3>
+            <p class="demo-category">🗳️ Campaña Política</p>
+            <p class="demo-plan">Plan: <span class="badge-base">Base</span></p>
+            <p class="demo-description">Landing page efectiva para campaña política con información clara y llamados a la acción.</p>
+          </div>
+        </div>
+
+        <!-- Demo 3: GKACHELE Portfolio -->
+        <div class="demo-card">
+          <div class="demo-image">
+            <div style="width:100%;height:300px;background:linear-gradient(135deg,#ff6b35 0%,#e55a28 100%);display:flex;align-items:center;justify-content:center;color:white;font-size:2rem;font-weight:bold;">💼 GKACHELE</div>
+            <div class="demo-overlay">
+              <a href="https://gkachele.duckdns.org" target="_blank" class="demo-btn">
+                <i class="fas fa-external-link-alt"></i> Ver Sitio
+              </a>
+            </div>
+          </div>
+          <div class="demo-info">
+            <h3>GKACHELE™</h3>
+            <p class="demo-category">💼 Portfolio Profesional</p>
+            <p class="demo-plan">Plan: <span class="badge-premium">Premium</span></p>
+            <p class="demo-description">Sitio web premium con diseño moderno, animaciones y sistema de gestión avanzado.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Video Demo - DESACTIVADO hasta tener YouTube -->
+      <!-- 
+      <div class="video-demo-section">
+        <h3>Video Demostrativo</h3>
+        <div class="video-container">
+          <div class="video-placeholder">
+            <i class="fas fa-play-circle"></i>
+            <p>Próximamente: Video demo de nuestros proyectos</p>
+            <small>Sube tu video a YouTube y pega el link aquí</small>
+          </div>
+        </div>
+      </div>
+      -->
+    </div>
+  </section>
+
+  <!-- QR Section -->
+  <section class="qr-section">
+    <div class="qr-bg-overlay"></div>
+    <div class="container-large">
+      <div class="qr-card">
+        <h3>Comparte tu sitio</h3>
+        <img src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=https://gkachele.duckdns.org" alt="QR Code GKACHELE™" class="qr-image">
+        <p>Escanea el código QR para compartir</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact Section -->
+  <section id="contacto" class="contact-section">
+    <div class="contact-bg-overlay"></div>
+    <div class="container-large">
+      <h2 class="section-title">Contacto</h2>
+      <div class="contact-grid">
+        <div class="contact-cards">
+          <a href="tel:+5491123456789" class="contact-card">
+            <i class="fas fa-phone"></i>
+            <span>+54 9 11 2345 6789</span>
+          </a>
+          <a href="mailto:contacto@gkachele.com" class="contact-card">
+            <i class="fas fa-envelope"></i>
+            <span>contacto@gkachele.com</span>
+          </a>
+          <a href="https://wa.me/5491123456789?text=Hola!%20Me%20interesa%20conocer%20más%20sobre%20GKACHELE" target="_blank" class="contact-card whatsapp-card">
+            <i class="fab fa-whatsapp"></i>
+            <span>WhatsApp</span>
+          </a>
+        </div>
+        <div class="social-card">
+          <h3>Redes Sociales</h3>
+          <div class="social-links-grid">
+            <a href="https://www.facebook.com/gkachele" target="_blank" class="social-link" title="Facebook">
+              <i class="fab fa-facebook-f"></i>
+            </a>
+            <a href="https://www.instagram.com/gkachele" target="_blank" class="social-link" title="Instagram">
+              <i class="fab fa-instagram"></i>
+            </a>
+            <a href="https://www.youtube.com/@gkachele" target="_blank" class="social-link" title="YouTube">
+              <i class="fab fa-youtube"></i>
+            </a>
+            <a href="https://www.tiktok.com/@gkachele" target="_blank" class="social-link" title="TikTok">
+              <i class="fab fa-tiktok"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- WhatsApp Float Button -->
+  <a href="https://wa.me/5491123456789?text=Hola!%20Me%20interesa%20conocer%20más%20sobre%20GKACHELE" target="_blank" class="whatsapp-float">
+    <i class="fab fa-whatsapp"></i>
+  </a>
+
+  <!-- Scroll to Top Button -->
+  <button class="scroll-to-top" id="scrollToTop" aria-label="Ir arriba">
+    <i class="fas fa-arrow-up"></i>
+  </button>
+
+  <!-- Footer -->
+  <footer class="footer-main">
+    <div class="footer-bg-overlay"></div>
+    <div class="container-large">
+      <p>&copy; 2025 GKACHELE™. Todos los derechos reservados.</p>
+    </div>
+  </footer>
+
+  <script>
+    // Plan Accordion - Desplegable Premium
+    const accordionItems = document.querySelectorAll('.plan-accordion-item');
+    
+    accordionItems.forEach(item => {
+      const header = item.querySelector('.plan-accordion-header');
+      const body = item.querySelector('.plan-accordion-body');
+      const chevron = item.querySelector('.plan-chevron');
+      
+      header.addEventListener('click', () => {
+        const isActive = item.classList.contains('active');
+        
+        // Cerrar todos los items con transición suave
+        accordionItems.forEach(otherItem => {
+          if (otherItem !== item) {
+            const otherBody = otherItem.querySelector('.plan-accordion-body');
+            const otherChevron = otherItem.querySelector('.plan-chevron');
+            const wasOtherActive = otherItem.classList.contains('active');
+            
+            if (wasOtherActive) {
+              // Cerrar con transición
+              otherItem.classList.remove('active');
+              setTimeout(() => {
+                otherBody.style.maxHeight = null;
+                otherChevron.style.transform = 'rotate(0deg)';
+              }, 50);
+            }
+          }
+        });
+        
+        // Toggle del item actual con transición
+        if (isActive) {
+          // Cerrar el item actual
+          item.classList.remove('active');
+          setTimeout(() => {
+            body.style.maxHeight = null;
+            chevron.style.transform = 'rotate(0deg)';
+          }, 50);
+        } else {
+          // Abrir el item actual
+          item.classList.add('active');
+          body.style.maxHeight = body.scrollHeight + 'px';
+          chevron.style.transform = 'rotate(180deg)';
+          
+          // Smooth scroll al item expandido con delay para la transición
+          setTimeout(() => {
+            item.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          }, 300);
+        }
+      });
+    });
+    
+    // Asegurar que todos los acordeones empiecen cerrados
+    // Forzar que ningún item tenga 'active' al cargar la página
+    accordionItems.forEach(item => {
+      item.classList.remove('active');
+      const body = item.querySelector('.plan-accordion-body');
+      const chevron = item.querySelector('.plan-chevron');
+      body.style.maxHeight = null;
+      chevron.style.transform = 'rotate(0deg)';
+    });
+
+    // Formulario de Pedido de Plan
+    function openForm(planType) {
+      const modal = document.getElementById('planFormModal');
+      const selectedPlan = document.getElementById('selectedPlan');
+      const selectedPlanName = document.getElementById('selectedPlanName');
+      
+      const planNames = {
+        'base': 'Base',
+        'pro': 'Pro',
+        'premium': 'Premium'
+      };
+      
+      selectedPlan.value = planType;
+      selectedPlanName.textContent = planNames[planType];
+      modal.style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeForm() {
+      const modal = document.getElementById('planFormModal');
+      modal.style.display = 'none';
+      document.body.style.overflow = 'auto';
+      document.getElementById('planRequestForm').reset();
+    }
+
+    function handleFormSubmit(event) {
+      event.preventDefault();
+      
+      const formData = new FormData(event.target);
+      const data = Object.fromEntries(formData);
+      
+      // Mostrar mensaje de confirmación
+      alert('¡Solicitud enviada! Te contactaremos pronto para generar tu sitio web.');
+      
+      // Aquí se enviará a un backend/API que genere el repo automáticamente
+      // Por ahora, mostramos los datos
+      console.log('Datos del formulario:', data);
+      
+      // Cerrar formulario
+      closeForm();
+      
+      // TODO: Enviar a endpoint que genere repo automáticamente
+      // fetch('/api/create-site', { method: 'POST', body: JSON.stringify(data) })
+    }
+
+    // Cerrar modal al hacer click fuera
+    window.onclick = function(event) {
+      const modal = document.getElementById('planFormModal');
+      if (event.target == modal) {
+        closeForm();
+      }
+    }
+
+    // Scroll to Top Button
+    const scrollToTopBtn = document.getElementById('scrollToTop');
+    
+    window.addEventListener('scroll', () => {
+      if (window.pageYOffset > 300) {
+        scrollToTopBtn.classList.add('show');
+      } else {
+        scrollToTopBtn.classList.remove('show');
+      }
+    });
+
+    scrollToTopBtn.addEventListener('click', () => {
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    });
+
+    // Smooth scroll for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          target.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+          });
+        }
+      });
+    });
+  </script>
+</body>
+</html>
