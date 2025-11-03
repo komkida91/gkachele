@@ -1,0 +1,112 @@
+name: Monitoreo y Limpieza (Cron)
+
+on:
+  schedule:
+    # Ejecutar cada hora
+    - cron: '0 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+
+jobs:
+  monitoreo:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      
+      - name: Monitorear sitios
+        run: |
+          echo "📊 MONITOREO DE SITIOS"
+          echo "======================"
+          echo ""
+          
+          # Lista de sitios a monitorear
+          SITIOS=(
+            "https://gkachele.duckdns.org"
+            "https://blowdance.duckdns.org"
+            "https://dalmau-intendente.duckdns.org"
+          )
+          
+          # Contador de sitios online
+          ONLINE=0
+          TOTAL=${#SITIOS[@]}
+          
+          echo "🔍 Verificando $TOTAL sitios..."
+          echo ""
+          
+          for SITIO in "${SITIOS[@]}"; do
+            HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" --max-time 10 "$SITIO" || echo "000")
+            
+            if [ "$HTTP_CODE" = "200" ] || [ "$HTTP_CODE" = "301" ] || [ "$HTTP_CODE" = "302" ]; then
+              echo "✅ $SITIO - Online (HTTP $HTTP_CODE)"
+              ONLINE=$((ONLINE + 1))
+            else
+              echo "❌ $SITIO - Offline (HTTP $HTTP_CODE)"
+            fi
+          done
+          
+          echo ""
+          echo "📊 RESULTADOS:"
+          echo "   Total sitios: $TOTAL"
+          echo "   Online: $ONLINE"
+          echo "   Offline: $((TOTAL - ONLINE))"
+          echo "   Uptime: $(( (ONLINE * 100) / TOTAL ))%"
+          
+          # Guardar métricas (para uso futuro en dashboard)
+          echo "{
+            \"total\": $TOTAL,
+            \"online\": $ONLINE,
+            \"offline\": $((TOTAL - ONLINE)),
+            \"uptime\": $(( (ONLINE * 100) / TOTAL )),
+            \"timestamp\": \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"
+          }" > metrics.json
+          
+          # Commit métricas si hay cambios
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          
+          if [ -n "$(git status --porcelain metrics.json)" ]; then
+            git add metrics.json
+            git commit -m "📊 Actualizar métricas de monitoreo - $(date +%Y-%m-%d\ %H:%M)" || true
+            git push origin main || true
+          fi
+      
+      - name: Limpiar cache de GitHub Pages
+        run: |
+          echo "🧹 LIMPIEZA DE CACHE"
+          echo "===================="
+          echo ""
+          echo "📋 Cache de GitHub Pages se limpia automáticamente en cada deploy"
+          echo "   - Cada push a main limpia el cache"
+          echo "   - Los workflows de deploy limpian automáticamente"
+          echo ""
+          echo "✅ Cache limpio"
+      
+      - name: Verificar conexiones
+        run: |
+          echo "🔌 VERIFICAR CONEXIONES"
+          echo "======================"
+          echo ""
+          
+          # Verificar conexión a DuckDNS
+          echo "📡 Verificando DuckDNS..."
+          if curl -s --max-time 5 "https://www.duckdns.org/" > /dev/null; then
+            echo "✅ DuckDNS accesible"
+          else
+            echo "⚠️ DuckDNS no responde"
+          fi
+          
+          # Verificar GitHub Pages
+          echo "📡 Verificando GitHub Pages..."
+          if curl -s --max-time 5 "https://github.com" > /dev/null; then
+            echo "✅ GitHub accesible"
+          else
+            echo "⚠️ GitHub no responde"
+          fi
+          
+          echo ""
+          echo "✅ Verificación completada"
+

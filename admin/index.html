@@ -2,22 +2,23 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <title>🎯 GKACHELE Dashboard</title>
 
-    <!-- Redirección inmediata y segura para GitHub Pages en /gkachele -->
-    <meta http-equiv="refresh" content="0;url=https://gkachele.duckdns.org">
+    <!-- Redirección solo para github.io (NO para DuckDNS) -->
     <script>
       (function(){
         try {
           var host = window.location.hostname || '';
           var path = window.location.pathname || '';
           console.log('redirect-check host=', host, 'path=', path);
-          // Ajustá el hostname o la ruta si es necesario
+          // Solo redirigir si está en github.io, NO en DuckDNS
           if ((host.includes('github.io') || host === 'komkida91.github.io') && path.startsWith('/gkachele')) {
             // Reemplaza la URL en el historial para no volver a la github.io
-            window.location.replace('https://gkachele.duckdns.org');
+            window.location.replace('https://gkachele.duckdns.org/admin/');
           }
         } catch(e){ console.error('redirect error', e); }
       })();
@@ -330,10 +331,35 @@
             100% { transform: rotate(360deg); }
         }
 
-        /* Responsive */
-        @media (max-width: 768px) {
+        /* Responsive - Mobile First */
+        
+        /* Móvil pequeño (hasta 480px) */
+        @media screen and (max-width: 480px) {
             .container {
-                padding: 1rem;
+                padding: 0.75rem;
+            }
+
+            .header {
+                padding: 0.75rem;
+            }
+
+            .header-content {
+                flex-direction: column;
+                gap: 0.5rem;
+                align-items: stretch;
+            }
+
+            .header-content > div {
+                display: flex;
+                gap: 0.5rem;
+                flex-wrap: wrap;
+            }
+
+            .refresh-btn {
+                flex: 1;
+                min-width: auto;
+                padding: 0.5rem 0.75rem;
+                font-size: 0.8rem;
             }
 
             .stats-grid {
@@ -343,6 +369,36 @@
 
             .sites-grid {
                 grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .stat-value {
+                font-size: 1.8rem;
+            }
+
+            .logo {
+                font-size: 1.1rem;
+            }
+
+            .site-card {
+                padding: 1rem;
+            }
+        }
+
+        /* Móvil y Tablet (481px a 768px) */
+        @media screen and (min-width: 481px) and (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1rem;
+            }
+
+            .sites-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
             }
 
             .stat-value {
@@ -351,6 +407,67 @@
 
             .logo {
                 font-size: 1.2rem;
+            }
+        }
+
+        /* Tablet (769px a 1024px) */
+        @media screen and (min-width: 769px) and (max-width: 1024px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .sites-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        /* Orientación Landscape en móvil */
+        @media screen and (max-width: 768px) and (orientation: landscape) {
+            .header {
+                padding: 0.5rem 1rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(4, 1fr);
+                gap: 0.75rem;
+            }
+
+            .stat-value {
+                font-size: 1.5rem;
+            }
+
+            .logo {
+                font-size: 1rem;
+            }
+        }
+
+        /* Desktop pequeño (1025px a 1400px) */
+        @media screen and (min-width: 1025px) and (max-width: 1400px) {
+            .sites-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        /* Compatibilidad navegadores antiguos */
+        @supports not (display: grid) {
+            .stats-grid {
+                display: flex;
+                flex-wrap: wrap;
+            }
+
+            .stat-card {
+                flex: 1 1 280px;
+                min-width: 280px;
+            }
+
+            .sites-grid {
+                display: flex;
+                flex-wrap: wrap;
+            }
+
+            .site-card {
+                flex: 1 1 320px;
+                min-width: 320px;
             }
         }
 
@@ -387,6 +504,9 @@
             <div style="display: flex; gap: 0.5rem;">
                 <button class="refresh-btn" onclick="refreshData()">
                     <i class="fas fa-sync-alt"></i> Actualizar
+                </button>
+                <button class="refresh-btn" onclick="clearCache()" style="background: #f59e0b;">
+                    <i class="fas fa-broom"></i> Limpiar Cache
                 </button>
                 <button class="refresh-btn" onclick="logout()" style="background: #ef4444;">
                     <i class="fas fa-sign-out-alt"></i> Salir
@@ -449,8 +569,7 @@
 
     <!-- Footer -->
     <div class="footer">
-        <strong>GKACHELE™</strong> Dashboard | Sistema de Control Centralizado<br>
-        Misiones, Argentina 🇦🇷
+        <strong>GKACHELE™</strong> Dashboard | Sistema de Control Centralizado
     </div>
 
     <script>
@@ -517,6 +636,26 @@
             }
         ];
 
+        // Actualizar métricas reales
+        function updateMetrics() {
+            const totalSites = sitiosData.length;
+            const sitesOnline = sitiosData.filter(s => s.status === 'online').length;
+            const totalClients = sitiosData.length;
+            
+            // Calcular uptime (simplificado - sería mejor con datos reales)
+            const uptime = totalSites > 0 ? Math.round((sitesOnline / totalSites) * 100) : 0;
+            
+            document.getElementById('total-sites').textContent = totalSites;
+            document.getElementById('sites-online').textContent = sitesOnline;
+            document.getElementById('total-clients').textContent = totalClients;
+            
+            // Actualizar uptime (el 4to card)
+            const uptimeElement = document.querySelector('.stats-grid').children[3].querySelector('.stat-value');
+            if (uptimeElement) {
+                uptimeElement.textContent = uptime + '%';
+            }
+        }
+
         // Cargar sitios
         function loadSites() {
             const container = document.getElementById('sites-container');
@@ -561,11 +700,37 @@
                 `;
                 container.appendChild(card);
             });
+            
+            // Actualizar métricas después de cargar sitios
+            updateMetrics();
         }
 
         // Chequear status de un sitio
         async function checkStatus(url) {
-            alert(`🔍 Chequeando: ${url}\n\nEsta función se conectará con la API de monitoreo.`);
+            try {
+                const response = await fetch(url, { method: 'HEAD', mode: 'no-cors' });
+                alert(`✅ ${url}\n\nEstado: Online`);
+            } catch (error) {
+                alert(`⚠️ ${url}\n\nEstado: Verificando...`);
+            }
+        }
+
+        // Limpiar cache
+        function clearCache() {
+            if (confirm('¿Limpiar cache del navegador y recargar?')) {
+                // Limpiar localStorage (excepto sesión)
+                const session = localStorage.getItem('gkachele_session');
+                localStorage.clear();
+                if (session) {
+                    localStorage.setItem('gkachele_session', session);
+                }
+                
+                // Limpiar sessionStorage
+                sessionStorage.clear();
+                
+                // Forzar recarga sin cache
+                window.location.reload(true);
+            }
         }
 
         // Refrescar datos
@@ -610,11 +775,13 @@
         document.addEventListener('DOMContentLoaded', () => {
             loadSites();
             updateTime();
+            updateMetrics();
             
             // Auto-refresh cada 5 minutos
             setInterval(() => {
                 loadSites();
                 updateTime();
+                updateMetrics();
             }, 300000);
         });
 

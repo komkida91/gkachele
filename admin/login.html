@@ -2,7 +2,9 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
     <title>🔐 Login - GKACHELE Dashboard</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -151,13 +153,58 @@
             cursor: pointer;
         }
 
-        @media (max-width: 768px) {
+        /* Responsive - Mobile First */
+        
+        /* Móvil pequeño (hasta 480px) */
+        @media screen and (max-width: 480px) {
+            .login-container {
+                padding: 1.5rem 1rem;
+                width: 95%;
+            }
+
+            .logo-text {
+                font-size: 1.3rem;
+            }
+
+            .logo-icon {
+                font-size: 3rem;
+            }
+
+            .btn-login {
+                padding: 0.9rem;
+                font-size: 1rem;
+            }
+
+            input {
+                padding: 0.9rem;
+            }
+        }
+
+        /* Móvil y Tablet (481px a 768px) */
+        @media screen and (min-width: 481px) and (max-width: 768px) {
             .login-container {
                 padding: 2rem 1.5rem;
             }
 
             .logo-text {
                 font-size: 1.5rem;
+            }
+        }
+
+        /* Orientación Landscape en móvil */
+        @media screen and (max-width: 768px) and (orientation: landscape) {
+            .login-container {
+                padding: 1.5rem 2rem;
+                max-height: 90vh;
+                overflow-y: auto;
+            }
+
+            .logo-icon {
+                font-size: 2.5rem;
+            }
+
+            .logo-text {
+                font-size: 1.3rem;
             }
         }
 
@@ -223,7 +270,7 @@
         </form>
 
         <div class="footer">
-            <strong>GKACHELE™</strong> | Misiones, Argentina 🇦🇷
+            <strong>GKACHELE™</strong>
         </div>
     </div>
 
