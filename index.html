@@ -171,12 +171,12 @@
 
   <!-- Formulario de Pedido de Plan -->
   <div id="planFormModal" class="modal-form" style="display: none;">
-    <div class="modal-form-content">
+    <div class="modal-form-content" onclick="event.stopPropagation()">
       <div class="modal-form-header">
         <h2>Solicitar Plan <span id="selectedPlanName"></span></h2>
         <button class="modal-close" onclick="closeForm()">&times;</button>
       </div>
-      <form id="planRequestForm" onsubmit="handleFormSubmit(event)">
+      <form id="planRequestForm" onsubmit="handleFormSubmit(event)" onclick="event.stopPropagation()">
         <input type="hidden" id="selectedPlan" name="plan" required>
         
         <div class="form-group">
@@ -896,13 +896,13 @@
       }
     }
 
-    // Cerrar modal al hacer click fuera
-    window.onclick = function(event) {
-      const modal = document.getElementById('planFormModal');
-      if (event.target == modal) {
+    // Cerrar modal solo si se hace clic en el fondo (no en el contenido)
+    document.getElementById('planFormModal').addEventListener('click', function(event) {
+      // Solo cerrar si se hace clic directamente en el modal (no en su contenido)
+      if (event.target === this) {
         closeForm();
       }
-    }
+    });
 
     // Scroll to Top Button
     const scrollToTopBtn = document.getElementById('scrollToTop');
