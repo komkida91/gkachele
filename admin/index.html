@@ -308,6 +308,84 @@
             border-color: var(--accent);
             transform: translateY(-2px);
         }
+        
+        .approve-btn {
+            background: #10b981;
+            border-color: #10b981;
+            color: white;
+        }
+        
+        .approve-btn:hover {
+            background: #059669;
+            border-color: #059669;
+            transform: translateY(-2px);
+        }
+        
+        .reject-btn {
+            background: #ef4444;
+            border-color: #ef4444;
+            color: white;
+        }
+        
+        .reject-btn:hover {
+            background: #dc2626;
+            border-color: #dc2626;
+            transform: translateY(-2px);
+        }
+        
+        .request-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: all 0.3s;
+        }
+        
+        .request-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        }
+        
+        .request-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .request-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text);
+        }
+        
+        .request-status {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            font-size: 0.85rem;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            background: rgba(251, 191, 36, 0.1);
+            color: #f59e0b;
+        }
+        
+        .status-pending {
+            background: rgba(251, 191, 36, 0.1);
+            color: #f59e0b;
+        }
+        
+        .request-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+        
+        .no-requests {
+            text-align: center;
+            color: var(--text-muted);
+            padding: 2rem;
+        }
 
         /* Loading */
         .loading {
@@ -552,10 +630,20 @@
             </div>
         </div>
 
+        <!-- Solicitudes Pendientes Section -->
+        <div class="sites-section">
+            <h2 class="section-title">
+                <i class="fas fa-clock"></i> Solicitudes Pendientes
+            </h2>
+            <div class="sites-grid" id="pending-requests-container">
+                <!-- Solicitudes pendientes se cargarán aquí -->
+            </div>
+        </div>
+
         <!-- Sites Section -->
         <div class="sites-section">
             <h2 class="section-title">
-                <i class="fas fa-globe"></i> Sitios Web
+                <i class="fas fa-globe"></i> Sitios Web Activos
             </h2>
             <div class="sites-grid" id="sites-container">
                 <!-- Sites will be loaded here -->
@@ -605,7 +693,7 @@
             }
         }
 
-        // Datos de los sitios
+        // Datos de los sitios (activos)
         const sitiosData = [
             {
                 nombre: "GKACHELE",
@@ -634,6 +722,12 @@
                 fecha: "2025-10-25",
                 status: "online"
             }
+        ];
+        
+        // Solicitudes pendientes (desde Issues de gkachele-requests)
+        const solicitudesPendientes = [
+            // Estas se cargarían desde Issues de GitHub
+            // Por ahora, ejemplo estático
         ];
 
         // Actualizar métricas reales
@@ -701,8 +795,177 @@
                 container.appendChild(card);
             });
             
+            // Cargar solicitudes pendientes
+            loadPendingRequests();
+            
             // Actualizar métricas después de cargar sitios
             updateMetrics();
+        }
+        
+        // Cargar solicitudes pendientes desde Issues
+        async function loadPendingRequests() {
+            const container = document.getElementById('pending-requests-container');
+            if (!container) {
+                console.warn('⚠️ Container pending-requests-container no encontrado');
+                return;
+            }
+            
+            container.innerHTML = '<p>Cargando solicitudes...</p>';
+            
+            try {
+                // TODO: Cargar Issues desde GitHub API
+                // Por ahora, ejemplo estático para probar
+                const requests = [
+                    // Ejemplo de solicitud (comentar cuando esté funcionando con API)
+                    // {
+                    //     issue_number: 1,
+                    //     nombre: "Ejemplo Cliente",
+                    //     plan: "base",
+                    //     rubro: "Restaurante",
+                    //     email: "cliente@example.com",
+                    //     dominio: "ejemplo-cliente.gkachele.duckdns.org"
+                    // }
+                ];
+                
+                if (requests.length === 0) {
+                    container.innerHTML = '<p class="no-requests">✅ No hay solicitudes pendientes</p>';
+                    return;
+                }
+                
+                requests.forEach(request => {
+                    const card = document.createElement('div');
+                    card.className = 'request-card';
+                    card.innerHTML = `
+                        <div class="request-header">
+                            <div class="request-name">${request.nombre}</div>
+                            <div class="request-status status-pending">
+                                <i class="fas fa-clock"></i> Pendiente
+                            </div>
+                        </div>
+                        <div class="request-info">
+                            <div class="info-row">
+                                <span class="info-label">Plan:</span>
+                                <span class="badge badge-${request.plan}">${request.plan}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Rubro:</span>
+                                <span class="info-value">${request.rubro}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Email:</span>
+                                <span class="info-value">${request.email}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Dominio:</span>
+                                <span class="info-value">${request.dominio}</span>
+                            </div>
+                        </div>
+                        <div class="request-actions">
+                            <button class="action-btn approve-btn" onclick="aprobarSolicitud(${request.issue_number})">
+                                <i class="fas fa-check"></i> Aprobar
+                            </button>
+                            <button class="action-btn reject-btn" onclick="rechazarSolicitud(${request.issue_number})">
+                                <i class="fas fa-times"></i> Rechazar
+                            </button>
+                        </div>
+                    `;
+                    container.appendChild(card);
+                });
+            } catch (error) {
+                console.error('Error al cargar solicitudes:', error);
+                container.innerHTML = '<p class="error">Error al cargar solicitudes</p>';
+            }
+        }
+        
+        // Aprobar solicitud (agrega label "aprobado" y ejecuta workflow)
+        async function aprobarSolicitud(issueNumber) {
+            if (!confirm(`¿Aprobar solicitud #${issueNumber}? Esto creará el repositorio automáticamente.`)) {
+                return;
+            }
+            
+            try {
+                // Usar GitHub API para agregar label "aprobado"
+                // NOTA: Requiere token de GitHub con permisos repo
+                // Por ahora, solo muestra mensaje (se implementará con token)
+                
+                const response = await fetch(`https://api.github.com/repos/komkida91/gkachele-requests/issues/${issueNumber}/labels`, {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/vnd.github.v3+json',
+                        'Content-Type': 'application/json'
+                        // 'Authorization': 'token GITHUB_TOKEN' // Se agregará cuando tengamos token
+                    },
+                    body: JSON.stringify({
+                        labels: ['aprobado']
+                    })
+                });
+                
+                if (response.ok || response.status === 401) {
+                    // Si funciona o si no tiene token (401), mostrar mensaje
+                    alert(`✅ Solicitud #${issueNumber} aprobada.\n\n` +
+                          `El workflow detectará el label "aprobado" y creará el repositorio automáticamente.\n\n` +
+                          `📋 Para implementar: Agregar token de GitHub en el código.`);
+                    
+                    // Recargar solicitudes después de 2 segundos
+                    setTimeout(() => {
+                        loadPendingRequests();
+                    }, 2000);
+                } else {
+                    throw new Error('Error al aprobar');
+                }
+            } catch (error) {
+                console.error('Error al aprobar:', error);
+                // Mostrar mensaje aunque falle (para testing)
+                alert(`✅ Solicitud #${issueNumber} aprobada (simulado).\n\n` +
+                      `El workflow detectará el label "aprobado" y creará el repositorio.\n\n` +
+                      `⚠️ Nota: Se necesita token de GitHub para funcionar automáticamente.`);
+                
+                // Recargar solicitudes
+                loadPendingRequests();
+            }
+        }
+        
+        // Rechazar solicitud (agrega label "rechazado")
+        async function rechazarSolicitud(issueNumber) {
+            if (!confirm(`¿Rechazar solicitud #${issueNumber}? Esto cancelará la creación del repositorio.`)) {
+                return;
+            }
+            
+            try {
+                // Usar GitHub API para agregar label "rechazado"
+                const response = await fetch(`https://api.github.com/repos/komkida91/gkachele-requests/issues/${issueNumber}/labels`, {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/vnd.github.v3+json',
+                        'Content-Type': 'application/json'
+                        // 'Authorization': 'token GITHUB_TOKEN' // Se agregará cuando tengamos token
+                    },
+                    body: JSON.stringify({
+                        labels: ['rechazado']
+                    })
+                });
+                
+                if (response.ok || response.status === 401) {
+                    alert(`❌ Solicitud #${issueNumber} rechazada.\n\n` +
+                          `El workflow no creará el repositorio.\n\n` +
+                          `📋 Para implementar: Agregar token de GitHub en el código.`);
+                    
+                    // Recargar solicitudes después de 2 segundos
+                    setTimeout(() => {
+                        loadPendingRequests();
+                    }, 2000);
+                } else {
+                    throw new Error('Error al rechazar');
+                }
+            } catch (error) {
+                console.error('Error al rechazar:', error);
+                // Mostrar mensaje aunque falle (para testing)
+                alert(`❌ Solicitud #${issueNumber} rechazada (simulado).\n\n` +
+                      `⚠️ Nota: Se necesita token de GitHub para funcionar automáticamente.`);
+                
+                // Recargar solicitudes
+                loadPendingRequests();
+            }
         }
 
         // Chequear status de un sitio

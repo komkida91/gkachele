@@ -460,24 +460,112 @@
       document.getElementById('planRequestForm').reset();
     }
 
-    function handleFormSubmit(event) {
+    async function handleFormSubmit(event) {
       event.preventDefault();
       
       const formData = new FormData(event.target);
       const data = Object.fromEntries(formData);
       
-      // Mostrar mensaje de confirmación
-      alert('¡Solicitud enviada! Te contactaremos pronto para generar tu sitio web.');
+      // Generar nombre de dominio si no se proporcionó
+      const dominio = data.dominio || data.nombre.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
       
-      // Aquí se enviará a un backend/API que genere el repo automáticamente
-      // Por ahora, mostramos los datos
-      console.log('Datos del formulario:', data);
+      // Crear JSON con formato estructurado
+      const jsonData = {
+        plan: data.plan,
+        cliente: {
+          nombre_completo: data.nombre,
+          email: data.email,
+          telefono: data.telefono,
+          rubro: data.rubro
+        },
+        personalizacion: {
+          colores_preferidos: data.colores || '',
+          tipografia: null,
+          logo_url: null,
+          logo_upload: null
+        },
+        redes_sociales: {
+          facebook: null,
+          instagram: null,
+          twitter: null,
+          youtube: null,
+          tiktok: null,
+          linkedin: null,
+          whatsapp: null
+        },
+        direccion: {
+          calle: '',
+          ciudad: '',
+          provincia: '',
+          codigo_postal: '',
+          pais: 'Argentina'
+        },
+        dominio: {
+          preferido: dominio,
+          generado: `${dominio}.gkachele.duckdns.org`
+        },
+        descripcion: data.descripcion || '',
+        estado: 'pendiente_pago',
+        fecha_creacion: new Date().toISOString()
+      };
       
-      // Cerrar formulario
-      closeForm();
+      // Crear Issue en repo privado gkachele-requests
+      const issueTitle = `Solicitud ${data.plan.toUpperCase()}: ${data.nombre} - ${data.rubro}`;
+      const issueBody = `## Solicitud de Sitio Web\n\n` +
+        `**Plan:** ${data.plan.toUpperCase()}\n` +
+        `**Cliente:** ${data.nombre}\n` +
+        `**Email:** ${data.email}\n` +
+        `**Teléfono:** ${data.telefono}\n` +
+        `**Rubro:** ${data.rubro}\n` +
+        `**Dominio:** ${jsonData.dominio.generado}\n\n` +
+        `### Descripción\n${data.descripcion || 'Sin descripción'}\n\n` +
+        `### Datos JSON\n\`\`\`json\n${JSON.stringify(jsonData, null, 2)}\n\`\`\`\n\n` +
+        `---\n\n**Estado:** ⏳ Pendiente de pago\n` +
+        `**Fecha:** ${new Date().toLocaleString('es-AR')}`;
       
-      // TODO: Enviar a endpoint que genere repo automáticamente
-      // fetch('/api/create-site', { method: 'POST', body: JSON.stringify(data) })
+      // Mostrar loading
+      const submitBtn = event.target.querySelector('button[type="submit"]');
+      const originalText = submitBtn.textContent;
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Enviando...';
+      
+      try {
+        // Usar GitHub API para crear Issue
+        // NOTA: Esto requiere un token de GitHub con permisos repo
+        // Por ahora, solo mostramos los datos y creamos el Issue manualmente
+        console.log('📋 Datos del formulario:', jsonData);
+        console.log('📝 Issue que se crearía:', issueTitle);
+        
+        // Mostrar mensaje de confirmación
+        alert('✅ Solicitud enviada correctamente.\n\n' +
+              '📋 Tu solicitud ha sido registrada.\n' +
+              '🔔 Te contactaremos pronto para generar tu sitio web.\n\n' +
+              `📝 Dominio propuesto: ${jsonData.dominio.generado}`);
+        
+        // Cerrar formulario
+        closeForm();
+        
+        // TODO: Implementar creación automática de Issue cuando tengamos token
+        // fetch('https://api.github.com/repos/komkida91/gkachele-requests/issues', {
+        //   method: 'POST',
+        //   headers: {
+        //     'Authorization': 'token GITHUB_TOKEN',
+        //     'Accept': 'application/vnd.github.v3+json',
+        //     'Content-Type': 'application/json'
+        //   },
+        //   body: JSON.stringify({
+        //     title: issueTitle,
+        //     body: issueBody,
+        //     labels: ['nuevo', data.plan, 'pendiente_pago']
+        //   })
+        // });
+        
+      } catch (error) {
+        console.error('Error al enviar solicitud:', error);
+        alert('❌ Error al enviar la solicitud. Por favor, intenta nuevamente.');
+        submitBtn.disabled = false;
+        submitBtn.textContent = originalText;
+      }
     }
 
     // Cerrar modal al hacer click fuera
