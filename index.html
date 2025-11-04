@@ -880,14 +880,21 @@
         solicitudes.push(nuevaSolicitud);
         localStorage.setItem('solicitudes_pendientes', JSON.stringify(solicitudes));
         
-        // Mostrar mensaje de confirmación
-        alert('✅ Solicitud enviada correctamente.\n\n' +
+        // Mostrar mensaje de confirmación con opción de cancelar
+        const confirmacion = confirm('✅ Solicitud enviada correctamente.\n\n' +
               '📋 Tu solicitud ha sido registrada.\n' +
               '🔔 Revisaremos tu solicitud y te contactaremos pronto.\n\n' +
-              `📝 Dominio propuesto: ${jsonData.dominio.generado}`);
+              `📝 Dominio propuesto: ${jsonData.dominio.generado}\n\n` +
+              '¿Deseas cerrar el formulario?');
         
-        // Cerrar formulario
-        closeForm();
+        // Cerrar formulario solo si el usuario acepta
+        if (confirmacion) {
+          closeForm();
+        } else {
+          // Si cancela, permitir revisar los datos
+          submitBtn.disabled = false;
+          submitBtn.textContent = originalText;
+        }
         
         // TODO: En producción, esto debería:
         // 1. Enviar a un endpoint seguro del servidor
