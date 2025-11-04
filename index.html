@@ -687,6 +687,9 @@
       selectedPlanName.textContent = planNames[planType];
       modal.style.display = 'flex';
       document.body.style.overflow = 'hidden';
+      
+      // Desactivar temporalmente el cierre por clic fuera
+      modal.dataset.preventClose = 'true';
     }
 
     function closeForm() {
@@ -697,6 +700,8 @@
       // Ocultar campos de rubro al cerrar
       document.getElementById('campos-rubro-especificos').style.display = 'none';
       document.querySelectorAll('.campos-rubro').forEach(el => el.style.display = 'none');
+      // Reactivar el cierre por clic fuera
+      delete modal.dataset.preventClose;
     }
 
     // Función para actualizar campos según rubro seleccionado
@@ -898,21 +903,22 @@
     }
 
     // Cerrar modal solo si se hace clic en el fondo (no en el contenido)
-    // Usar mousedown en lugar de click para evitar problemas con formularios
+    // Y solo si no está desactivado el cierre
     const modal = document.getElementById('planFormModal');
     const modalContent = modal.querySelector('.modal-form-content');
     
-    modal.addEventListener('mousedown', function(event) {
-      // Solo cerrar si se hace clic directamente en el fondo del modal (no en el contenido)
-      if (event.target === modal) {
-        event.preventDefault();
-        closeForm();
-      }
+    // Prevenir que los clics dentro del contenido cierren el modal
+    modalContent.addEventListener('click', function(event) {
+      event.stopPropagation();
     });
     
-    // Prevenir que los clics dentro del contenido cierren el modal
-    modalContent.addEventListener('mousedown', function(event) {
-      event.stopPropagation();
+    modal.addEventListener('click', function(event) {
+      // Solo cerrar si:
+      // 1. Se hace clic directamente en el fondo del modal (no en el contenido)
+      // 2. No está desactivado el cierre automático
+      if (event.target === modal && !modal.dataset.preventClose) {
+        closeForm();
+      }
     });
 
     // Scroll to Top Button
