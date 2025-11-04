@@ -171,12 +171,12 @@
 
   <!-- Formulario de Pedido de Plan -->
   <div id="planFormModal" class="modal-form" style="display: none;">
-    <div class="modal-form-content" onclick="event.stopPropagation()">
+    <div class="modal-form-content">
       <div class="modal-form-header">
         <h2>Solicitar Plan <span id="selectedPlanName"></span></h2>
-        <button class="modal-close" onclick="closeForm()">&times;</button>
+        <button type="button" class="modal-close" onclick="closeForm()">&times;</button>
       </div>
-      <form id="planRequestForm" onsubmit="handleFormSubmit(event)" onclick="event.stopPropagation()">
+      <form id="planRequestForm" onsubmit="handleFormSubmit(event)">
         <input type="hidden" id="selectedPlan" name="plan" required>
         
         <div class="form-group">
@@ -897,11 +897,21 @@
     }
 
     // Cerrar modal solo si se hace clic en el fondo (no en el contenido)
-    document.getElementById('planFormModal').addEventListener('click', function(event) {
-      // Solo cerrar si se hace clic directamente en el modal (no en su contenido)
-      if (event.target === this) {
+    // Usar mousedown en lugar de click para evitar problemas con formularios
+    const modal = document.getElementById('planFormModal');
+    const modalContent = modal.querySelector('.modal-form-content');
+    
+    modal.addEventListener('mousedown', function(event) {
+      // Solo cerrar si se hace clic directamente en el fondo del modal (no en el contenido)
+      if (event.target === modal) {
+        event.preventDefault();
         closeForm();
       }
+    });
+    
+    // Prevenir que los clics dentro del contenido cierren el modal
+    modalContent.addEventListener('mousedown', function(event) {
+      event.stopPropagation();
     });
 
     // Scroll to Top Button
