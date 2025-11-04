@@ -185,6 +185,20 @@
         </div>
 
         <div class="form-group">
+          <label for="rubro">Rubro/Negocio *</label>
+          <select id="rubro" name="rubro" required onchange="actualizarCamposRubro()">
+            <option value="">Seleccionar rubro...</option>
+            <option value="restaurante">Restaurante</option>
+            <option value="danza">Danza</option>
+            <option value="cosmeticos">Cosméticos</option>
+            <option value="politica">Política</option>
+            <option value="fitness">Fitness</option>
+            <option value="educacion">Educación</option>
+            <option value="base">Base (Otro)</option>
+          </select>
+        </div>
+
+        <div class="form-group">
           <label for="email">Email *</label>
           <input type="email" id="email" name="email" required placeholder="tu@email.com">
         </div>
@@ -192,20 +206,6 @@
         <div class="form-group">
           <label for="telefono">Teléfono *</label>
           <input type="tel" id="telefono" name="telefono" required placeholder="+54 9 11 2345 6789">
-        </div>
-
-        <div class="form-group">
-          <label for="rubro">Rubro/Negocio *</label>
-          <select id="rubro" name="rubro" required onchange="actualizarCamposRubro()">
-            <option value="">Seleccionar rubro...</option>
-            <option value="restaurante">🍽️ Restaurante</option>
-            <option value="danza">💃 Danza</option>
-            <option value="cosmeticos">💄 Cosméticos</option>
-            <option value="politica">🗳️ Política</option>
-            <option value="fitness">💪 Fitness</option>
-            <option value="educacion">📚 Educación</option>
-            <option value="base">💼 Base (Otro)</option>
-          </select>
         </div>
 
         <!-- Campos específicos por rubro (se muestran dinámicamente) -->
@@ -357,7 +357,7 @@
         <div class="form-group">
           <label for="colores">Colores Preferidos</label>
           <input type="text" id="colores" name="colores" placeholder="Ej: Azul y blanco, Naranja y negro">
-          <small>Ej: #1e40af y #ffffff, o Naranja y negro</small>
+          <small>Ejemplos: Azul y blanco, o Naranja y negro</small>
         </div>
 
         <div class="form-group">
@@ -729,12 +729,12 @@
       
       // Prellenar colores y tipografía sugeridos según rubro
       const rubrosData = {
-        restaurante: { colores: '#d32f2f y #f57c00', tipografia: 'Roboto' },
-        danza: { colores: '#e91e63 y #c2185b', tipografia: 'Poppins' },
-        cosmeticos: { colores: '#9c27b0 y #673ab7', tipografia: 'Montserrat' },
-        politica: { colores: '#1e40af y #1e3a8a', tipografia: 'Georgia' },
-        fitness: { colores: '#f44336 y #d32f2f', tipografia: 'Roboto' },
-        educacion: { colores: '#1976d2 y #1565c0', tipografia: 'Open Sans' }
+        restaurante: { colores: 'Rojo y naranja', tipografia: 'Roboto' },
+        danza: { colores: 'Rosa y magenta', tipografia: 'Poppins' },
+        cosmeticos: { colores: 'Morado y violeta', tipografia: 'Montserrat' },
+        politica: { colores: 'Azul y azul oscuro', tipografia: 'Georgia' },
+        fitness: { colores: 'Rojo y rojo oscuro', tipografia: 'Roboto' },
+        educacion: { colores: 'Azul y azul claro', tipografia: 'Open Sans' }
       };
       
       if (rubrosData[rubro]) {
@@ -902,23 +902,20 @@
       }
     }
 
-    // Cerrar modal solo si se hace clic en el fondo (no en el contenido)
-    // Y solo si no está desactivado el cierre
+    // DESACTIVAR COMPLETAMENTE el cierre por clic fuera del modal
+    // Solo se puede cerrar con los botones explícitos (X, Cancelar, o después de enviar)
     const modal = document.getElementById('planFormModal');
     const modalContent = modal.querySelector('.modal-form-content');
     
-    // Prevenir que los clics dentro del contenido cierren el modal
+    // Prevenir TODOS los clics dentro del contenido
     modalContent.addEventListener('click', function(event) {
       event.stopPropagation();
     });
     
+    // Prevenir TODOS los clics en el fondo del modal también
     modal.addEventListener('click', function(event) {
-      // Solo cerrar si:
-      // 1. Se hace clic directamente en el fondo del modal (no en el contenido)
-      // 2. No está desactivado el cierre automático
-      if (event.target === modal && !modal.dataset.preventClose) {
-        closeForm();
-      }
+      // NO cerrar automáticamente - solo con botones explícitos
+      event.stopPropagation();
     });
 
     // Scroll to Top Button
