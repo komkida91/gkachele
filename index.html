@@ -196,18 +196,254 @@
 
         <div class="form-group">
           <label for="rubro">Rubro/Negocio *</label>
-          <input type="text" id="rubro" name="rubro" required placeholder="Ej: Restaurante, Danza, Cosmética">
+          <select id="rubro" name="rubro" required onchange="actualizarCamposRubro()">
+            <option value="">Seleccionar rubro...</option>
+            <option value="restaurante">🍽️ Restaurante</option>
+            <option value="danza">💃 Danza</option>
+            <option value="cosmeticos">💄 Cosméticos</option>
+            <option value="politica">🗳️ Política</option>
+            <option value="fitness">💪 Fitness</option>
+            <option value="educacion">📚 Educación</option>
+            <option value="base">💼 Base (Otro)</option>
+          </select>
+        </div>
+
+        <!-- Campos específicos por rubro (se muestran dinámicamente) -->
+        <div id="campos-rubro-especificos" style="display: none;">
+          <hr style="margin: 20px 0; border: 1px solid #e0e0e0;">
+          <h3 style="margin-bottom: 15px; color: #2c3e50;" id="titulo-campos-rubro">Información Específica del Rubro</h3>
+          
+          <!-- Campos para Restaurante -->
+          <div id="campos-restaurante" class="campos-rubro" style="display: none;">
+            <div class="form-group">
+              <label for="menu_url">URL del Menú (opcional)</label>
+              <input type="url" id="menu_url" name="menu_url" placeholder="https://ejemplo.com/menu.pdf">
+            </div>
+            <div class="form-group">
+              <label for="horarios">Horarios de Atención</label>
+              <input type="text" id="horarios" name="horarios" placeholder="Ej: Lunes a Viernes 12:00-15:00 y 19:00-23:00">
+            </div>
+            <div class="form-group">
+              <label for="reservas">Sistema de Reservas</label>
+              <input type="text" id="reservas" name="reservas" placeholder="Ej: WhatsApp, teléfono, online">
+            </div>
+            <div class="form-group">
+              <label for="capacidad">Capacidad (opcional)</label>
+              <input type="text" id="capacidad" name="capacidad" placeholder="Ej: 50 personas">
+            </div>
+            <div class="form-group">
+              <label for="especialidad_culinaria">Especialidad Culinaria</label>
+              <input type="text" id="especialidad_culinaria" name="especialidad_culinaria" placeholder="Ej: Cocina italiana, Parrilla, Sushi">
+            </div>
+          </div>
+
+          <!-- Campos para Danza -->
+          <div id="campos-danza" class="campos-rubro" style="display: none;">
+            <div class="form-group">
+              <label for="clases">Tipos de Clases</label>
+              <input type="text" id="clases" name="clases" placeholder="Ej: Ballet, Salsa, Hip Hop, Contemporáneo">
+            </div>
+            <div class="form-group">
+              <label for="horarios_clases">Horarios de Clases</label>
+              <input type="text" id="horarios_clases" name="horarios_clases" placeholder="Ej: Lunes y Miércoles 18:00-20:00">
+            </div>
+            <div class="form-group">
+              <label for="niveles">Niveles</label>
+              <input type="text" id="niveles" name="niveles" placeholder="Ej: Principiante, Intermedio, Avanzado">
+            </div>
+            <div class="form-group">
+              <label for="estilos">Estilos de Danza</label>
+              <input type="text" id="estilos" name="estilos" placeholder="Ej: Clásico, Moderno, Urbano">
+            </div>
+            <div class="form-group">
+              <label for="profesores">Profesores (opcional)</label>
+              <input type="text" id="profesores" name="profesores" placeholder="Ej: María García, Juan Pérez">
+            </div>
+          </div>
+
+          <!-- Campos para Cosméticos -->
+          <div id="campos-cosmeticos" class="campos-rubro" style="display: none;">
+            <div class="form-group">
+              <label for="productos_url">URL del Catálogo (opcional)</label>
+              <input type="url" id="productos_url" name="productos_url" placeholder="https://ejemplo.com/catalogo">
+            </div>
+            <div class="form-group">
+              <label for="catalogo">Tipo de Catálogo</label>
+              <input type="text" id="catalogo" name="catalogo" placeholder="Ej: Maquillaje, Cuidado facial, Perfumes">
+            </div>
+            <div class="form-group">
+              <label for="categorias">Categorías de Productos</label>
+              <input type="text" id="categorias" name="categorias" placeholder="Ej: Labiales, Bases, Sombras">
+            </div>
+            <div class="form-group">
+              <label for="ofertas">Ofertas Especiales (opcional)</label>
+              <input type="text" id="ofertas" name="ofertas" placeholder="Ej: 2x1 en labiales, 20% descuento">
+            </div>
+            <div class="form-group">
+              <label for="envios">Información de Envíos</label>
+              <input type="text" id="envios" name="envios" placeholder="Ej: Envío gratis desde $5000, Retiro en local">
+            </div>
+          </div>
+
+          <!-- Campos para Política -->
+          <div id="campos-politica" class="campos-rubro" style="display: none;">
+            <div class="form-group">
+              <label for="propuestas">Propuestas Principales</label>
+              <textarea id="propuestas" name="propuestas" rows="3" placeholder="Describe tus principales propuestas o plataforma política"></textarea>
+            </div>
+            <div class="form-group">
+              <label for="agenda">Agenda de Actividades (opcional)</label>
+              <input type="text" id="agenda" name="agenda" placeholder="Ej: Reuniones semanales, eventos públicos">
+            </div>
+            <div class="form-group">
+              <label for="eventos">Próximos Eventos (opcional)</label>
+              <input type="text" id="eventos" name="eventos" placeholder="Ej: Charla el 15/03, Acto el 20/03">
+            </div>
+            <div class="form-group">
+              <label for="noticias">Noticias/Comunicados (opcional)</label>
+              <input type="text" id="noticias" name="noticias" placeholder="URL o fuente de noticias">
+            </div>
+          </div>
+
+          <!-- Campos para Fitness -->
+          <div id="campos-fitness" class="campos-rubro" style="display: none;">
+            <div class="form-group">
+              <label for="planes_fitness">Planes de Entrenamiento</label>
+              <input type="text" id="planes_fitness" name="planes_fitness" placeholder="Ej: Básico, Premium, Personalizado">
+            </div>
+            <div class="form-group">
+              <label for="horarios_fitness">Horarios</label>
+              <input type="text" id="horarios_fitness" name="horarios_fitness" placeholder="Ej: Lunes a Sábado 6:00-22:00">
+            </div>
+            <div class="form-group">
+              <label for="entrenadores">Entrenadores (opcional)</label>
+              <input type="text" id="entrenadores" name="entrenadores" placeholder="Ej: Personal trainers certificados">
+            </div>
+            <div class="form-group">
+              <label for="instalaciones">Instalaciones (opcional)</label>
+              <input type="text" id="instalaciones" name="instalaciones" placeholder="Ej: Gimnasio completo, piscina, sauna">
+            </div>
+            <div class="form-group">
+              <label for="precios">Precios (opcional)</label>
+              <input type="text" id="precios" name="precios" placeholder="Ej: Desde $5000/mes">
+            </div>
+          </div>
+
+          <!-- Campos para Educación -->
+          <div id="campos-educacion" class="campos-rubro" style="display: none;">
+            <div class="form-group">
+              <label for="cursos">Cursos Ofrecidos</label>
+              <input type="text" id="cursos" name="cursos" placeholder="Ej: Inglés, Programación, Diseño">
+            </div>
+            <div class="form-group">
+              <label for="horarios_educacion">Horarios de Clases</label>
+              <input type="text" id="horarios_educacion" name="horarios_educacion" placeholder="Ej: Mañana, tarde, noche">
+            </div>
+            <div class="form-group">
+              <label for="niveles_educacion">Niveles</label>
+              <input type="text" id="niveles_educacion" name="niveles_educacion" placeholder="Ej: Inicial, Intermedio, Avanzado">
+            </div>
+            <div class="form-group">
+              <label for="profesores_educacion">Profesores (opcional)</label>
+              <input type="text" id="profesores_educacion" name="profesores_educacion" placeholder="Ej: Docentes certificados">
+            </div>
+            <div class="form-group">
+              <label for="inscripcion">Forma de Inscripción</label>
+              <input type="text" id="inscripcion" name="inscripcion" placeholder="Ej: Online, presencial, WhatsApp">
+            </div>
+          </div>
         </div>
 
         <div class="form-group">
           <label for="colores">Colores Preferidos</label>
           <input type="text" id="colores" name="colores" placeholder="Ej: Azul y blanco, Naranja y negro">
+          <small>Ej: #1e40af y #ffffff, o Naranja y negro</small>
+        </div>
+
+        <div class="form-group">
+          <label for="tipografia">Tipografía Preferida (opcional)</label>
+          <select id="tipografia" name="tipografia">
+            <option value="">Seleccionar tipografía...</option>
+            <option value="Georgia">Georgia (Serif clásica)</option>
+            <option value="Inter">Inter (Moderno)</option>
+            <option value="Roboto">Roboto (Limpio)</option>
+            <option value="Montserrat">Montserrat (Elegante)</option>
+            <option value="Open Sans">Open Sans (Legible)</option>
+            <option value="Poppins">Poppins (Dinámico)</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="logo_url">Logo URL (opcional)</label>
+          <input type="url" id="logo_url" name="logo_url" placeholder="https://ejemplo.com/logo.png">
+          <small>URL de tu logo existente, o déjalo vacío para usar texto</small>
         </div>
 
         <div class="form-group">
           <label for="descripcion">Descripción de lo que necesitas</label>
           <textarea id="descripcion" name="descripcion" rows="4" placeholder="Cuéntanos qué necesitas para tu sitio web..."></textarea>
         </div>
+
+        <hr style="margin: 20px 0; border: 1px solid #e0e0e0;">
+
+        <h3 style="margin-bottom: 15px; color: #2c3e50;">📱 Redes Sociales (opcional)</h3>
+
+        <div class="form-group">
+          <label for="facebook">Facebook</label>
+          <input type="url" id="facebook" name="facebook" placeholder="https://facebook.com/mi-negocio">
+        </div>
+
+        <div class="form-group">
+          <label for="instagram">Instagram</label>
+          <input type="url" id="instagram" name="instagram" placeholder="https://instagram.com/mi-negocio">
+        </div>
+
+        <div class="form-group">
+          <label for="twitter">Twitter/X</label>
+          <input type="url" id="twitter" name="twitter" placeholder="https://twitter.com/mi-negocio">
+        </div>
+
+        <div class="form-group">
+          <label for="whatsapp">WhatsApp</label>
+          <input type="text" id="whatsapp" name="whatsapp" placeholder="+54 9 11 2345-6789">
+          <small>Número de WhatsApp con código de país</small>
+        </div>
+
+        <div class="form-group">
+          <label for="youtube">YouTube</label>
+          <input type="url" id="youtube" name="youtube" placeholder="https://youtube.com/@mi-negocio">
+        </div>
+
+        <div class="form-group">
+          <label for="tiktok">TikTok</label>
+          <input type="url" id="tiktok" name="tiktok" placeholder="https://tiktok.com/@mi-negocio">
+        </div>
+
+        <hr style="margin: 20px 0; border: 1px solid #e0e0e0;">
+
+        <h3 style="margin-bottom: 15px; color: #2c3e50;">📍 Dirección (opcional)</h3>
+
+        <div class="form-group">
+          <label for="direccion_calle">Calle y Número</label>
+          <input type="text" id="direccion_calle" name="direccion_calle" placeholder="Av. Corrientes 1234">
+        </div>
+
+        <div class="form-group">
+          <label for="direccion_ciudad">Ciudad</label>
+          <input type="text" id="direccion_ciudad" name="direccion_ciudad" placeholder="Buenos Aires">
+        </div>
+
+        <div class="form-group">
+          <label for="direccion_provincia">Provincia</label>
+          <input type="text" id="direccion_provincia" name="direccion_provincia" placeholder="CABA">
+        </div>
+
+        <div class="form-group">
+          <label for="direccion_cp">Código Postal</label>
+          <input type="text" id="direccion_cp" name="direccion_cp" placeholder="C1234ABC">
+        </div>
+
+        <hr style="margin: 20px 0; border: 1px solid #e0e0e0;">
 
         <div class="form-group">
           <label for="dominio">Nombre de dominio preferido (opcional)</label>
@@ -458,6 +694,52 @@
       modal.style.display = 'none';
       document.body.style.overflow = 'auto';
       document.getElementById('planRequestForm').reset();
+      // Ocultar campos de rubro al cerrar
+      document.getElementById('campos-rubro-especificos').style.display = 'none';
+      document.querySelectorAll('.campos-rubro').forEach(el => el.style.display = 'none');
+    }
+
+    // Función para actualizar campos según rubro seleccionado
+    function actualizarCamposRubro() {
+      const rubro = document.getElementById('rubro').value;
+      const contenedor = document.getElementById('campos-rubro-especificos');
+      const titulo = document.getElementById('titulo-campos-rubro');
+      
+      // Ocultar todos los campos de rubro
+      document.querySelectorAll('.campos-rubro').forEach(el => el.style.display = 'none');
+      
+      if (!rubro || rubro === 'base') {
+        contenedor.style.display = 'none';
+        return;
+      }
+      
+      // Mostrar contenedor y campos específicos
+      contenedor.style.display = 'block';
+      const camposRubro = document.getElementById(`campos-${rubro}`);
+      
+      if (camposRubro) {
+        camposRubro.style.display = 'block';
+        titulo.textContent = `Información Específica - ${document.getElementById('rubro').selectedOptions[0].text}`;
+      }
+      
+      // Prellenar colores y tipografía sugeridos según rubro
+      const rubrosData = {
+        restaurante: { colores: '#d32f2f y #f57c00', tipografia: 'Roboto' },
+        danza: { colores: '#e91e63 y #c2185b', tipografia: 'Poppins' },
+        cosmeticos: { colores: '#9c27b0 y #673ab7', tipografia: 'Montserrat' },
+        politica: { colores: '#1e40af y #1e3a8a', tipografia: 'Georgia' },
+        fitness: { colores: '#f44336 y #d32f2f', tipografia: 'Roboto' },
+        educacion: { colores: '#1976d2 y #1565c0', tipografia: 'Open Sans' }
+      };
+      
+      if (rubrosData[rubro]) {
+        if (!document.getElementById('colores').value) {
+          document.getElementById('colores').value = rubrosData[rubro].colores;
+        }
+        if (!document.getElementById('tipografia').value) {
+          document.getElementById('tipografia').value = rubrosData[rubro].tipografia;
+        }
+      }
     }
 
     async function handleFormSubmit(event) {
@@ -468,6 +750,48 @@
       
       // Generar nombre de dominio si no se proporcionó
       const dominio = data.dominio || data.nombre.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+      
+      // Recopilar campos específicos del rubro
+      const camposRubro = {};
+      const rubro = data.rubro;
+      
+      // Campos específicos por rubro
+      if (rubro === 'restaurante') {
+        if (data.menu_url) camposRubro.menu_url = data.menu_url;
+        if (data.horarios) camposRubro.horarios = data.horarios;
+        if (data.reservas) camposRubro.reservas = data.reservas;
+        if (data.capacidad) camposRubro.capacidad = data.capacidad;
+        if (data.especialidad_culinaria) camposRubro.especialidad_culinaria = data.especialidad_culinaria;
+      } else if (rubro === 'danza') {
+        if (data.clases) camposRubro.clases = data.clases;
+        if (data.horarios_clases) camposRubro.horarios_clases = data.horarios_clases;
+        if (data.niveles) camposRubro.niveles = data.niveles;
+        if (data.estilos) camposRubro.estilos = data.estilos;
+        if (data.profesores) camposRubro.profesores = data.profesores;
+      } else if (rubro === 'cosmeticos') {
+        if (data.productos_url) camposRubro.productos_url = data.productos_url;
+        if (data.catalogo) camposRubro.catalogo = data.catalogo;
+        if (data.categorias) camposRubro.categorias = data.categorias;
+        if (data.ofertas) camposRubro.ofertas = data.ofertas;
+        if (data.envios) camposRubro.envios = data.envios;
+      } else if (rubro === 'politica') {
+        if (data.propuestas) camposRubro.propuestas = data.propuestas;
+        if (data.agenda) camposRubro.agenda = data.agenda;
+        if (data.eventos) camposRubro.eventos = data.eventos;
+        if (data.noticias) camposRubro.noticias = data.noticias;
+      } else if (rubro === 'fitness') {
+        if (data.planes_fitness) camposRubro.planes = data.planes_fitness;
+        if (data.horarios_fitness) camposRubro.horarios = data.horarios_fitness;
+        if (data.entrenadores) camposRubro.entrenadores = data.entrenadores;
+        if (data.instalaciones) camposRubro.instalaciones = data.instalaciones;
+        if (data.precios) camposRubro.precios = data.precios;
+      } else if (rubro === 'educacion') {
+        if (data.cursos) camposRubro.cursos = data.cursos;
+        if (data.horarios_educacion) camposRubro.horarios = data.horarios_educacion;
+        if (data.niveles_educacion) camposRubro.niveles = data.niveles_educacion;
+        if (data.profesores_educacion) camposRubro.profesores = data.profesores_educacion;
+        if (data.inscripcion) camposRubro.inscripcion = data.inscripcion;
+      }
       
       // Crear JSON con formato estructurado
       const jsonData = {
@@ -480,26 +804,27 @@
         },
         personalizacion: {
           colores_preferidos: data.colores || '',
-          tipografia: null,
-          logo_url: null,
+          tipografia: data.tipografia || null,
+          logo_url: data.logo_url || null,
           logo_upload: null
         },
         redes_sociales: {
-          facebook: null,
-          instagram: null,
-          twitter: null,
-          youtube: null,
-          tiktok: null,
+          facebook: data.facebook || null,
+          instagram: data.instagram || null,
+          twitter: data.twitter || null,
+          youtube: data.youtube || null,
+          tiktok: data.tiktok || null,
           linkedin: null,
-          whatsapp: null
+          whatsapp: data.whatsapp || null
         },
         direccion: {
-          calle: '',
-          ciudad: '',
-          provincia: '',
-          codigo_postal: '',
+          calle: data.direccion_calle || '',
+          ciudad: data.direccion_ciudad || '',
+          provincia: data.direccion_provincia || '',
+          codigo_postal: data.direccion_cp || '',
           pais: 'Argentina'
         },
+        rubro_especifico: Object.keys(camposRubro).length > 0 ? camposRubro : null,
         dominio: {
           preferido: dominio,
           generado: `${dominio}.gkachele.duckdns.org`
