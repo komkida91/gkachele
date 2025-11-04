@@ -630,14 +630,14 @@
             </div>
         </div>
 
-        <!-- Token GitHub (para acceder a repo privado) -->
+        <!-- Token GitHub (para acceder a repo privado) - Solo se muestra si no hay token por defecto -->
         <div class="sites-section" id="token-section" style="display: none;">
             <h2 class="section-title">
-                <i class="fas fa-key"></i> Configuración
+                <i class="fas fa-key"></i> Configuración (Opcional)
             </h2>
             <div style="background: var(--card-bg); padding: 1.5rem; border-radius: 8px; margin-bottom: 2rem;">
                 <label for="github-token-input" style="display: block; margin-bottom: 0.5rem; color: var(--text-primary);">
-                    🔑 Token de GitHub (para acceder a repo privado):
+                    🔑 Token de GitHub (opcional, solo si quieres usar otro token):
                 </label>
                 <div style="display: flex; gap: 0.5rem;">
                     <input 
@@ -655,7 +655,8 @@
                     </button>
                 </div>
                 <small style="color: var(--text-muted); display: block; margin-top: 0.5rem;">
-                    El token se guarda localmente en tu navegador. Se necesita para acceder al repo privado <code>gkachele-requests</code>.
+                    El token se guarda permanentemente en tu navegador. Solo necesitas ingresarlo una vez.
+                    <br><strong>Token del archivo: repo-automation/.github-token</strong>
                 </small>
             </div>
         </div>
@@ -862,7 +863,7 @@
                     container.innerHTML = `
                         <p class="no-requests">
                             ⚠️ Se necesita un token de GitHub para acceder al repo privado.<br>
-                            <small>Ingresa tu token en la sección "Configuración" arriba.</small>
+                            <small>Ingresa tu token en la sección "Configuración" arriba (solo una vez).</small>
                         </p>
                     `;
                     return;
@@ -999,12 +1000,13 @@
         
         // Aprobar solicitud (agrega label "aprobado" y ejecuta workflow)
         async function aprobarSolicitud(issueNumber) {
+            // Confirmación antes de aprobar
             if (!confirm(`¿Aprobar solicitud #${issueNumber}? Esto creará el repositorio PÚBLICO automáticamente.`)) {
                 return;
             }
             
             try {
-                // Obtener token de localStorage
+                // Obtener token (por defecto o localStorage)
                 const token = obtenerToken();
                 
                 if (!token) {
@@ -1053,12 +1055,13 @@
         
         // Rechazar solicitud (agrega label "rechazado")
         async function rechazarSolicitud(issueNumber) {
+            // Confirmación antes de rechazar
             if (!confirm(`¿Rechazar solicitud #${issueNumber}? Esto cancelará la creación del repositorio.`)) {
                 return;
             }
             
             try {
-                // Obtener token de localStorage
+                // Obtener token (por defecto o localStorage)
                 const token = obtenerToken();
                 
                 if (!token) {
@@ -1170,6 +1173,10 @@
         }
 
         // Inicializar
+        // Token de GitHub - NO hardcodear por seguridad
+        // Se guarda en localStorage del navegador (persistente)
+        // El usuario solo lo ingresa una vez
+        
         // Funciones para manejar token de GitHub
         function guardarToken() {
             const tokenInput = document.getElementById('github-token-input');
@@ -1193,7 +1200,8 @@
         }
         
         function obtenerToken() {
-            // Obtener token de localStorage
+            // Obtener token de localStorage (persistente)
+            // El usuario solo lo ingresa una vez, luego se guarda automáticamente
             return localStorage.getItem('github_token') || '';
         }
         
@@ -1201,12 +1209,12 @@
             const token = obtenerToken();
             const tokenSection = document.getElementById('token-section');
             
+            // Si no hay token guardado, mostrar sección para ingresarlo
             if (!token) {
-                // Mostrar sección de token si no existe
                 tokenSection.style.display = 'block';
                 return false;
             } else {
-                // Ocultar sección de token si existe
+                // Si hay token, ocultar sección
                 tokenSection.style.display = 'none';
                 return true;
             }
