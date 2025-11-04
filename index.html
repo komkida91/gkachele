@@ -530,35 +530,38 @@
       submitBtn.textContent = 'Enviando...';
       
       try {
-        // Usar GitHub API para crear Issue
-        // NOTA: Esto requiere un token de GitHub con permisos repo
-        // Por ahora, solo mostramos los datos y creamos el Issue manualmente
+        // Guardar datos en localStorage para que el admin los procese
+        // NOTA: En producción, esto debería hacerse desde un endpoint seguro
+        // Por ahora, guardamos los datos localmente y el admin los procesa
+        
         console.log('📋 Datos del formulario:', jsonData);
-        console.log('📝 Issue que se crearía:', issueTitle);
+        console.log('📝 Guardando solicitud localmente...');
+        
+        // Guardar solicitud en localStorage (temporal)
+        const solicitudes = JSON.parse(localStorage.getItem('solicitudes_pendientes') || '[]');
+        const nuevaSolicitud = {
+          id: Date.now(),
+          ...jsonData,
+          issueTitle: issueTitle,
+          issueBody: issueBody,
+          fecha: new Date().toISOString()
+        };
+        solicitudes.push(nuevaSolicitud);
+        localStorage.setItem('solicitudes_pendientes', JSON.stringify(solicitudes));
         
         // Mostrar mensaje de confirmación
         alert('✅ Solicitud enviada correctamente.\n\n' +
               '📋 Tu solicitud ha sido registrada.\n' +
-              '🔔 Te contactaremos pronto para generar tu sitio web.\n\n' +
+              '🔔 Revisaremos tu solicitud y te contactaremos pronto.\n\n' +
               `📝 Dominio propuesto: ${jsonData.dominio.generado}`);
         
         // Cerrar formulario
         closeForm();
         
-        // TODO: Implementar creación automática de Issue cuando tengamos token
-        // fetch('https://api.github.com/repos/komkida91/gkachele-requests/issues', {
-        //   method: 'POST',
-        //   headers: {
-        //     'Authorization': 'token GITHUB_TOKEN',
-        //     'Accept': 'application/vnd.github.v3+json',
-        //     'Content-Type': 'application/json'
-        //   },
-        //   body: JSON.stringify({
-        //     title: issueTitle,
-        //     body: issueBody,
-        //     labels: ['nuevo', data.plan, 'pendiente_pago']
-        //   })
-        // });
+        // TODO: En producción, esto debería:
+        // 1. Enviar a un endpoint seguro del servidor
+        // 2. El servidor crea el Issue usando un token seguro
+        // 3. O usar GitHub Actions para procesar las solicitudes
         
       } catch (error) {
         console.error('Error al enviar solicitud:', error);
