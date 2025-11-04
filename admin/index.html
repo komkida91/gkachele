@@ -663,9 +663,19 @@
 
         <!-- Solicitudes Pendientes Section -->
         <div class="sites-section">
-            <h2 class="section-title">
-                <i class="fas fa-clock"></i> Solicitudes Pendientes
-            </h2>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                <h2 class="section-title" style="margin: 0;">
+                    <i class="fas fa-clock"></i> Solicitudes Pendientes
+                </h2>
+                <button 
+                    onclick="procesarSolicitudesLocal()" 
+                    class="action-btn"
+                    style="padding: 0.5rem 1rem; font-size: 0.9rem;"
+                    title="Procesar solicitudes guardadas localmente"
+                >
+                    <i class="fas fa-sync"></i> Procesar Locales
+                </button>
+            </div>
             <div class="sites-grid" id="pending-requests-container">
                 <!-- Solicitudes pendientes se cargarán aquí -->
             </div>
@@ -833,6 +843,58 @@
             updateMetrics();
         }
         
+        // Procesar solicitudes del localStorage y crear Issues
+        async function procesarSolicitudesLocal() {
+            const solicitudes = JSON.parse(localStorage.getItem('solicitudes_pendientes') || '[]');
+            
+            if (solicitudes.length === 0) {
+                return;
+            }
+            
+            const token = obtenerToken();
+            if (!token) {
+                alert('⚠️ Se necesita un token de GitHub para crear Issues. Configúralo en la sección "Configuración".');
+                verificarToken();
+                return;
+            }
+            
+            console.log(`📋 Procesando ${solicitudes.length} solicitudes del localStorage...`);
+            
+            for (const solicitud of solicitudes) {
+                try {
+                    const response = await fetch('https://api.github.com/repos/komkida91/gkachele-requests/issues', {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `token ${token}`,
+                            'Accept': 'application/vnd.github.v3+json',
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            title: solicitud.issueTitle,
+                            body: solicitud.issueBody,
+                            labels: ['nuevo', solicitud.plan, 'pendiente_pago']
+                        })
+                    });
+                    
+                    if (response.ok) {
+                        const issueData = await response.json();
+                        console.log(`✅ Issue #${issueData.number} creado para: ${solicitud.cliente.nombre_completo}`);
+                    } else {
+                        console.error(`❌ Error al crear Issue para: ${solicitud.cliente.nombre_completo}`);
+                    }
+                } catch (error) {
+                    console.error(`❌ Error al procesar solicitud:`, error);
+                }
+            }
+            
+            // Limpiar solicitudes procesadas
+            localStorage.removeItem('solicitudes_pendientes');
+            console.log('✅ Solicitudes procesadas y localStorage limpiado');
+            
+            // Recargar solicitudes pendientes
+            loadPendingRequests();
+        }
+        
         // Cargar solicitudes pendientes desde Issues
         async function loadPendingRequests() {
             const container = document.getElementById('pending-requests-container');
@@ -844,6 +906,13 @@
             container.innerHTML = '<p>Cargando solicitudes...</p>';
             
             try {
+                // Primero, procesar solicitudes del localStorage si hay
+                const solicitudesLocal = JSON.parse(localStorage.getItem('solicitudes_pendientes') || '[]');
+                if (solicitudesLocal.length > 0) {
+                    console.log(`📋 Hay ${solicitudesLocal.length} solicitudes en localStorage, procesándolas...`);
+                    await procesarSolicitudesLocal();
+                }
+                
                 // Cargar Issues desde GitHub API
                 // Endpoint: GET /repos/{owner}/{repo}/issues
                 // Solo Issues sin labels "aprobado" o "rechazado"
