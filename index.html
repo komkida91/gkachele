@@ -744,6 +744,7 @@
 
     async function handleFormSubmit(event) {
       event.preventDefault();
+      event.stopPropagation();
       
       const formData = new FormData(event.target);
       const data = Object.fromEntries(formData);
