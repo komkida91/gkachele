@@ -1080,15 +1080,16 @@
                 const token = await obtenerTokenDesdeSecrets();
                 
                 if (!token) {
-                    alert('⚠️ Se necesita un token de GitHub (PAT) para agregar labels.\n\n' +
-                          'Configúralo en la sección "Configuración" arriba.\n\n' +
-                          'Los workflows usan GITHUB_TOKEN automáticamente desde GitHub Secrets.');
+                    alert('⚠️ Se necesita un token de GitHub (PAT) para crear comentarios.\n\n' +
+                          'Configúralo en la sección "Configuración" arriba (solo una vez).\n\n' +
+                          'El workflow procesará el comentario automáticamente usando GITHUB_TOKEN.');
                     verificarToken();
                     return;
                 }
                 
-                // Usar GitHub API para agregar label "aprobado"
-                const response = await fetch(`https://api.github.com/repos/komkida91/gkachele-requests/issues/${issueNumber}/labels`, {
+                // Crear comentario "/aprobar" en el Issue
+                // El workflow procesar-comentarios.yml detectará el comentario y agregará el label automáticamente
+                const response = await fetch(`https://api.github.com/repos/komkida91/gkachele-requests/issues/${issueNumber}/comments`, {
                     method: 'POST',
                     headers: {
                         'Accept': 'application/vnd.github.v3+json',
@@ -1096,14 +1097,15 @@
                         'Authorization': `token ${token}`
                     },
                     body: JSON.stringify({
-                        labels: ['aprobado']
+                        body: '/aprobar'
                     })
                 });
                 
                 if (response.ok) {
                     // Éxito
                     alert(`✅ Solicitud #${issueNumber} aprobada.\n\n` +
-                          `El workflow detectará el label "aprobado" y creará el repositorio PRIVADO automáticamente.\n\n` +
+                          `Se creó comentario "/aprobar" en el Issue.\n\n` +
+                          `El workflow procesará el comentario y creará el repositorio PRIVADO automáticamente.\n\n` +
                           `📋 Espera unos segundos y recarga la página para ver el progreso.`);
                     
                     // Recargar solicitudes después de 2 segundos
@@ -1139,15 +1141,16 @@
                 const token = await obtenerTokenDesdeSecrets();
                 
                 if (!token) {
-                    alert('⚠️ Se necesita un token de GitHub (PAT) para agregar labels.\n\n' +
-                          'Configúralo en la sección "Configuración" arriba.\n\n' +
-                          'Los workflows usan GITHUB_TOKEN automáticamente desde GitHub Secrets.');
+                    alert('⚠️ Se necesita un token de GitHub (PAT) para crear comentarios.\n\n' +
+                          'Configúralo en la sección "Configuración" arriba (solo una vez).\n\n' +
+                          'El workflow procesará el comentario automáticamente usando GITHUB_TOKEN.');
                     verificarToken();
                     return;
                 }
                 
-                // Usar GitHub API para agregar label "rechazado"
-                const response = await fetch(`https://api.github.com/repos/komkida91/gkachele-requests/issues/${issueNumber}/labels`, {
+                // Crear comentario "/rechazar" en el Issue
+                // El workflow procesar-comentarios.yml detectará el comentario y agregará el label automáticamente
+                const response = await fetch(`https://api.github.com/repos/komkida91/gkachele-requests/issues/${issueNumber}/comments`, {
                     method: 'POST',
                     headers: {
                         'Accept': 'application/vnd.github.v3+json',
@@ -1155,15 +1158,16 @@
                         'Authorization': `token ${token}`
                     },
                     body: JSON.stringify({
-                        labels: ['rechazado']
+                        body: '/rechazar'
                     })
                 });
                 
                 if (response.ok) {
                     // Éxito
                     alert(`❌ Solicitud #${issueNumber} rechazada.\n\n` +
-                          `El workflow no creará el repositorio.\n\n` +
-                          `📋 La solicitud quedará marcada como rechazada.`);
+                          `Se creó comentario "/rechazar" en el Issue.\n\n` +
+                          `El workflow procesará el comentario y marcará la solicitud como rechazada.\n\n` +
+                          `📋 La solicitud quedará cancelada.`);
                     
                     // Recargar solicitudes después de 2 segundos
                     setTimeout(() => {
