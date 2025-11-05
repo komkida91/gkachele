@@ -1078,7 +1078,7 @@
             
             try {
                 // Obtener token desde localStorage
-                const token = await obtenerTokenDesdeSecrets();
+                const token = localStorage.getItem('github_token') || '';
                 
                 if (!token) {
                     alert('⚠️ Se necesita un token de GitHub (PAT) para crear comentarios.\n\n' +
@@ -1087,6 +1087,8 @@
                     verificarToken();
                     return;
                 }
+                
+                console.log('🔑 Token encontrado, creando comentario /aprobar...');
                 
                 // Crear comentario "/aprobar" en el Issue
                 // El workflow procesar-comentarios.yml detectará el comentario y agregará el label automáticamente
