@@ -1282,9 +1282,12 @@
             // document.getElementById('token-section').style.display = 'none';
             
             // Recargar solicitudes pendientes
-            loadPendingRequests();
-            
             alert('✅ Token guardado. Cargando solicitudes pendientes...');
+            
+            // Esperar un poco y luego cargar solicitudes
+            setTimeout(() => {
+                loadPendingRequests();
+            }, 500);
         }
         
         // Función para obtener token desde GitHub Secrets vía workflow
@@ -1334,13 +1337,16 @@
             // Verificar token al cargar
             verificarToken();
             
+            // Cargar sitios y solicitudes
             loadSites();
+            loadPendingRequests(); // Cargar solicitudes pendientes automáticamente
             updateTime();
             updateMetrics();
             
             // Auto-refresh cada 5 minutos
             setInterval(() => {
                 loadSites();
+                loadPendingRequests(); // Recargar solicitudes también
                 updateTime();
                 updateMetrics();
             }, 300000);
