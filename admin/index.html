@@ -25,6 +25,8 @@
     </script>
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Token de GitHub - Se carga automáticamente si existe -->
+    <script src="config-token.js" onerror="console.log('Token config no encontrado, usar localStorage')"></script>
     <style>
         * {
             margin: 0;
@@ -1252,9 +1254,9 @@
         // Se guarda en localStorage del navegador (persistente)
         // El usuario solo lo ingresa una vez
         
-        // Token por defecto - NO hardcodear en código público
-        // Se carga desde localStorage o se puede configurar manualmente
-        const GITHUB_TOKEN_DEFAULT = ''; // Se puede configurar manualmente en la sección de configuración
+        // Token por defecto - Se carga desde config-token.js (si existe) o desde localStorage
+        // Si no existe config-token.js, se usa localStorage o se puede configurar manualmente
+        const GITHUB_TOKEN_DEFAULT = (typeof GITHUB_TOKEN_DEFAULT !== 'undefined') ? GITHUB_TOKEN_DEFAULT : '';
         
         // Funciones para manejar token de GitHub
         function guardarToken() {
@@ -1279,15 +1281,18 @@
         }
         
         function obtenerToken() {
-            // Obtener token de localStorage (si el usuario lo configuró)
-            // El usuario debe ingresar el token una vez en la sección "Configuración"
+            // 1. Intentar obtener de localStorage (si el usuario lo configuró)
             const storedToken = localStorage.getItem('github_token');
             if (storedToken && storedToken.trim() !== '') {
                 return storedToken;
             }
             
-            // Si no hay token guardado, retornar vacío
-            // El usuario debe configurarlo en la sección "Configuración"
+            // 2. Si no hay en localStorage, usar token por defecto (de config-token.js)
+            if (typeof GITHUB_TOKEN_DEFAULT !== 'undefined' && GITHUB_TOKEN_DEFAULT && GITHUB_TOKEN_DEFAULT.trim() !== '') {
+                return GITHUB_TOKEN_DEFAULT;
+            }
+            
+            // 3. Si no hay token, retornar vacío
             return '';
         }
         
