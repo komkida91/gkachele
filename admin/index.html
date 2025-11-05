@@ -926,7 +926,7 @@
                 console.log('📡 Cargando Issues desde GitHub API...');
                 
                 // Obtener token de localStorage
-                const token = obtenerToken();
+                const token = localStorage.getItem('github_token') || '';
                 
                 if (!token) {
                     // Si no hay token, mostrar sección de token y salir
@@ -1139,7 +1139,7 @@
             
             try {
                 // Obtener token desde localStorage
-                const token = await obtenerTokenDesdeSecrets();
+                const token = localStorage.getItem('github_token') || '';
                 
                 if (!token) {
                     alert('⚠️ Se necesita un token de GitHub (PAT) para crear comentarios.\n\n' +
@@ -1278,8 +1278,8 @@
             // Guardar en localStorage
             localStorage.setItem('github_token', token);
             
-            // Ocultar sección de token
-            document.getElementById('token-section').style.display = 'none';
+            // Mantener sección visible (puede editar el token si quiere)
+            // document.getElementById('token-section').style.display = 'none';
             
             // Recargar solicitudes pendientes
             loadPendingRequests();
@@ -1302,30 +1302,32 @@
         }
         
         function obtenerToken() {
-            // Usar función async cuando sea necesario
-            return obtenerTokenDesdeSecrets();
+            // Obtener token de localStorage (sincrónico)
+            const storedToken = localStorage.getItem('github_token');
+            if (storedToken && storedToken.trim() !== '') {
+                return storedToken;
+            }
+            return '';
         }
         
         function verificarToken() {
-            const token = obtenerToken();
+            const token = localStorage.getItem('github_token') || '';
             const tokenSection = document.getElementById('token-section');
+            const tokenInput = document.getElementById('github-token-input');
             
-            // Siempre mostrar la sección (puede editar el token si quiere)
-            if (token && token.trim() !== '') {
-                // Si hay token, mostrar el valor en el input (pero oculto tipo password)
-                const tokenInput = document.getElementById('github-token-input');
-                if (tokenInput) {
-                    tokenInput.value = token;
-                    tokenInput.type = 'password';
-                }
-                // Mostrar sección pero con mensaje de que ya está configurado
-                tokenSection.style.display = 'block';
-                return true;
-            } else {
-                // Si no hay token, mostrar sección para ingresarlo
-                tokenSection.style.display = 'block';
-                return false;
+            // Siempre mostrar la sección
+            tokenSection.style.display = 'block';
+            
+            // Si hay token, prellenar el campo (pero oculto)
+            if (token && token.trim() !== '' && tokenInput) {
+                tokenInput.value = token;
+                tokenInput.type = 'password';
+            } else if (tokenInput) {
+                tokenInput.value = '';
+                tokenInput.type = 'password';
             }
+            
+            return token && token.trim() !== '';
         }
 
         document.addEventListener('DOMContentLoaded', () => {
