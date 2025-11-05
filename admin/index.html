@@ -25,8 +25,7 @@
     </script>
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Token de GitHub - Se carga automáticamente si existe -->
-    <script src="config-token.js" onerror="console.log('Token config no encontrado, usar localStorage')"></script>
+    <!-- Token de GitHub - Se carga desde GitHub Secrets vía API segura -->
     <style>
         * {
             margin: 0;
@@ -1077,11 +1076,13 @@
             }
             
             try {
-                // Obtener token (por defecto o localStorage)
-                const token = obtenerToken();
+                // Obtener token desde localStorage
+                const token = await obtenerTokenDesdeSecrets();
                 
                 if (!token) {
-                    alert('⚠️ Se necesita un token de GitHub. Configúralo en la sección "Configuración".');
+                    alert('⚠️ Se necesita un token de GitHub (PAT) para agregar labels.\n\n' +
+                          'Configúralo en la sección "Configuración" arriba.\n\n' +
+                          'Los workflows usan GITHUB_TOKEN automáticamente desde GitHub Secrets.');
                     verificarToken();
                     return;
                 }
@@ -1134,11 +1135,13 @@
             }
             
             try {
-                // Obtener token (por defecto o localStorage)
-                const token = obtenerToken();
+                // Obtener token desde localStorage
+                const token = await obtenerTokenDesdeSecrets();
                 
                 if (!token) {
-                    alert('⚠️ Se necesita un token de GitHub. Configúralo en la sección "Configuración".');
+                    alert('⚠️ Se necesita un token de GitHub (PAT) para agregar labels.\n\n' +
+                          'Configúralo en la sección "Configuración" arriba.\n\n' +
+                          'Los workflows usan GITHUB_TOKEN automáticamente desde GitHub Secrets.');
                     verificarToken();
                     return;
                 }
@@ -1254,9 +1257,8 @@
         // Se guarda en localStorage del navegador (persistente)
         // El usuario solo lo ingresa una vez
         
-        // Token por defecto - Se carga desde config-token.js (si existe) o desde localStorage
-        // Si no existe config-token.js, se usa localStorage o se puede configurar manualmente
-        const GITHUB_TOKEN_DEFAULT = (typeof GITHUB_TOKEN_DEFAULT !== 'undefined') ? GITHUB_TOKEN_DEFAULT : '';
+        // Token de GitHub - Se carga desde localStorage o se puede configurar manualmente
+        // Los workflows usan GITHUB_TOKEN automáticamente desde GitHub Secrets
         
         // Funciones para manejar token de GitHub
         function guardarToken() {
@@ -1280,20 +1282,23 @@
             alert('✅ Token guardado. Cargando solicitudes pendientes...');
         }
         
-        function obtenerToken() {
-            // 1. Intentar obtener de localStorage (si el usuario lo configuró)
+        // Función para obtener token desde GitHub Secrets vía workflow
+        async function obtenerTokenDesdeSecrets() {
+            // Intentar obtener token desde localStorage primero
             const storedToken = localStorage.getItem('github_token');
             if (storedToken && storedToken.trim() !== '') {
                 return storedToken;
             }
             
-            // 2. Si no hay en localStorage, usar token por defecto (de config-token.js)
-            if (typeof GITHUB_TOKEN_DEFAULT !== 'undefined' && GITHUB_TOKEN_DEFAULT && GITHUB_TOKEN_DEFAULT.trim() !== '') {
-                return GITHUB_TOKEN_DEFAULT;
-            }
-            
-            // 3. Si no hay token, retornar vacío
+            // Si no hay token, retornar vacío
+            // El usuario debe configurarlo una vez en la sección "Configuración"
+            // O usar un token personal (PAT) desde GitHub Secrets
             return '';
+        }
+        
+        function obtenerToken() {
+            // Usar función async cuando sea necesario
+            return obtenerTokenDesdeSecrets();
         }
         
         function verificarToken() {
