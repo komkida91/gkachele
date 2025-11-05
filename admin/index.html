@@ -970,13 +970,21 @@
                 // Filtrar Issues sin labels "aprobado" o "rechazado"
                 const pendingIssues = issues.filter(issue => {
                     const labels = issue.labels.map(l => l.name.toLowerCase());
-                    return !labels.includes('aprobado') && !labels.includes('rechazado');
+                    const isApproved = labels.includes('aprobado');
+                    const isRejected = labels.includes('rechazado');
+                    const isPending = !isApproved && !isRejected;
+                    
+                    console.log(`Issue #${issue.number}: labels=${labels.join(', ')}, pending=${isPending}`);
+                    
+                    return isPending;
                 });
                 
                 console.log(`📋 ${pendingIssues.length} solicitudes pendientes (sin aprobar/rechazar)`);
+                console.log('Issues pendientes:', pendingIssues.map(i => `#${i.number}: ${i.title}`));
                 
                 if (pendingIssues.length === 0) {
                     container.innerHTML = '<p class="no-requests">✅ No hay solicitudes pendientes</p>';
+                    console.log('⚠️ No hay Issues pendientes después del filtro');
                     return;
                 }
                 
