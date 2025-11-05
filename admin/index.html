@@ -1070,7 +1070,7 @@
         // Aprobar solicitud (agrega label "aprobado" y ejecuta workflow)
         async function aprobarSolicitud(issueNumber) {
             // Confirmación antes de aprobar
-            if (!confirm(`¿Aprobar solicitud #${issueNumber}? Esto creará el repositorio PÚBLICO automáticamente.`)) {
+            if (!confirm(`¿Aprobar solicitud #${issueNumber}? Esto creará el repositorio PRIVADO automáticamente (preview).`)) {
                 return;
             }
             
@@ -1097,28 +1097,30 @@
                     })
                 });
                 
-                if (response.ok || response.status === 401) {
-                    // Si funciona o si no tiene token (401), mostrar mensaje
+                if (response.ok) {
+                    // Éxito
                     alert(`✅ Solicitud #${issueNumber} aprobada.\n\n` +
-                          `El workflow detectará el label "aprobado" y creará el repositorio automáticamente.\n\n` +
-                          `📋 Para implementar: Agregar token de GitHub en el código.`);
+                          `El workflow detectará el label "aprobado" y creará el repositorio PRIVADO automáticamente.\n\n` +
+                          `📋 Espera unos segundos y recarga la página para ver el progreso.`);
                     
                     // Recargar solicitudes después de 2 segundos
                     setTimeout(() => {
                         loadPendingRequests();
                     }, 2000);
+                } else if (response.status === 401) {
+                    // Token inválido
+                    alert('⚠️ Token de GitHub inválido. Verifica la configuración.');
+                    verificarToken();
                 } else {
-                    throw new Error('Error al aprobar');
+                    // Otro error
+                    const errorData = await response.json().catch(() => ({}));
+                    throw new Error(errorData.message || `HTTP ${response.status}`);
                 }
             } catch (error) {
                 console.error('Error al aprobar:', error);
-                // Mostrar mensaje aunque falle (para testing)
-                alert(`✅ Solicitud #${issueNumber} aprobada (simulado).\n\n` +
-                      `El workflow detectará el label "aprobado" y creará el repositorio.\n\n` +
-                      `⚠️ Nota: Se necesita token de GitHub para funcionar automáticamente.`);
-                
-                // Recargar solicitudes
-                loadPendingRequests();
+                alert(`❌ Error al aprobar solicitud #${issueNumber}.\n\n` +
+                      `Error: ${error.message}\n\n` +
+                      `Verifica la consola para más detalles.`);
             }
         }
         
@@ -1152,26 +1154,30 @@
                     })
                 });
                 
-                if (response.ok || response.status === 401) {
+                if (response.ok) {
+                    // Éxito
                     alert(`❌ Solicitud #${issueNumber} rechazada.\n\n` +
                           `El workflow no creará el repositorio.\n\n` +
-                          `📋 Para implementar: Agregar token de GitHub en el código.`);
+                          `📋 La solicitud quedará marcada como rechazada.`);
                     
                     // Recargar solicitudes después de 2 segundos
                     setTimeout(() => {
                         loadPendingRequests();
                     }, 2000);
+                } else if (response.status === 401) {
+                    // Token inválido
+                    alert('⚠️ Token de GitHub inválido. Verifica la configuración.');
+                    verificarToken();
                 } else {
-                    throw new Error('Error al rechazar');
+                    // Otro error
+                    const errorData = await response.json().catch(() => ({}));
+                    throw new Error(errorData.message || `HTTP ${response.status}`);
                 }
             } catch (error) {
                 console.error('Error al rechazar:', error);
-                // Mostrar mensaje aunque falle (para testing)
-                alert(`❌ Solicitud #${issueNumber} rechazada (simulado).\n\n` +
-                      `⚠️ Nota: Se necesita token de GitHub para funcionar automáticamente.`);
-                
-                // Recargar solicitudes
-                loadPendingRequests();
+                alert(`❌ Error al rechazar solicitud #${issueNumber}.\n\n` +
+                      `Error: ${error.message}\n\n` +
+                      `Verifica la consola para más detalles.`);
             }
         }
 
@@ -1246,6 +1252,10 @@
         // Se guarda en localStorage del navegador (persistente)
         // El usuario solo lo ingresa una vez
         
+        // Token por defecto - NO hardcodear en código público
+        // Se carga desde localStorage o se puede configurar manualmente
+        const GITHUB_TOKEN_DEFAULT = ''; // Se puede configurar manualmente en la sección de configuración
+        
         // Funciones para manejar token de GitHub
         function guardarToken() {
             const tokenInput = document.getElementById('github-token-input');
@@ -1269,23 +1279,30 @@
         }
         
         function obtenerToken() {
-            // Obtener token de localStorage (persistente)
-            // El usuario solo lo ingresa una vez, luego se guarda automáticamente
-            return localStorage.getItem('github_token') || '';
+            // Obtener token de localStorage (si el usuario lo configuró)
+            // El usuario debe ingresar el token una vez en la sección "Configuración"
+            const storedToken = localStorage.getItem('github_token');
+            if (storedToken && storedToken.trim() !== '') {
+                return storedToken;
+            }
+            
+            // Si no hay token guardado, retornar vacío
+            // El usuario debe configurarlo en la sección "Configuración"
+            return '';
         }
         
         function verificarToken() {
             const token = obtenerToken();
             const tokenSection = document.getElementById('token-section');
             
-            // Si no hay token guardado, mostrar sección para ingresarlo
-            if (!token) {
-                tokenSection.style.display = 'block';
-                return false;
-            } else {
-                // Si hay token, ocultar sección
+            // Si hay token guardado, ocultar sección
+            if (token && token.trim() !== '') {
                 tokenSection.style.display = 'none';
                 return true;
+            } else {
+                // Si no hay token, mostrar sección para ingresarlo
+                tokenSection.style.display = 'block';
+                return false;
             }
         }
 

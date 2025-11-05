@@ -32,6 +32,7 @@ secrets.json
 *.key
 *.pem
 *.p12
+admin/config.js
 
 # Archivos de editor
 .vscode/
