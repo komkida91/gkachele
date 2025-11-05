@@ -631,14 +631,14 @@
             </div>
         </div>
 
-        <!-- Token GitHub (para acceder a repo privado) - Solo se muestra si no hay token por defecto -->
-        <div class="sites-section" id="token-section" style="display: none;">
+        <!-- Token GitHub (para acceder a repo privado) - Siempre visible -->
+        <div class="sites-section" id="token-section">
             <h2 class="section-title">
-                <i class="fas fa-key"></i> Configuración (Opcional)
+                <i class="fas fa-key"></i> Configuración - Token de GitHub
             </h2>
             <div style="background: var(--card-bg); padding: 1.5rem; border-radius: 8px; margin-bottom: 2rem;">
                 <label for="github-token-input" style="display: block; margin-bottom: 0.5rem; color: var(--text-primary);">
-                    🔑 Token de GitHub (opcional, solo si quieres usar otro token):
+                    🔑 Token de GitHub (requerido para cargar solicitudes pendientes):
                 </label>
                 <div style="display: flex; gap: 0.5rem;">
                     <input 
@@ -1309,9 +1309,16 @@
             const token = obtenerToken();
             const tokenSection = document.getElementById('token-section');
             
-            // Si hay token guardado, ocultar sección
+            // Siempre mostrar la sección (puede editar el token si quiere)
             if (token && token.trim() !== '') {
-                tokenSection.style.display = 'none';
+                // Si hay token, mostrar el valor en el input (pero oculto tipo password)
+                const tokenInput = document.getElementById('github-token-input');
+                if (tokenInput) {
+                    tokenInput.value = token;
+                    tokenInput.type = 'password';
+                }
+                // Mostrar sección pero con mensaje de que ya está configurado
+                tokenSection.style.display = 'block';
                 return true;
             } else {
                 // Si no hay token, mostrar sección para ingresarlo
