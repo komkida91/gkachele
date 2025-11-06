@@ -895,7 +895,8 @@
       submitBtn.textContent = 'Enviando...';
       
       try {
-        const payload = {
+        const payload = new URLSearchParams();
+        const datosEnvio = {
           plan: jsonData.plan,
           nombre: jsonData.cliente.nombre_completo,
           email: jsonData.cliente.email,
@@ -912,12 +913,16 @@
           estado: jsonData.estado
         };
 
+        Object.entries(datosEnvio).forEach(([clave, valor]) => {
+          payload.append(clave, valor ?? '');
+        });
+
         const response = await fetch(SOLICITUDES_ENDPOINT, {
           method: 'POST',
           headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
           },
-          body: JSON.stringify(payload)
+          body: payload.toString()
         });
 
         const result = await response.json();
