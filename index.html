@@ -656,6 +656,8 @@
   </footer>
 
   <script>
+    const SOLICITUDES_ENDPOINT = 'https://script.google.com/macros/s/AKfycbwg6iTfHRflIGnGxOmwf9sExwtbbE1hI8SzYBOPIFkl3nNWfzlfu7_zRcZsIJ8a30VZ/exec';
+
     // Plan Accordion - Desplegable Premium
     const accordionItems = document.querySelectorAll('.plan-accordion-item');
     
@@ -886,20 +888,6 @@
         fecha_creacion: new Date().toISOString()
       };
       
-      // Crear Issue en repo privado gkachele-requests
-      const issueTitle = `Solicitud ${data.plan.toUpperCase()}: ${data.nombre} - ${data.rubro}`;
-      const issueBody = `## Solicitud de Sitio Web\n\n` +
-        `**Plan:** ${data.plan.toUpperCase()}\n` +
-        `**Cliente:** ${data.nombre}\n` +
-        `**Email:** ${data.email}\n` +
-        `**Teléfono:** ${data.telefono}\n` +
-        `**Rubro:** ${data.rubro}\n` +
-        `**Dominio:** ${jsonData.dominio.generado}\n\n` +
-        `### Descripción\n${data.descripcion || 'Sin descripción'}\n\n` +
-        `### Datos JSON\n\`\`\`json\n${JSON.stringify(jsonData, null, 2)}\n\`\`\`\n\n` +
-        `---\n\n**Estado:** ⏳ Pendiente de pago\n` +
-        `**Fecha:** ${new Date().toLocaleString('es-AR')}`;
-      
       // Mostrar loading
       const submitBtn = event.target.querySelector('button[type="submit"]');
       const originalText = submitBtn.textContent;
@@ -907,46 +895,47 @@
       submitBtn.textContent = 'Enviando...';
       
       try {
-        // Guardar datos en localStorage para que el admin los procese
-        // NOTA: En producción, esto debería hacerse desde un endpoint seguro
-        // Por ahora, guardamos los datos localmente y el admin los procesa
-        
-        console.log('📋 Datos del formulario:', jsonData);
-        console.log('📝 Guardando solicitud localmente...');
-        
-        // Guardar solicitud en localStorage (temporal)
-        const solicitudes = JSON.parse(localStorage.getItem('solicitudes_pendientes') || '[]');
-        const nuevaSolicitud = {
-          id: Date.now(),
-          ...jsonData,
-          issueTitle: issueTitle,
-          issueBody: issueBody,
-          fecha: new Date().toISOString()
+        const payload = {
+          plan: jsonData.plan,
+          nombre: jsonData.cliente.nombre_completo,
+          email: jsonData.cliente.email,
+          telefono: jsonData.cliente.telefono,
+          rubro: jsonData.cliente.rubro,
+          dominio: jsonData.dominio.generado,
+          descripcion: jsonData.descripcion,
+          colores: jsonData.personalizacion.colores_preferidos,
+          tipografia: jsonData.personalizacion.tipografia || '',
+          logo_url: jsonData.personalizacion.logo_url || '',
+          redes: JSON.stringify(jsonData.redes_sociales),
+          whatsapp: jsonData.redes_sociales.whatsapp || '',
+          rubro_especifico: JSON.stringify(jsonData.rubro_especifico || {}),
+          estado: jsonData.estado
         };
-        solicitudes.push(nuevaSolicitud);
-        localStorage.setItem('solicitudes_pendientes', JSON.stringify(solicitudes));
-        
-        // Mostrar mensaje de confirmación con opción de cancelar
-        const confirmacion = confirm('✅ Solicitud enviada correctamente.\n\n' +
-              '📋 Tu solicitud ha sido registrada.\n' +
-              '🔔 Revisaremos tu solicitud y te contactaremos pronto.\n\n' +
-              `📝 Dominio propuesto: ${jsonData.dominio.generado}\n\n` +
-              '¿Deseas cerrar el formulario?');
-        
-        // Cerrar formulario solo si el usuario acepta
-        if (confirmacion) {
-          closeForm();
-        } else {
-          // Si cancela, permitir revisar los datos
-          submitBtn.disabled = false;
-          submitBtn.textContent = originalText;
+
+        const response = await fetch(SOLICITUDES_ENDPOINT, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(payload)
+        });
+
+        const result = await response.json();
+
+        if (!response.ok || !result.success) {
+          throw new Error(result.error || 'No se pudo guardar la solicitud');
         }
-        
-        // TODO: En producción, esto debería:
-        // 1. Enviar a un endpoint seguro del servidor
-        // 2. El servidor crea el Issue usando un token seguro
-        // 3. O usar GitHub Actions para procesar las solicitudes
-        
+
+        alert('✅ Solicitud enviada correctamente.\n\n' +
+              '📋 Tu solicitud ha sido registrada en el sistema.\n' +
+              '🔔 Te contactaremos pronto para continuar el proceso.');
+
+        submitBtn.disabled = false;
+        submitBtn.textContent = originalText;
+
+        closeForm();
+        event.target.reset();
+
       } catch (error) {
         console.error('Error al enviar solicitud:', error);
         alert('❌ Error al enviar la solicitud. Por favor, intenta nuevamente.');

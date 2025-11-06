@@ -631,35 +631,23 @@
             </div>
         </div>
 
-        <!-- Token GitHub (para acceder a repo privado) - Siempre visible -->
+        <!-- Centro de Solicitudes -->
         <div class="sites-section" id="token-section">
             <h2 class="section-title">
-                <i class="fas fa-key"></i> Configuración - Token de GitHub
+                <i class="fas fa-database"></i> Centro de Solicitudes (Google Sheets)
             </h2>
             <div style="background: var(--card-bg); padding: 1.5rem; border-radius: 8px; margin-bottom: 2rem;">
-                <label for="github-token-input" style="display: block; margin-bottom: 0.5rem; color: var(--text-primary);">
-                    🔑 Token de GitHub (requerido para cargar solicitudes pendientes):
-                </label>
-                <div style="display: flex; gap: 0.5rem;">
-                    <input 
-                        type="password" 
-                        id="github-token-input" 
-                        placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" 
-                        style="flex: 1; padding: 0.75rem; border: 1px solid var(--border); border-radius: 4px; background: var(--bg-primary); color: var(--text-primary);"
-                    >
-                    <button 
-                        onclick="guardarToken()" 
-                        class="action-btn"
-                        style="padding: 0.75rem 1.5rem;"
-                    >
-                        <i class="fas fa-save"></i> Guardar
-                    </button>
-                </div>
-                <small style="color: var(--text-muted); display: block; margin-top: 0.5rem;">
-                    El token se guarda permanentemente en tu navegador. Solo necesitas ingresarlo una vez.
-                    <br><strong>📍 Token del archivo: repo-automation/.github-token</strong>
-                    <br><strong>💡 Copia el token del archivo .github-token y pégalo aquí</strong>
-                </small>
+                <p style="color: var(--text-primary); margin-bottom: 1rem;">
+                    ✅ Las solicitudes del formulario se guardan en Google Sheets automáticamente.
+                    No se necesita token de GitHub. Usa el botón de abajo para actualizar manualmente.
+                </p>
+                <button 
+                    onclick="loadPendingRequests(true)" 
+                    class="action-btn"
+                    style="padding: 0.75rem 1.5rem;"
+                >
+                    <i class="fas fa-sync"></i> Actualizar solicitudes
+                </button>
             </div>
         </div>
 
@@ -673,9 +661,9 @@
                     onclick="procesarSolicitudesLocal()" 
                     class="action-btn"
                     style="padding: 0.5rem 1rem; font-size: 0.9rem;"
-                    title="Procesar solicitudes guardadas localmente"
+                    title="Actualizar solicitudes desde Google Sheets"
                 >
-                    <i class="fas fa-sync"></i> Procesar Locales
+                    <i class="fas fa-sync"></i> Actualizar
                 </button>
             </div>
             <div class="sites-grid" id="pending-requests-container">
@@ -845,361 +833,193 @@
             updateMetrics();
         }
         
-        // Procesar solicitudes del localStorage y crear Issues
-        async function procesarSolicitudesLocal() {
-            const solicitudes = JSON.parse(localStorage.getItem('solicitudes_pendientes') || '[]');
-            
-            if (solicitudes.length === 0) {
-                return;
-            }
-            
-            const token = obtenerToken();
-            if (!token) {
-                alert('⚠️ Se necesita un token de GitHub para crear Issues. Configúralo en la sección "Configuración".');
-                verificarToken();
-                return;
-            }
-            
-            console.log(`📋 Procesando ${solicitudes.length} solicitudes del localStorage...`);
-            
-            for (const solicitud of solicitudes) {
-                try {
-                    const response = await fetch('https://api.github.com/repos/komkida91/gkachele-requests/issues', {
-                        method: 'POST',
-                        headers: {
-                            'Authorization': `token ${token}`,
-                            'Accept': 'application/vnd.github.v3+json',
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            title: solicitud.issueTitle,
-                            body: solicitud.issueBody,
-                            labels: ['nuevo', solicitud.plan, 'pendiente_pago']
-                        })
-                    });
-                    
-                    if (response.ok) {
-                        const issueData = await response.json();
-                        console.log(`✅ Issue #${issueData.number} creado para: ${solicitud.cliente.nombre_completo}`);
-                    } else {
-                        console.error(`❌ Error al crear Issue para: ${solicitud.cliente.nombre_completo}`);
-                    }
-                } catch (error) {
-                    console.error(`❌ Error al procesar solicitud:`, error);
-                }
-            }
-            
-            // Limpiar solicitudes procesadas
-            localStorage.removeItem('solicitudes_pendientes');
-            console.log('✅ Solicitudes procesadas y localStorage limpiado');
-            
-            // Recargar solicitudes pendientes
-            loadPendingRequests();
-        }
-        
-        // Cargar solicitudes pendientes desde Issues
-        async function loadPendingRequests() {
-            const container = document.getElementById('pending-requests-container');
-            if (!container) {
-                console.warn('⚠️ Container pending-requests-container no encontrado');
-                return;
-            }
-            
-            container.innerHTML = '<p>Cargando solicitudes...</p>';
-            
+        const SHEETS_ENDPOINT = 'https://script.google.com/macros/s/AKfycbwg6iTfHRflIGnGxOmwf9sExwtbbE1hI8SzYBOPIFkl3nNWfzlfu7_zRcZsIJ8a30VZ/exec';
+
+        function safeJSONParse(value) {
             try {
-                // Primero, procesar solicitudes del localStorage si hay
-                const solicitudesLocal = JSON.parse(localStorage.getItem('solicitudes_pendientes') || '[]');
-                if (solicitudesLocal.length > 0) {
-                    console.log(`📋 Hay ${solicitudesLocal.length} solicitudes en localStorage, procesándolas...`);
-                    await procesarSolicitudesLocal();
-                }
-                
-                // Cargar Issues desde GitHub API
-                // Endpoint: GET /repos/{owner}/{repo}/issues
-                // Solo Issues sin labels "aprobado" o "rechazado"
-                
-                const REPO_OWNER = 'komkida91';
-                const REPO_NAME = 'gkachele-requests';
-                const API_URL = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/issues?state=open&per_page=100`;
-                
-                console.log('📡 Cargando Issues desde GitHub API...');
-                
-                // Obtener token de localStorage
-                const token = localStorage.getItem('github_token') || '';
-                
-                if (!token) {
-                    // Si no hay token, mostrar sección de token y salir
-                    verificarToken();
-                    container.innerHTML = `
-                        <p class="no-requests">
-                            ⚠️ Se necesita un token de GitHub para acceder al repo privado.<br>
-                            <small>Ingresa tu token en la sección "Configuración" arriba (solo una vez).</small>
-                        </p>
-                    `;
-                    return;
-                }
-                
-                // Hacer fetch a GitHub API con token
-                const response = await fetch(API_URL, {
+                return value ? JSON.parse(value) : null;
+            } catch (error) {
+                console.warn('JSON inválido:', error);
+                return null;
+            }
+        }
+
+        function escapeHTML(value) {
+            if (value === null || value === undefined) return '';
+            return String(value)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
+        function normalizarNumero(numero) {
+            if (!numero) return '';
+            return String(numero).replace(/[^0-9]/g, '');
+        }
+
+        async function procesarSolicitudesLocal() {
+            await loadPendingRequests(true);
+        }
+
+        async function loadPendingRequests(force = false) {
+            const container = document.getElementById('pending-requests-container');
+            if (!container) return;
+
+            container.innerHTML = '<p class="no-requests">Cargando solicitudes...</p>';
+
+            try {
+                const response = await fetch(SHEETS_ENDPOINT, {
                     method: 'GET',
-                    headers: {
-                        'Accept': 'application/vnd.github.v3+json',
-                        'Authorization': `token ${token}`
-                    }
+                    headers: { 'Cache-Control': force ? 'no-cache' : 'max-age=60' }
                 });
-                
+
                 if (!response.ok) {
-                    if (response.status === 401 || response.status === 404) {
-                        // Repo privado o no encontrado - necesita autenticación
-                        console.warn('⚠️ Repo privado requiere autenticación');
-                        container.innerHTML = `
-                            <p class="no-requests">
-                                ⚠️ Para cargar solicitudes pendientes, se necesita un token de GitHub.<br>
-                                <small>El repo gkachele-requests es privado y requiere autenticación.</small>
-                            </p>
-                        `;
-                        return;
-                    }
-                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    throw new Error(`HTTP ${response.status}`);
                 }
-                
-                const issues = await response.json();
-                console.log(`✅ ${issues.length} Issues encontrados`);
-                
-                // Filtrar Issues sin labels "aprobado" o "rechazado"
-                const pendingIssues = issues.filter(issue => {
-                    const labels = issue.labels.map(l => l.name.toLowerCase());
-                    const isApproved = labels.includes('aprobado');
-                    const isRejected = labels.includes('rechazado');
-                    const isPending = !isApproved && !isRejected;
-                    
-                    console.log(`Issue #${issue.number}: labels=${labels.join(', ')}, pending=${isPending}`);
-                    
-                    return isPending;
-                });
-                
-                console.log(`📋 ${pendingIssues.length} solicitudes pendientes (sin aprobar/rechazar)`);
-                console.log('Issues pendientes:', pendingIssues.map(i => `#${i.number}: ${i.title}`));
-                
-                if (pendingIssues.length === 0) {
-                    container.innerHTML = '<p class="no-requests">✅ No hay solicitudes pendientes</p>';
-                    console.log('⚠️ No hay Issues pendientes después del filtro');
+
+                const result = await response.json();
+                if (!result.success) {
+                    throw new Error(result.error || 'Error desconocido');
+                }
+
+                const rows = Array.isArray(result.rows) ? result.rows : [];
+
+                if (rows.length === 0) {
+                    container.innerHTML = '<p class="no-requests">No hay solicitudes pendientes.</p>';
                     return;
                 }
-                
-                // Extraer datos del JSON embebido en el body del Issue
-                const requests = pendingIssues.map(issue => {
-                    // El JSON está en el body del Issue, dentro de un bloque de código ```json
-                    let jsonData = {};
-                    try {
-                        // Buscar bloque JSON en el body
-                        const jsonMatch = issue.body.match(/```json\s*([\s\S]*?)\s*```/);
-                        if (jsonMatch) {
-                            jsonData = JSON.parse(jsonMatch[1]);
-                        } else {
-                            // Intentar parsear todo el body como JSON
-                            jsonData = JSON.parse(issue.body);
-                        }
-                    } catch (e) {
-                        console.warn(`⚠️ No se pudo parsear JSON del Issue #${issue.number}:`, e);
-                        // Usar datos por defecto del Issue
-                        jsonData = {
-                            cliente: {
-                                nombre_completo: issue.title || `Issue #${issue.number}`
-                            },
-                            plan: 'base',
-                            rubro: 'No especificado',
-                            email: issue.user?.login || 'no-email@example.com',
-                            dominio: `${issue.title?.toLowerCase().replace(/\s+/g, '-') || `issue-${issue.number}`}.gkachele.duckdns.org`
-                        };
-                    }
-                    
-                    return {
-                        issue_number: issue.number,
-                        nombre: jsonData.cliente?.nombre_completo || issue.title || `Issue #${issue.number}`,
-                        plan: jsonData.plan || 'base',
-                        rubro: jsonData.rubro || jsonData.cliente?.rubro || 'No especificado',
-                        email: jsonData.cliente?.email || jsonData.email || issue.user?.login || 'no-email@example.com',
-                        dominio: jsonData.dominio || jsonData.cliente?.dominio || `${issue.title?.toLowerCase().replace(/\s+/g, '-') || `issue-${issue.number}`}.gkachele.duckdns.org`,
-                        creado: new Date(issue.created_at).toLocaleDateString('es-ES'),
-                        body: issue.body // Guardar body completo por si acaso
-                    };
-                });
-                
-                if (requests.length === 0) {
-                    container.innerHTML = '<p class="no-requests">✅ No hay solicitudes pendientes</p>';
-                    return;
-                }
-                
-                requests.forEach(request => {
+
+                container.innerHTML = '';
+
+                rows.reverse().forEach(row => {
+                    const plan = (row.plan || 'base').toLowerCase();
+                    const redes = safeJSONParse(row.redes) || {};
+                    const redesHTML = Object.entries(redes)
+                        .filter(([, url]) => url)
+                        .map(([nombre, url]) => `<a href="${escapeHTML(url)}" target="_blank">${escapeHTML(nombre)}</a>`)
+                        .join(' • ') || 'Sin redes';
+
+                    const rubroExtra = safeJSONParse(row.rubro_especifico) || {};
+                    const rubroDetalle = Object.entries(rubroExtra)
+                        .filter(([, valor]) => valor)
+                        .map(([clave, valor]) => `${escapeHTML(clave)}: ${escapeHTML(valor)}`)
+                        .join(' · ') || 'Sin datos adicionales';
+
+                    const fecha = row.timestamp ? new Date(row.timestamp).toLocaleString('es-AR') : 'Sin fecha';
+                    const jsonString = typeof row.json_completo === 'string'
+                        ? row.json_completo
+                        : JSON.stringify(row.json_completo || {}, null, 2);
+                    const encodedJSON = encodeURIComponent(jsonString);
+
                     const card = document.createElement('div');
-                    card.className = 'request-card';
+                    card.className = 'site-card';
                     card.innerHTML = `
-                        <div class="request-header">
-                            <div class="request-name">${request.nombre}</div>
-                            <div class="request-status status-pending">
-                                <i class="fas fa-clock"></i> Pendiente
+                        <div class="site-header">
+                            <div class="site-name">${escapeHTML(row.nombre || 'Sin nombre')}</div>
+                            <div class="site-status status-pending">
+                                <i class="fas fa-layer-group"></i> ${escapeHTML(plan.toUpperCase())}
                             </div>
                         </div>
-                        <div class="request-info">
-                            <div class="info-row">
-                                <span class="info-label">Plan:</span>
-                                <span class="badge badge-${request.plan}">${request.plan}</span>
-                            </div>
+                        <div class="site-info">
                             <div class="info-row">
                                 <span class="info-label">Rubro:</span>
-                                <span class="info-value">${request.rubro}</span>
+                                <span class="info-value">${escapeHTML(row.rubro || 'Sin rubro')}</span>
                             </div>
                             <div class="info-row">
                                 <span class="info-label">Email:</span>
-                                <span class="info-value">${request.email}</span>
+                                <span class="info-value">${escapeHTML(row.email || 'Sin email')}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Teléfono:</span>
+                                <span class="info-value">${escapeHTML(row.telefono || 'Sin teléfono')}</span>
                             </div>
                             <div class="info-row">
                                 <span class="info-label">Dominio:</span>
-                                <span class="info-value">${request.dominio}</span>
+                                <span class="info-value">${escapeHTML(row.dominio || 'Sin dominio')}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Colores:</span>
+                                <span class="info-value">${escapeHTML(row.colores || 'Sin especificar')}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Tipografía:</span>
+                                <span class="info-value">${escapeHTML(row.tipografia || 'Por definir')}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Redes:</span>
+                                <span class="info-value">${redesHTML}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Datos rubro:</span>
+                                <span class="info-value">${rubroDetalle}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Descripción:</span>
+                                <span class="info-value">${escapeHTML(row.descripcion || 'Sin descripción')}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Recibido:</span>
+                                <span class="info-value">${escapeHTML(fecha)}</span>
                             </div>
                         </div>
-                        <div class="request-actions">
-                            <button class="action-btn approve-btn" onclick="aprobarSolicitud(${request.issue_number})">
-                                <i class="fas fa-check"></i> Aprobar
+                        <div class="site-actions">
+                            <button class="action-btn" onclick="copySolicitudJSON(this)" data-json="${encodedJSON}">
+                                <i class="fas fa-copy"></i> Copiar JSON
                             </button>
-                            <button class="action-btn reject-btn" onclick="rechazarSolicitud(${request.issue_number})">
-                                <i class="fas fa-times"></i> Rechazar
+                            <button class="action-btn" onclick="abrirWhatsApp('${normalizarNumero(row.whatsapp)}')" ${row.whatsapp ? '' : 'disabled'}>
+                                <i class="fab fa-whatsapp"></i> WhatsApp
+                            </button>
+                            <button class="action-btn" onclick="abrirEmail('${escapeHTML(row.email || '')}', '${escapeHTML(`Solicitud ${plan.toUpperCase()} - ${row.nombre || ''}`)}')" ${row.email ? '' : 'disabled'}>
+                                <i class="fas fa-envelope"></i> Email
                             </button>
                         </div>
                     `;
+
                     container.appendChild(card);
                 });
+
             } catch (error) {
                 console.error('Error al cargar solicitudes:', error);
-                container.innerHTML = '<p class="error">Error al cargar solicitudes</p>';
+                container.innerHTML = `<p class="no-requests">❌ Error al cargar solicitudes: ${escapeHTML(error.message)}</p>`;
             }
         }
-        
-        // Aprobar solicitud (agrega label "aprobado" y ejecuta workflow)
-        async function aprobarSolicitud(issueNumber) {
-            // Confirmación antes de aprobar
-            if (!confirm(`¿Aprobar solicitud #${issueNumber}? Esto creará el repositorio PRIVADO automáticamente (preview).`)) {
-                return;
-            }
-            
-            try {
-                // Obtener token desde localStorage
-                const token = localStorage.getItem('github_token') || '';
-                
-                if (!token) {
-                    alert('⚠️ Se necesita un token de GitHub (PAT) para crear comentarios.\n\n' +
-                          'Configúralo en la sección "Configuración" arriba (solo una vez).\n\n' +
-                          'El workflow procesará el comentario automáticamente usando GITHUB_TOKEN.');
-                    verificarToken();
-                    return;
-                }
-                
-                console.log('🔑 Token encontrado, creando comentario /aprobar...');
-                
-                // Crear comentario "/aprobar" en el Issue
-                // El workflow procesar-comentarios.yml detectará el comentario y agregará el label automáticamente
-                const response = await fetch(`https://api.github.com/repos/komkida91/gkachele-requests/issues/${issueNumber}/comments`, {
-                    method: 'POST',
-                    headers: {
-                        'Accept': 'application/vnd.github.v3+json',
-                        'Content-Type': 'application/json',
-                        'Authorization': `token ${token}`
-                    },
-                    body: JSON.stringify({
-                        body: '/aprobar'
-                    })
-                });
-                
-                if (response.ok) {
-                    // Éxito
-                    alert(`✅ Solicitud #${issueNumber} aprobada.\n\n` +
-                          `Se creó comentario "/aprobar" en el Issue.\n\n` +
-                          `El workflow procesará el comentario y creará el repositorio PRIVADO automáticamente.\n\n` +
-                          `📋 Espera unos segundos y recarga la página para ver el progreso.`);
-                    
-                    // Recargar solicitudes después de 2 segundos
-                    setTimeout(() => {
-                        loadPendingRequests();
-                    }, 2000);
-                } else if (response.status === 401) {
-                    // Token inválido
-                    alert('⚠️ Token de GitHub inválido. Verifica la configuración.');
-                    verificarToken();
-                } else {
-                    // Otro error
-                    const errorData = await response.json().catch(() => ({}));
-                    throw new Error(errorData.message || `HTTP ${response.status}`);
-                }
-            } catch (error) {
-                console.error('Error al aprobar:', error);
-                alert(`❌ Error al aprobar solicitud #${issueNumber}.\n\n` +
-                      `Error: ${error.message}\n\n` +
-                      `Verifica la consola para más detalles.`);
-            }
+
+        function copySolicitudJSON(button) {
+            const jsonData = decodeURIComponent(button.getAttribute('data-json') || '');
+            navigator.clipboard.writeText(jsonData)
+                .then(() => {
+                    button.textContent = 'Copiado ✓';
+                    setTimeout(() => { button.innerHTML = '<i class="fas fa-copy"></i> Copiar JSON'; }, 1500);
+                })
+                .catch(() => alert('No se pudo copiar el JSON.'));
         }
-        
-        // Rechazar solicitud (agrega label "rechazado")
-        async function rechazarSolicitud(issueNumber) {
-            // Confirmación antes de rechazar
-            if (!confirm(`¿Rechazar solicitud #${issueNumber}? Esto cancelará la creación del repositorio.`)) {
-                return;
-            }
-            
-            try {
-                // Obtener token desde localStorage
-                const token = localStorage.getItem('github_token') || '';
-                
-                if (!token) {
-                    alert('⚠️ Se necesita un token de GitHub (PAT) para crear comentarios.\n\n' +
-                          'Configúralo en la sección "Configuración" arriba (solo una vez).\n\n' +
-                          'El workflow procesará el comentario automáticamente usando GITHUB_TOKEN.');
-                    verificarToken();
-                    return;
-                }
-                
-                // Crear comentario "/rechazar" en el Issue
-                // El workflow procesar-comentarios.yml detectará el comentario y agregará el label automáticamente
-                const response = await fetch(`https://api.github.com/repos/komkida91/gkachele-requests/issues/${issueNumber}/comments`, {
-                    method: 'POST',
-                    headers: {
-                        'Accept': 'application/vnd.github.v3+json',
-                        'Content-Type': 'application/json',
-                        'Authorization': `token ${token}`
-                    },
-                    body: JSON.stringify({
-                        body: '/rechazar'
-                    })
-                });
-                
-                if (response.ok) {
-                    // Éxito
-                    alert(`❌ Solicitud #${issueNumber} rechazada.\n\n` +
-                          `Se creó comentario "/rechazar" en el Issue.\n\n` +
-                          `El workflow procesará el comentario y marcará la solicitud como rechazada.\n\n` +
-                          `📋 La solicitud quedará cancelada.`);
-                    
-                    // Recargar solicitudes después de 2 segundos
-                    setTimeout(() => {
-                        loadPendingRequests();
-                    }, 2000);
-                } else if (response.status === 401) {
-                    // Token inválido
-                    alert('⚠️ Token de GitHub inválido. Verifica la configuración.');
-                    verificarToken();
-                } else {
-                    // Otro error
-                    const errorData = await response.json().catch(() => ({}));
-                    throw new Error(errorData.message || `HTTP ${response.status}`);
-                }
-            } catch (error) {
-                console.error('Error al rechazar:', error);
-                alert(`❌ Error al rechazar solicitud #${issueNumber}.\n\n` +
-                      `Error: ${error.message}\n\n` +
-                      `Verifica la consola para más detalles.`);
-            }
+
+        function abrirWhatsApp(numero) {
+            if (!numero) return;
+            window.open(`https://wa.me/${numero}`, '_blank');
         }
+
+        function abrirEmail(email, subject) {
+            if (!email) return;
+            const enlace = `mailto:${email}?subject=${encodeURIComponent(subject)}`;
+            window.location.href = enlace;
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadSites();
+            loadPendingRequests();
+            updateTime();
+            updateMetrics();
+
+            setInterval(() => {
+                loadSites();
+                loadPendingRequests();
+                updateTime();
+                updateMetrics();
+            }, 300000);
+        });
 
         // Chequear status de un sitio
         async function checkStatus(url) {
@@ -1267,101 +1087,6 @@
             document.getElementById('update-time').textContent = time;
         }
 
-        // Inicializar
-        // Token de GitHub - NO hardcodear por seguridad
-        // Se guarda en localStorage del navegador (persistente)
-        // El usuario solo lo ingresa una vez
-        
-        // Token de GitHub - Se carga desde localStorage o se puede configurar manualmente
-        // Los workflows usan GITHUB_TOKEN automáticamente desde GitHub Secrets
-        
-        // Funciones para manejar token de GitHub
-        function guardarToken() {
-            const tokenInput = document.getElementById('github-token-input');
-            const token = tokenInput.value.trim();
-            
-            if (!token) {
-                alert('⚠️ Por favor ingresa un token de GitHub');
-                return;
-            }
-            
-            // Guardar en localStorage
-            localStorage.setItem('github_token', token);
-            
-            // Mantener sección visible (puede editar el token si quiere)
-            // document.getElementById('token-section').style.display = 'none';
-            
-            // Recargar solicitudes pendientes
-            alert('✅ Token guardado. Cargando solicitudes pendientes...');
-            
-            // Esperar un poco y luego cargar solicitudes
-            setTimeout(() => {
-                loadPendingRequests();
-            }, 500);
-        }
-        
-        // Función para obtener token desde GitHub Secrets vía workflow
-        async function obtenerTokenDesdeSecrets() {
-            // Intentar obtener token desde localStorage primero
-            const storedToken = localStorage.getItem('github_token');
-            if (storedToken && storedToken.trim() !== '') {
-                return storedToken;
-            }
-            
-            // Si no hay token, retornar vacío
-            // El usuario debe configurarlo una vez en la sección "Configuración"
-            // O usar un token personal (PAT) desde GitHub Secrets
-            return '';
-        }
-        
-        function obtenerToken() {
-            // Obtener token de localStorage (sincrónico)
-            const storedToken = localStorage.getItem('github_token');
-            if (storedToken && storedToken.trim() !== '') {
-                return storedToken;
-            }
-            return '';
-        }
-        
-        function verificarToken() {
-            const token = localStorage.getItem('github_token') || '';
-            const tokenSection = document.getElementById('token-section');
-            const tokenInput = document.getElementById('github-token-input');
-            
-            // Siempre mostrar la sección
-            tokenSection.style.display = 'block';
-            
-            // Si hay token, prellenar el campo (pero oculto)
-            if (token && token.trim() !== '' && tokenInput) {
-                tokenInput.value = token;
-                tokenInput.type = 'password';
-            } else if (tokenInput) {
-                tokenInput.value = '';
-                tokenInput.type = 'password';
-            }
-            
-            return token && token.trim() !== '';
-        }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            // Verificar token al cargar
-            verificarToken();
-            
-            // Cargar sitios y solicitudes
-            loadSites();
-            loadPendingRequests(); // Cargar solicitudes pendientes automáticamente
-            updateTime();
-            updateMetrics();
-            
-            // Auto-refresh cada 5 minutos
-            setInterval(() => {
-                loadSites();
-                loadPendingRequests(); // Recargar solicitudes también
-                updateTime();
-                updateMetrics();
-            }, 300000);
-        });
-
         // Animación para notificaciones
         const style = document.createElement('style');
         style.textContent = `
@@ -1380,3 +1105,4 @@
     </script>
 </body>
 </html>
+
