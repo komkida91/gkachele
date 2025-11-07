@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Solicitud de Sitio · GKACHELE</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-pVnXN8pGf2c1wMek9hbSAVnX1soxO0hX9B5yA1sJfTbsnzx1GawDg5n0pYht3e1JgKp1IsfRSAU1PP0o7pC8Ug==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <style>
+    :root {
+      --bg: #0b0b0f;
+      --card: rgba(22, 22, 30, 0.92);
+      --accent: #ff6b35;
+      --text: #f1f1f5;
+      --muted: #8a8a94;
+      --border: rgba(255, 255, 255, 0.12);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: "Segoe UI", system-ui, sans-serif;
+      background: radial-gradient(circle at top left, rgba(255, 107, 53, 0.12), transparent 40%),
+                  radial-gradient(circle at bottom right, rgba(69, 123, 157, 0.08), transparent 35%),
+                  var(--bg);
+      min-height: 100vh;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2.5rem 1rem;
+    }
+
+    .form-container {
+      width: min(580px, 100%);
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 2.25rem;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
+      backdrop-filter: blur(14px);
+    }
+
+    h1 {
+      font-size: 1.9rem;
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+      margin-bottom: 1.8rem;
+    }
+
+    h1 i {
+      color: var(--accent);
+    }
+
+    .field {
+      margin-bottom: 1.3rem;
+    }
+
+    label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 0.55rem;
+    }
+
+    input[type="text"],
+    textarea,
+    select {
+      width: 100%;
+      padding: 0.9rem 1rem;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: rgba(0, 0, 0, 0.35);
+      color: var(--text);
+      font-size: 0.95rem;
+      transition: border 0.2s ease, transform 0.2s ease;
+    }
+
+    input:focus,
+    textarea:focus,
+    select:focus {
+      outline: none;
+      border-color: var(--accent);
+      transform: translateY(-1px);
+    }
+
+    textarea {
+      min-height: 130px;
+      resize: vertical;
+    }
+
+    .actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 1rem;
+      margin-top: 2rem;
+      flex-wrap: wrap;
+    }
+
+    button {
+      all: unset;
+      cursor: pointer;
+      padding: 0.85rem 1.8rem;
+      border-radius: 999px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    button.primary {
+      background: var(--accent);
+      color: #fff;
+      box-shadow: 0 12px 25px rgba(255, 107, 53, 0.25);
+    }
+
+    button.primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 16px 35px rgba(255, 107, 53, 0.32);
+    }
+
+    .status-message {
+      margin-top: 1rem;
+      font-size: 0.95rem;
+      color: var(--muted);
+      min-height: 1.4rem;
+    }
+
+    .status-message.success { color: #5fe1a4; }
+    .status-message.error { color: #ff9682; }
+
+    @media (max-width: 520px) {
+      .form-container {
+        padding: 1.75rem;
+      }
+
+      h1 { font-size: 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+  <main class="form-container">
+    <h1><i class="fa-solid fa-paper-plane"></i> Solicitud de Sitio GKACHELE</h1>
+    <form id="requestForm">
+      <div class="field">
+        <label for="nombre_cliente">Nombre del cliente</label>
+        <input type="text" id="nombre_cliente" name="nombre_cliente" placeholder="Ej. María Gómez" required />
+      </div>
+
+      <div class="field">
+        <label for="rubro">Rubro</label>
+        <select id="rubro" name="rubro" required>
+          <option value="" disabled selected>Seleccionar rubro</option>
+          <option value="restaurante">Restaurante</option>
+          <option value="cosmeticos">Cosméticos</option>
+          <option value="base">Base / Genérico</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="plan">Plan</label>
+        <select id="plan" name="plan" required>
+          <option value="" disabled selected>Seleccionar plan</option>
+          <option value="base">Base</option>
+          <option value="pro">Pro</option>
+          <option value="premium">Premium</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="redes_sociales">Redes Sociales / Links</label>
+        <textarea id="redes_sociales" name="redes_sociales" placeholder="Ej. Instagram: @mi_negocio&#10;Facebook: facebook.com/mi.negocio"></textarea>
+      </div>
+
+      <div class="actions">
+        <button type="submit" class="primary" id="submitButton">
+          <i class="fa-solid fa-circle-check"></i>
+          Enviar solicitud
+        </button>
+      </div>
+
+      <p class="status-message" id="statusMessage"></p>
+    </form>
+  </main>
+
+  <script src="config.js"></script>
+  <script src="config-token.js"></script>
+  <script src="js/form-submit.js" type="module"></script>
+</body>
+</html>
+

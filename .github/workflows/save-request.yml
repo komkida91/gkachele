@@ -1,0 +1,113 @@
+name: Guardar solicitud de cliente
+
+on:
+  workflow_dispatch:
+    inputs:
+      nombre_cliente:
+        description: "Nombre del cliente"
+        required: true
+        type: string
+      slug:
+        description: "Identificador opcional"
+        required: false
+        type: string
+      rubro:
+        description: "Rubro del negocio"
+        required: true
+        type: choice
+        options:
+          - restaurante
+          - cosmeticos
+          - base
+      plan:
+        description: "Plan solicitado"
+        required: true
+        type: choice
+        options:
+          - base
+          - pro
+          - premium
+      redes:
+        description: "Redes sociales o enlaces relevantes"
+        required: false
+        type: string
+      timestamp:
+        description: "Fecha de creación (ISO 8601)"
+        required: false
+        type: string
+
+jobs:
+  save-request:
+    name: Guardar solicitud
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    env:
+      INPUT_NOMBRE_CLIENTE: ${{ github.event.inputs.nombre_cliente }}
+      INPUT_SLUG: ${{ github.event.inputs.slug }}
+      INPUT_RUBRO: ${{ github.event.inputs.rubro }}
+      INPUT_PLAN: ${{ github.event.inputs.plan }}
+      INPUT_REDES: ${{ github.event.inputs.redes }}
+      INPUT_TIMESTAMP: ${{ github.event.inputs.timestamp }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.ADMIN_TOKEN }}
+
+      - name: Preparar archivo de solicitudes
+        run: |
+          mkdir -p data
+          if [ ! -f data/requests.json ]; then
+            echo "[]" > data/requests.json
+          fi
+
+      - name: Agregar entrada
+        run: |
+          node <<'NODE'
+          const fs = require('fs');
+          const path = 'data/requests.json';
+
+          let content;
+          try {
+            content = fs.readFileSync(path, 'utf8');
+          } catch (error) {
+            content = '[]';
+          }
+
+          let entries;
+          try {
+            entries = JSON.parse(content || '[]');
+            if (!Array.isArray(entries)) entries = [];
+          } catch (error) {
+            entries = [];
+          }
+
+          const entry = {
+            nombre_cliente: process.env.INPUT_NOMBRE_CLIENTE,
+            slug: process.env.INPUT_SLUG && process.env.INPUT_SLUG.trim() ? process.env.INPUT_SLUG.trim() : (process.env.INPUT_NOMBRE_CLIENTE || '').toLowerCase().replace(/[^a-z0-9-]+/g, '-').replace(/^-+|-+$/g, '') || `sitio-${Date.now()}`,
+            rubro: process.env.INPUT_RUBRO,
+            plan: process.env.INPUT_PLAN,
+            redes: process.env.INPUT_REDES || '',
+            estado: 'pendiente',
+            created_at: process.env.INPUT_TIMESTAMP && process.env.INPUT_TIMESTAMP.trim() ? process.env.INPUT_TIMESTAMP.trim() : new Date().toISOString()
+          };
+
+          entries.push(entry);
+          fs.writeFileSync(path, JSON.stringify(entries, null, 2));
+          NODE
+
+      - name: Commit y push
+        run: |
+          git config user.name "GKACHELE Bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add data/requests.json
+          if git diff --cached --quiet; then
+            echo "No hay cambios que guardar"
+            exit 0
+          fi
+          git commit -m "Registrar solicitud de ${INPUT_NOMBRE_CLIENTE}" --no-verify
+          git push
+

@@ -1,0 +1,17 @@
+# robots.txt para sitios GKACHELE
+# Permitir todos los crawlers
+
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: {{SITEMAP_URL}}
+
+# Crawl delay (opcional, evita sobrecarga)
+Crawl-delay: 1
+
+# Bloquear directorios sensibles (si existen)
+Disallow: /admin/
+Disallow: /private/
+Disallow: /.git/
+

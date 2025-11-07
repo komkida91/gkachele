@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Panel de Solicitudes · GKACHELE</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-pVnXN8pGf2c1wMek9hbSAVnX1soxO0hX9B5yA1sJfTbsnzx1GawDg5n0pYht3e1JgKp1IsfRSAU1PP0o7pC8Ug==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <style>
+    :root {
+      --bg: #08080b;
+      --card: rgba(20, 22, 30, 0.95);
+      --accent: #ff6b35;
+      --accent-soft: rgba(255, 107, 53, 0.12);
+      --text: #f0f3ff;
+      --muted: #9191a1;
+      --border: rgba(255, 255, 255, 0.08);
+      --success: #36f3b2;
+      --pending: #ffd166;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: "Segoe UI", system-ui, sans-serif;
+      background: linear-gradient(160deg, rgba(255, 107, 53, 0.08), transparent 45%),
+                  linear-gradient(320deg, rgba(69, 123, 157, 0.08), transparent 35%),
+                  var(--bg);
+      min-height: 100vh;
+      color: var(--text);
+      padding: 3.5rem 1.25rem;
+    }
+
+    header {
+      max-width: 1220px;
+      margin: 0 auto 2rem auto;
+      display: flex;
+      flex-direction: column;
+      gap: 0.45rem;
+    }
+
+    header h1 {
+      font-size: 2.1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.9rem;
+    }
+
+    header h1 i { color: var(--accent); }
+
+    header p { color: var(--muted); }
+
+    .card {
+      max-width: 1220px;
+      margin: 0 auto;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 1.8rem 2rem;
+      box-shadow: 0 25px 55px rgba(0, 0, 0, 0.35);
+      backdrop-filter: blur(16px);
+    }
+
+    .toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .toolbar button {
+      all: unset;
+      padding: 0.75rem 1.6rem;
+      border-radius: 999px;
+      background: var(--accent);
+      color: #fff;
+      cursor: pointer;
+      display: inline-flex;
+      gap: 0.6rem;
+      align-items: center;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .toolbar button:hover { transform: translateY(-2px); box-shadow: 0 16px 35px rgba(255, 107, 53, 0.28); }
+
+    table {
+      width: 100%;
+      border-spacing: 0;
+      color: inherit;
+    }
+
+    thead {
+      background: rgba(255, 255, 255, 0.04);
+      border-radius: 12px;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    th, td {
+      padding: 0.95rem 0.9rem;
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+    }
+
+    tbody tr:hover { background: rgba(255, 255, 255, 0.03); }
+
+    .status-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      padding: 0.35rem 0.75rem;
+      border-radius: 999px;
+      font-weight: 600;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .status-tag.pending {
+      background: rgba(255, 209, 102, 0.12);
+      color: var(--pending);
+    }
+
+    .status-tag.approved {
+      background: rgba(54, 243, 178, 0.14);
+      color: var(--success);
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 2.2rem 1rem;
+      color: var(--muted);
+    }
+
+    .approve-btn {
+      all: unset;
+      cursor: pointer;
+      padding: 0.55rem 1.3rem;
+      border-radius: 999px;
+      background: var(--accent);
+      color: #fff;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      transition: transform 0.2s ease;
+    }
+
+    .approve-btn:hover { transform: translateY(-2px); }
+    .approve-btn[disabled] { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+    .status-bar {
+      margin-top: 1.5rem;
+      font-size: 0.95rem;
+      min-height: 1.4rem;
+      color: var(--muted);
+    }
+
+    .status-bar.success { color: var(--success); }
+    .status-bar.error { color: #ff8d7a; }
+
+    @media (max-width: 780px) {
+      table, thead, tbody, th, td, tr { display: block; }
+      thead { display: none; }
+      tr { margin-bottom: 1.2rem; border: 1px solid var(--border); border-radius: 12px; padding: 1rem; }
+      td { border: none; padding: 0.5rem 0; }
+      td::before {
+        content: attr(data-label);
+        display: block;
+        font-weight: 600;
+        color: var(--muted);
+        margin-bottom: 0.35rem;
+      }
+      .approve-btn { width: 100%; justify-content: center; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1><i class="fa-solid fa-chart-line"></i> Panel de Solicitudes</h1>
+    <p>Revisa las solicitudes pendientes y aprueba aquellas que deban avanzar a producción.</p>
+  </header>
+
+  <section class="card">
+    <div class="toolbar">
+      <div>
+        <strong id="pendingCounter">0 pendientes</strong>
+      </div>
+      <button id="refreshButton" type="button">
+        <i class="fa-solid fa-rotate"></i>
+        Actualizar
+      </button>
+    </div>
+
+    <div class="table-wrapper">
+      <table id="requestsTable">
+        <thead>
+          <tr>
+            <th>Cliente</th>
+            <th>Rubro</th>
+            <th>Plan</th>
+            <th>Redes</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody id="requestsBody">
+          <tr class="empty-state" id="emptyStateRow">
+            <td data-label="Aviso">No hay solicitudes registradas.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="status-bar" id="dashboardStatus"></div>
+  </section>
+
+  <script src="config.js"></script>
+  <script src="config-token.js"></script>
+  <script src="js/dashboard.js" type="module"></script>
+</body>
+</html>
+

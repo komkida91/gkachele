@@ -1,0 +1,110 @@
+name: Aprobar y desplegar sitio de cliente
+
+on:
+  workflow_dispatch:
+    inputs:
+      nombre_cliente:
+        description: "Nombre del cliente"
+        required: true
+        type: string
+      slug:
+        description: "Identificador único del sitio"
+        required: true
+        type: string
+      rubro:
+        description: "Rubro seleccionado"
+        required: true
+        type: choice
+        options:
+          - restaurante
+          - cosmeticos
+          - base
+      plan:
+        description: "Plan seleccionado"
+        required: true
+        type: choice
+        options:
+          - base
+          - pro
+          - premium
+      redes:
+        description: "Redes sociales o enlaces"
+        required: false
+        type: string
+
+jobs:
+  deploy-site:
+    name: Crear sitio
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    env:
+      INPUT_NOMBRE_CLIENTE: ${{ github.event.inputs.nombre_cliente }}
+      INPUT_SLUG: ${{ github.event.inputs.slug }}
+      INPUT_RUBRO: ${{ github.event.inputs.rubro }}
+      INPUT_PLAN: ${{ github.event.inputs.plan }}
+      INPUT_REDES: ${{ github.event.inputs.redes }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.ADMIN_TOKEN }}
+
+      - name: Preparar script
+        run: |
+          chmod +x core/scripts/create-site.sh
+
+      - name: Crear sitio
+        run: |
+          core/scripts/create-site.sh \
+            "${INPUT_SLUG}" \
+            "${INPUT_NOMBRE_CLIENTE}" \
+            "${INPUT_RUBRO}" \
+            "${INPUT_PLAN}" \
+            "${INPUT_REDES}"
+
+      - name: Actualizar estado de solicitud
+        run: |
+          node <<'NODE'
+          const fs = require('fs');
+          const path = 'data/requests.json';
+
+          let entries = [];
+          try {
+            const raw = fs.readFileSync(path, 'utf8');
+            entries = JSON.parse(raw || '[]');
+            if (!Array.isArray(entries)) entries = [];
+          } catch (error) {
+            console.error('No se pudo leer data/requests.json', error);
+            entries = [];
+          }
+
+          const slug = process.env.INPUT_SLUG;
+          const siteUrl = `https://gkachele.duckdns.org/proyectos/${slug}/`;
+          const updated = entries.map((entry) => {
+            if (!entry || entry.slug !== slug) return entry;
+            return {
+              ...entry,
+              estado: 'aprobado',
+              aprobado_en: new Date().toISOString(),
+              sitio_url: siteUrl
+            };
+          });
+
+          fs.writeFileSync(path, JSON.stringify(updated, null, 2));
+          NODE
+
+      - name: Commit y push
+        run: |
+          git config user.name "GKACHELE Bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add data/requests.json proyectos/${INPUT_SLUG}
+          if git diff --cached --quiet; then
+            echo "No hay cambios que subir"
+            exit 0
+          fi
+          git commit -m "Aprobar solicitud de ${INPUT_NOMBRE_CLIENTE}" --no-verify
+          git push
+

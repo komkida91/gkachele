@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<!--
+    ============================================================================
+    PROPRIEDAD INTELECTUAL - GKACHELE
+    ============================================================================
+    
+    Copyright (c) 2025 GKACHELE
+    Desarrollado desde: 29 de octubre de 2025
+    
+    Este código y su estructura son propiedad exclusiva de GKACHELE.
+    Todos los derechos reservados.
+    
+    PROPIEDAD:
+    - Código HTML/CSS/JavaScript: Propiedad de GKACHELE
+    - Sistema de automatización: Propiedad de GKACHELE
+    - Estructura y diseño: Propiedad de GKACHELE
+    
+    PROHIBICIONES:
+    - Prohibida la copia, reproducción o distribución sin autorización
+    - Prohibida la modificación no autorizada
+    - Prohibido el uso comercial sin licencia
+    
+    CONTACTO: gkachele.duckdns.org
+    
+    ============================================================================
+-->
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    
+    <!-- Security Headers -->
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta http-equiv="X-Frame-Options" content="DENY">
+    <meta http-equiv="X-XSS-Protection" content="1; mode=block">
+    <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
+    <meta http-equiv="Permissions-Policy" content="geolocation=(), microphone=(), camera=()">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdnjs.cloudflare.com https://fonts.googleapis.com; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; img-src 'self' data: https:; connect-src 'self' https://api.pagecounter.io; frame-ancestors 'none'; base-uri 'self'; form-action 'self';">
+    
+    <!-- Cache Control -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    
+    <!-- SEO Meta Tags -->
+    <title>{{SITE_NAME}}</title>
+    <meta name="description" content="{{SITE_DESCRIPTION}}">
+    <meta name="keywords" content="{{SITE_KEYWORDS}}">
+    <meta name="author" content="GKACHELE">
+    <meta name="generator" content="GKACHELE Sistema Automatizado - Copyright 2025">
+    <meta name="copyright" content="Copyright (c) 2025 GKACHELE - Todos los derechos reservados">
+    <meta name="robots" content="index, follow">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://{{DOMAIN}}/">
+    <meta property="og:title" content="{{SITE_NAME}}">
+    <meta property="og:description" content="{{SITE_DESCRIPTION}}">
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://{{DOMAIN}}/">
+    <meta property="twitter:title" content="{{SITE_NAME}}">
+    <meta property="twitter:description" content="{{SITE_DESCRIPTION}}">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* CSS Variables para personalización de colores */
+        :root {
+            --color-primary: {{COLOR_PRIMARY}};
+            --color-secondary: {{COLOR_SECONDARY}};
+            --color-accent: {{COLOR_ACCENT}};
+            --color-text: {{COLOR_TEXT}};
+            --color-bg: {{COLOR_BG}};
+            --font-family: {{FONT_FAMILY}};
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: var(--font-family, Georgia, serif); 
+            color: var(--color-text, #333); 
+            line-height: 1.6; 
+        }
+        .header { background: white; padding: 20px 0; box-shadow: 0 2px 5px rgba(0,0,0,0.1); position: fixed; width: 100%; top: 0; z-index: 1000; }
+        .header .container { max-width: 1200px; margin: 0 auto; padding: 0 30px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; }
+        .logo { font-size: 1.2rem; font-weight: bold; color: var(--color-primary, #2c3e50); text-transform: uppercase; letter-spacing: 2px; }
+        .logo img { max-height: 50px; max-width: 200px; vertical-align: middle; margin-right: 10px; }
+        .nav { display: flex; gap: 30px; list-style: none; }
+        .nav a { text-decoration: none; color: #2c3e50; font-size: 0.95rem; }
+        .header-actions { display: flex; gap: 15px; align-items: center; flex-wrap: wrap; }
+        .btn-subscribe { background: transparent; color: #e74c3c; padding: 10px 25px; text-decoration: none; border: 2px solid #e74c3c; border-radius: 3px; font-size: 0.9rem; font-weight: bold; white-space: nowrap; }
+        
+        @media (max-width: 768px) {
+            .header .container { flex-direction: column; padding: 15px 20px; gap: 12px; }
+            .logo { text-align: center; width: 100%; font-size: 1rem; }
+            .nav { display: flex; flex-direction: column; width: 100%; gap: 10px; text-align: center; }
+            .nav li { width: 100%; }
+            .nav a { display: block; padding: 10px; font-size: 0.9rem; }
+            .header-actions { flex-direction: column; width: 100%; gap: 10px; }
+            .btn-subscribe { width: 100%; padding: 12px; font-size: 0.85rem; }
+            .hero { padding: 140px 20px 80px; margin-top: 140px; }
+            .hero h1 { font-size: 1.8rem; }
+        }
+        .hero { background: linear-gradient(135deg, var(--color-primary, #3b5998) 0%, var(--color-secondary, #2c3e50) 100%); color: white; padding: 180px 30px 120px; text-align: center; margin-top: 70px; }
+        .hero-flag { font-size: 3rem; margin-bottom: 20px; }
+        .hero-subtitle { text-transform: uppercase; letter-spacing: 3px; font-size: 0.9rem; margin-bottom: 20px; opacity: 0.9; }
+        .hero h1 { font-size: 3.5rem; font-weight: normal; margin-bottom: 40px; line-height: 1.2; }
+        .hero-social { display: flex; justify-content: center; gap: 20px; margin-top: 40px; flex-wrap: wrap; }
+        .hero-social a { color: white; font-size: 1.5rem; }
+        .get-on-board { padding: 80px 30px; background: white; text-align: center; }
+        .get-on-board h2 { font-size: 2.5rem; font-weight: normal; margin-bottom: 50px; color: #2c3e50; }
+        .actions-grid { max-width: 1000px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px; }
+        .action-card { padding: 40px 30px; background: #f8f9fa; border-radius: 5px; }
+        .action-card i { font-size: 2.5rem; color: var(--color-primary, #3b5998); margin-bottom: 20px; }
+        .propuestas { padding: 80px 30px; background: #f8f9fa; }
+        .propuestas h2 { text-align: center; font-size: 2.5rem; margin-bottom: 60px; color: #2c3e50; }
+        .propuestas-grid { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 40px; }
+        .propuesta-card { background: white; padding: 40px; border-radius: 5px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .propuesta-card i { font-size: 2.5rem; color: #3b5998; margin-bottom: 20px; }
+        .contact { padding: 80px 30px; background: #2c3e50; color: white; text-align: center; }
+        .contact-methods { display: flex; justify-content: center; gap: 40px; flex-wrap: wrap; margin: 40px 0; }
+        .contact-item { display: flex; align-items: center; gap: 10px; }
+        .contact-item i { color: #e74c3c; }
+        .contact-item a { color: white; text-decoration: none; }
+        .social-links { display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; }
+        .social-links a { color: white; font-size: 1.8rem; }
+        .footer { background: #1a1a1a; color: white; text-align: center; padding: 30px; }
+        .whatsapp-float { position: fixed; bottom: 30px; right: 30px; background: #25D366; color: white; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2rem; text-decoration: none; z-index: 1000; }
+        .scroll-to-top { position: fixed; bottom: 100px; right: 30px; background: #3b5998; color: white; width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; cursor: pointer; opacity: 0; visibility: hidden; transition: all 0.3s ease; z-index: 999; border: none; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+        .scroll-to-top.show { opacity: 1; visibility: visible; }
+        .scroll-to-top:hover { background: #2c3e50; transform: translateY(-3px); box-shadow: 0 6px 15px rgba(0,0,0,0.3); }
+        
+        @media (max-width: 480px) {
+            .hero h1 { font-size: 1.5rem; }
+            .hero-flag { font-size: 1.5rem; }
+            .get-on-board h2, .propuestas h2, .contact h2 { font-size: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="container">
+            <div class="logo">{{SITE_NAME}}</div>
+            <ul class="nav">
+                <li><a href="#inicio">Inicio</a></li>
+                <li><a href="#propuestas">Propuestas</a></li>
+                <li><a href="#contacto">Contacto</a></li>
+            </ul>
+            <div class="header-actions">
+                <a href="#suscribirse" class="btn-subscribe">SUSCRIBIRSE</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="hero" id="inicio">
+        <div class="hero-flag">🇦🇷</div>
+        <div class="hero-subtitle">{{HERO_SUBTITLE}}</div>
+        <h1>{{HERO_TITLE}}</h1>
+        <div class="hero-social">
+            <a href="{{FACEBOOK_URL}}" target="_blank"><i class="fab fa-facebook-f"></i></a>
+            <a href="{{TWITTER_URL}}" target="_blank"><i class="fab fa-twitter"></i></a>
+            <a href="{{INSTAGRAM_URL}}" target="_blank"><i class="fab fa-instagram"></i></a>
+        </div>
+    </div>
+
+    <div class="get-on-board">
+        <h2>{{SECTION_TITLE}}</h2>
+        <div class="actions-grid">
+            <div class="action-card">
+                <i class="fas fa-hand-holding-heart"></i>
+                <h4>Voluntariado</h4>
+                <p>Únete a nuestro equipo</p>
+            </div>
+            <div class="action-card">
+                <i class="fas fa-bullhorn"></i>
+                <h4>Difunde</h4>
+                <p>Comparte en redes</p>
+            </div>
+            <div class="action-card">
+                <i class="fas fa-envelope"></i>
+                <h4>Informate</h4>
+                <p>Suscríbete al boletín</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="propuestas" id="propuestas">
+        <h2>Nuestras Propuestas</h2>
+        <div class="propuestas-grid">
+            <div class="propuesta-card">
+                <i class="fas fa-heart"></i>
+                <h3>Salud</h3>
+                <p>Acceso universal a servicios de salud</p>
+            </div>
+            <div class="propuesta-card">
+                <i class="fas fa-graduation-cap"></i>
+                <h3>Educación</h3>
+                <p>Inversión en infraestructura</p>
+            </div>
+            <div class="propuesta-card">
+                <i class="fas fa-briefcase"></i>
+                <h3>Trabajo</h3>
+                <p>Generación de empleo</p>
+            </div>
+            <div class="propuesta-card">
+                <i class="fas fa-leaf"></i>
+                <h3>Ambiente</h3>
+                <p>Ciudad sustentable</p>
+            </div>
+            <div class="propuesta-card">
+                <i class="fas fa-shield-alt"></i>
+                <h3>Seguridad</h3>
+                <p>Prevención comunitaria</p>
+            </div>
+            <div class="propuesta-card">
+                <i class="fas fa-home"></i>
+                <h3>Vivienda</h3>
+                <p>Acceso a vivienda digna</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="contact" id="contacto">
+        <h2>Contactanos</h2>
+        <div class="contact-methods">
+            <div class="contact-item">
+                <i class="fas fa-envelope"></i>
+                <a href="mailto:{{CONTACT_EMAIL}}">{{CONTACT_EMAIL}}</a>
+            </div>
+            <div class="contact-item">
+                <i class="fas fa-phone"></i>
+                <span>{{CONTACT_PHONE}}</span>
+            </div>
+        </div>
+        <div class="social-links">
+            <a href="{{FACEBOOK_URL}}" target="_blank"><i class="fab fa-facebook-f"></i></a>
+            <a href="{{TWITTER_URL}}" target="_blank"><i class="fab fa-twitter"></i></a>
+            <a href="{{INSTAGRAM_URL}}" target="_blank"><i class="fab fa-instagram"></i></a>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>&copy; 2024 {{SITE_NAME}}</p>
+    </div>
+
+    <a href="{{WHATSAPP_URL}}" class="whatsapp-float" target="_blank">
+        <i class="fab fa-whatsapp"></i>
+    </a>
+
+    <!-- Botón Scroll to Top -->
+    <button id="scrollToTop" class="scroll-to-top" aria-label="Volver arriba">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <script>
+        // Mostrar/ocultar botón según scroll
+        window.addEventListener('scroll', function() {
+            const scrollBtn = document.getElementById('scrollToTop');
+            if (window.scrollY > 300) {
+                scrollBtn.classList.add('show');
+            } else {
+                scrollBtn.classList.remove('show');
+            }
+        });
+
+        // Scroll suave al hacer clic
+        document.getElementById('scrollToTop').addEventListener('click', function() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+    </script>
+</body>
+</html>
+
