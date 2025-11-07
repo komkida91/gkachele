@@ -62,9 +62,28 @@ case "$PLAN" in
 esac
 
 export REDES_INPUT="$REDES_RAW"
+export PAYLOAD_JSON="${PAYLOAD_JSON:-}"
 
 SOCIALS_JSON=$(node <<'NODE'
+const payload = (() => {
+  try { return JSON.parse(process.env.PAYLOAD_JSON || '{}'); }
+  catch { return {}; }
+})();
+
+if (payload.redes_sociales && Object.keys(payload.redes_sociales).length) {
+  process.stdout.write(JSON.stringify(payload.redes_sociales));
+  return;
+}
+
 const raw = process.env.REDES_INPUT || '';
+try {
+  const parsed = JSON.parse(raw);
+  if (parsed && typeof parsed === 'object') {
+    process.stdout.write(JSON.stringify(parsed));
+    return;
+  }
+} catch (error) {}
+
 const lines = raw.replace(/\r/g, '').split(/\n+/).map(line => line.trim()).filter(Boolean);
 const socials = {
   facebook: '#',
@@ -113,10 +132,19 @@ export SOCIALS_JSON
 
 REPLACEMENTS=$(node <<'NODE'
 const socials = JSON.parse(process.env.SOCIALS_JSON || '{}');
+let payload = {};
+try {
+  payload = process.env.PAYLOAD_JSON ? JSON.parse(process.env.PAYLOAD_JSON) : {};
+} catch (error) {
+  payload = {};
+}
+
+const cliente = payload.cliente || {};
+const personalizacion = payload.personalizacion || {};
 
 const replacements = {
   SITE_NAME: process.env.SITE_NAME,
-  SITE_DESCRIPTION: process.env.SITE_DESCRIPTION,
+  SITE_DESCRIPTION: payload.descripcion || process.env.SITE_DESCRIPTION,
   SITE_KEYWORDS: process.env.SITE_KEYWORDS,
   DOMAIN: process.env.DOMAIN_PATH,
   COLOR_PRIMARY: process.env.COLOR_PRIMARY,
@@ -124,13 +152,13 @@ const replacements = {
   COLOR_ACCENT: process.env.COLOR_ACCENT,
   COLOR_TEXT: process.env.COLOR_TEXT,
   COLOR_BG: process.env.COLOR_BG,
-  FONT_FAMILY: process.env.FONT_FAMILY,
-  HERO_TITLE: process.env.HERO_TITLE,
+  FONT_FAMILY: personalizacion.tipografia ? `'${personalizacion.tipografia}', 'Segoe UI', sans-serif` : process.env.FONT_FAMILY,
+  HERO_TITLE: `Bienvenido a ${cliente.nombre_completo || process.env.SITE_NAME}`,
   HERO_SUBTITLE: process.env.HERO_SUBTITLE,
-  HERO_DESCRIPTION: process.env.HERO_DESCRIPTION,
+  HERO_DESCRIPTION: payload.descripcion || process.env.HERO_DESCRIPTION,
   SECTION_TITLE: process.env.SECTION_TITLE,
-  CONTACT_EMAIL: process.env.CONTACT_EMAIL,
-  CONTACT_PHONE: process.env.CONTACT_PHONE,
+  CONTACT_EMAIL: cliente.email || process.env.CONTACT_EMAIL,
+  CONTACT_PHONE: cliente.telefono || process.env.CONTACT_PHONE,
   FACEBOOK_URL: socials.facebook || '#',
   INSTAGRAM_URL: socials.instagram || '#',
   TWITTER_URL: socials.twitter || '#',
@@ -139,6 +167,13 @@ const replacements = {
   SITEMAP_URL: `https://${process.env.DOMAIN_PATH}/sitemap.xml`,
   LAST_MOD: new Date().toISOString().split('T')[0]
 };
+
+if (personalizacion.colores_preferidos) {
+  const colors = personalizacion.colores_preferidos.split(',').map(color => color.trim()).filter(Boolean);
+  const isHex = (value) => /^#([0-9a-f]{3}|[0-9a-f]{6})$/i.test(value);
+  if (colors[0] && isHex(colors[0])) replacements.COLOR_PRIMARY = colors[0];
+  if (colors[1] && isHex(colors[1])) replacements.COLOR_ACCENT = colors[1];
+}
 
 process.stdout.write(JSON.stringify(replacements));
 NODE
@@ -175,6 +210,10 @@ const walk = (dir) => {
 walk(siteDir);
 NODE
 "$REPLACEMENTS"
+
+if [[ -n "${PAYLOAD_JSON}" ]]; then
+  echo "$PAYLOAD_JSON" > "$SITE_DIR/config.json"
+fi
 
 echo "✅ Sitio creado en proyectos/$SLUG usando plantilla '$RUBRO' (${PLAN})."
 

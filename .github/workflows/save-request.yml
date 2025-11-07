@@ -17,7 +17,11 @@ on:
         type: choice
         options:
           - restaurante
+          - danza
           - cosmeticos
+          - politica
+          - fitness
+          - educacion
           - base
       plan:
         description: "Plan solicitado"
@@ -35,6 +39,10 @@ on:
         description: "Fecha de creación (ISO 8601)"
         required: false
         type: string
+      payload:
+        description: "Datos completos de la solicitud (JSON)"
+        required: false
+        type: string
 
 jobs:
   save-request:
@@ -50,6 +58,7 @@ jobs:
       INPUT_PLAN: ${{ github.event.inputs.plan }}
       INPUT_REDES: ${{ github.event.inputs.redes }}
       INPUT_TIMESTAMP: ${{ github.event.inputs.timestamp }}
+      INPUT_PAYLOAD: ${{ github.event.inputs.payload }}
 
     steps:
       - name: Checkout
@@ -85,14 +94,59 @@ jobs:
             entries = [];
           }
 
+          const sanitize = (value) => (value ? value.toString().trim() : '');
+          const slugify = (value) => {
+            const base = sanitize(value);
+            if (!base) return '';
+            return base
+              .normalize('NFD')
+              .replace(/[\u0300-\u036f]/g, '')
+              .toLowerCase()
+              .replace(/[^a-z0-9-]+/g, '-')
+              .replace(/-{2,}/g, '-')
+              .replace(/^-+|-+$/g, '');
+          };
+
+          let payload = {};
+          try {
+            payload = process.env.INPUT_PAYLOAD ? JSON.parse(process.env.INPUT_PAYLOAD) : {};
+          } catch (error) {
+            payload = {};
+          }
+
+          let redes = payload.redes_sociales || {};
+          if ((!redes || Object.keys(redes).length === 0) && process.env.INPUT_REDES) {
+            try {
+              redes = JSON.parse(process.env.INPUT_REDES);
+            } catch (error) {
+              redes = { resumen: process.env.INPUT_REDES };
+            }
+          }
+
+          const baseNombre = sanitize(process.env.INPUT_NOMBRE_CLIENTE) || sanitize(payload?.cliente?.nombre_completo) || 'Sitio';
+          let slug = sanitize(process.env.INPUT_SLUG) || sanitize(payload.slug);
+          if (!slug) slug = slugify(baseNombre) || `sitio-${Date.now()}`;
+
+          payload.slug = slug;
+
           const entry = {
-            nombre_cliente: process.env.INPUT_NOMBRE_CLIENTE,
-            slug: process.env.INPUT_SLUG && process.env.INPUT_SLUG.trim() ? process.env.INPUT_SLUG.trim() : (process.env.INPUT_NOMBRE_CLIENTE || '').toLowerCase().replace(/[^a-z0-9-]+/g, '-').replace(/^-+|-+$/g, '') || `sitio-${Date.now()}`,
-            rubro: process.env.INPUT_RUBRO,
-            plan: process.env.INPUT_PLAN,
-            redes: process.env.INPUT_REDES || '',
+            nombre_cliente: baseNombre,
+            slug,
+            rubro: sanitize(process.env.INPUT_RUBRO) || sanitize(payload?.cliente?.rubro),
+            plan: sanitize(process.env.INPUT_PLAN) || sanitize(payload.plan),
+            contacto: {
+              email: sanitize(payload?.cliente?.email) || null,
+              telefono: sanitize(payload?.cliente?.telefono) || null
+            },
+            personalizacion: payload.personalizacion || {},
+            redes_sociales: redes,
+            direccion: payload.direccion || {},
+            rubro_especifico: payload.rubro_especifico || null,
+            descripcion: sanitize(payload.descripcion),
+            dominio: payload.dominio || {},
+            payload,
             estado: 'pendiente',
-            created_at: process.env.INPUT_TIMESTAMP && process.env.INPUT_TIMESTAMP.trim() ? process.env.INPUT_TIMESTAMP.trim() : new Date().toISOString()
+            created_at: sanitize(process.env.INPUT_TIMESTAMP) || payload.fecha_creacion || new Date().toISOString()
           };
 
           entries.push(entry);

@@ -17,7 +17,11 @@ on:
         type: choice
         options:
           - restaurante
+          - danza
           - cosmeticos
+          - politica
+          - fitness
+          - educacion
           - base
       plan:
         description: "Plan seleccionado"
@@ -29,6 +33,10 @@ on:
           - premium
       redes:
         description: "Redes sociales o enlaces"
+        required: false
+        type: string
+      payload:
+        description: "Datos completos de la solicitud (JSON)"
         required: false
         type: string
 
@@ -45,6 +53,7 @@ jobs:
       INPUT_RUBRO: ${{ github.event.inputs.rubro }}
       INPUT_PLAN: ${{ github.event.inputs.plan }}
       INPUT_REDES: ${{ github.event.inputs.redes }}
+      INPUT_PAYLOAD: ${{ github.event.inputs.payload }}
 
     steps:
       - name: Checkout
@@ -57,6 +66,8 @@ jobs:
           chmod +x core/scripts/create-site.sh
 
       - name: Crear sitio
+        env:
+          PAYLOAD_JSON: ${{ github.event.inputs.payload }}
         run: |
           core/scripts/create-site.sh \
             "${INPUT_SLUG}" \
