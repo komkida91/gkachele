@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Solicitud de Sitio · GKACHELE</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-pVnXN8pGf2c1wMek9hbSAVnX1soxO0hX9B5yA1sJfTbsnzx1GawDg5n0pYht3e1JgKp1IsfRSAU1PP0o7pC8Ug==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <style>
+    :root {
+      --bg: #0b0b0f;
+      --card: rgba(22, 22, 30, 0.92);
+      --accent: #ff6b35;
+      --text: #f1f1f5;
+      --muted: #8a8a94;
+      --border: rgba(255, 255, 255, 0.12);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: "Segoe UI", system-ui, sans-serif;
+      background: radial-gradient(circle at top left, rgba(255, 107, 53, 0.12), transparent 40%),
+                  radial-gradient(circle at bottom right, rgba(69, 123, 157, 0.08), transparent 35%),
+                  var(--bg);
+      min-height: 100vh;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2.5rem 1rem;
+    }
+
+    .form-container {
+      width: min(780px, 100%);
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      padding: 2.5rem 2rem;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
+      backdrop-filter: blur(14px);
+      overflow: hidden;
+    }
+
+    h1 {
+      font-size: 2rem;
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+      margin-bottom: 1.8rem;
+    }
+
+    h1 i {
+      color: var(--accent);
+    }
+
+    .form-section {
+      margin-bottom: 2rem;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 16px;
+      padding: 1.5rem;
+      background: rgba(0, 0, 0, 0.2);
+    }
+
+    .form-section h2 {
+      font-size: 1.1rem;
+      margin-bottom: 1rem;
+      color: #ffffff;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .form-section h3 {
+      font-size: 1rem;
+      margin-bottom: 0.75rem;
+      color: var(--accent);
+    }
+
+    .field {
+      margin-bottom: 1.2rem;
+    }
+
+    .field small {
+      display: block;
+      margin-top: 0.4rem;
+      color: var(--muted);
+      font-size: 0.75rem;
+    }
+
+    label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 0.45rem;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="tel"],
+    input[type="url"],
+    textarea,
+    select {
+      width: 100%;
+      padding: 0.85rem 1rem;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: rgba(0, 0, 0, 0.35);
+      color: var(--text);
+      font-size: 0.95rem;
+      transition: border 0.2s ease, transform 0.2s ease;
+    }
+
+    input:focus,
+    textarea:focus,
+    select:focus {
+      outline: none;
+      border-color: var(--accent);
+      transform: translateY(-1px);
+    }
+
+    textarea {
+      min-height: 120px;
+      resize: vertical;
+    }
+
+    .field-grid {
+      display: grid;
+      gap: 1rem;
+    }
+
+    .field-grid.two-columns {
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    }
+
+    .field-grid.three-columns {
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    }
+
+    .rubro-extra {
+      display: none;
+      margin-top: 1.2rem;
+      padding: 1rem;
+      border-radius: 12px;
+      border: 1px dashed rgba(255, 255, 255, 0.12);
+      background: rgba(0, 0, 0, 0.25);
+    }
+
+    .campos-rubro {
+      display: none;
+    }
+
+    .actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 1rem;
+      margin-top: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    button {
+      all: unset;
+      cursor: pointer;
+      padding: 0.9rem 1.8rem;
+      border-radius: 999px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    button.primary {
+      background: var(--accent);
+      color: #fff;
+      box-shadow: 0 12px 25px rgba(255, 107, 53, 0.25);
+    }
+
+    button.primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 18px 35px rgba(255, 107, 53, 0.32);
+    }
+
+    .status-message {
+      margin-top: 1.2rem;
+      font-size: 0.95rem;
+      color: var(--muted);
+      min-height: 1.4rem;
+    }
+
+    .status-message.success { color: #5fe1a4; }
+    .status-message.error { color: #ff9682; }
+
+    @media (max-width: 640px) {
+      .form-container {
+        padding: 2rem 1.4rem;
+      }
+
+      h1 {
+        font-size: 1.6rem;
+      }
+
+      .form-section {
+        padding: 1.25rem 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="form-container">
+    <h1><i class="fa-solid fa-paper-plane"></i> Solicitud de Sitio GKACHELE</h1>
+    <form id="requestForm">
+      <section class="form-section">
+        <h2>Datos del Cliente</h2>
+        <div class="field-grid two-columns">
+          <div class="field">
+            <label for="nombre">Nombre Completo *</label>
+            <input type="text" id="nombre" name="nombre" required placeholder="Tu nombre completo" />
+          </div>
+          <div class="field">
+            <label for="plan">Plan *</label>
+            <select id="plan" name="plan" required>
+              <option value="" disabled selected>Seleccionar plan</option>
+              <option value="base">Base</option>
+              <option value="pro">Pro</option>
+              <option value="premium">Premium</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field-grid two-columns">
+          <div class="field">
+            <label for="rubro">Rubro / Negocio *</label>
+            <select id="rubro" name="rubro" required>
+              <option value="" disabled selected>Seleccionar rubro...</option>
+              <option value="restaurante">Restaurante</option>
+              <option value="danza">Danza</option>
+              <option value="cosmeticos">Cosméticos</option>
+              <option value="politica">Política</option>
+              <option value="fitness">Fitness</option>
+              <option value="educacion">Educación</option>
+              <option value="base">Base / Otro</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="email">Email *</label>
+            <input type="email" id="email" name="email" required placeholder="tu@email.com" />
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="telefono">Teléfono *</label>
+          <input type="tel" id="telefono" name="telefono" required placeholder="+54 9 11 2345 6789" />
+        </div>
+
+        <div id="campos-rubro-especificos" class="rubro-extra">
+          <h3 id="titulo-campos-rubro">Información Específica del Rubro</h3>
+
+          <div id="campos-restaurante" class="campos-rubro">
+            <div class="field-grid two-columns">
+              <div class="field">
+                <label for="menu_url">URL del Menú (opcional)</label>
+                <input type="url" id="menu_url" name="menu_url" placeholder="https://ejemplo.com/menu.pdf" />
+              </div>
+              <div class="field">
+                <label for="horarios">Horarios de Atención</label>
+                <input type="text" id="horarios" name="horarios" placeholder="Ej: Lun a Vie 12-15 y 19-23" />
+              </div>
+            </div>
+            <div class="field-grid two-columns">
+              <div class="field">
+                <label for="reservas">Sistema de Reservas</label>
+                <input type="text" id="reservas" name="reservas" placeholder="Ej: WhatsApp, teléfono, online" />
+              </div>
+              <div class="field">
+                <label for="capacidad">Capacidad (opcional)</label>
+                <input type="text" id="capacidad" name="capacidad" placeholder="Ej: 50 personas" />
+              </div>
+            </div>
+            <div class="field">
+              <label for="especialidad_culinaria">Especialidad Culinaria</label>
+              <input type="text" id="especialidad_culinaria" name="especialidad_culinaria" placeholder="Ej: Cocina italiana, Parrilla" />
+            </div>
+          </div>
+
+          <div id="campos-danza" class="campos-rubro">
+            <div class="field-grid two-columns">
+              <div class="field">
+                <label for="clases">Tipos de Clases</label>
+                <input type="text" id="clases" name="clases" placeholder="Ej: Ballet, Salsa, Hip Hop" />
+              </div>
+              <div class="field">
+                <label for="horarios_clases">Horarios de Clases</label>
+                <input type="text" id="horarios_clases" name="horarios_clases" placeholder="Ej: Lunes y Miércoles 18-20" />
+              </div>
+            </div>
+            <div class="field-grid two-columns">
+              <div class="field">
+                <label for="niveles">Niveles</label>
+                <input type="text" id="niveles" name="niveles" placeholder="Ej: Principiante, Intermedio" />
+              </div>
+              <div class="field">
+                <label for="estilos">Estilos de Danza</label>
+                <input type="text" id="estilos" name="estilos" placeholder="Ej: Clásico, Moderno, Urbano" />
+              </div>
+            </div>
+            <div class="field">
+              <label for="profesores">Profesores (opcional)</label>
+              <input type="text" id="profesores" name="profesores" placeholder="Ej: María García, Juan Pérez" />
+            </div>
+          </div>
+
+          <div id="campos-cosmeticos" class="campos-rubro">
+            <div class="field-grid two-columns">
+              <div class="field">
+                <label for="productos_url">URL del Catálogo (opcional)</label>
+                <input type="url" id="productos_url" name="productos_url" placeholder="https://ejemplo.com/catalogo" />
+              </div>
+              <div class="field">
+                <label for="catalogo">Tipo de Catálogo</label>
+                <input type="text" id="catalogo" name="catalogo" placeholder="Ej: Maquillaje, Cuidado facial" />
+              </div>
+            </div>
+            <div class="field-grid two-columns">
+              <div class="field">
+                <label for="categorias">Categorías de Productos</label>
+                <input type="text" id="categorias" name="categorias" placeholder="Ej: Labiales, Bases, Sombras" />
+              </div>
+              <div class="field">
+                <label for="ofertas">Ofertas Especiales (opcional)</label>
+                <input type="text" id="ofertas" name="ofertas" placeholder="Ej: 2x1 en labiales" />
+              </div>
+            </div>
+            <div class="field">
+              <label for="envios">Información de Envíos</label>
+              <input type="text" id="envios" name="envios" placeholder="Ej: Envío gratis desde $5000" />
+            </div>
+          </div>
+
+          <div id="campos-politica" class="campos-rubro">
+            <div class="field">
+              <label for="propuestas">Propuestas Principales</label>
+              <textarea id="propuestas" name="propuestas" rows="3" placeholder="Describe tus principales propuestas"></textarea>
+            </div>
+            <div class="field-grid two-columns">
+              <div class="field">
+                <label for="agenda">Agenda de Actividades (opcional)</label>
+                <input type="text" id="agenda" name="agenda" placeholder="Ej: Reuniones semanales, eventos públicos" />
+              </div>
+              <div class="field">
+                <label for="eventos">Próximos Eventos (opcional)</label>
+                <input type="text" id="eventos" name="eventos" placeholder="Ej: Charla el 15/03" />
+              </div>
+            </div>
+            <div class="field">
+              <label for="noticias">Noticias / Comunicados (opcional)</label>
+              <input type="text" id="noticias" name="noticias" placeholder="URL o fuente de noticias" />
+            </div>
+          </div>
+
+          <div id="campos-fitness" class="campos-rubro">
+            <div class="field-grid two-columns">
+              <div class="field">
+                <label for="planes_fitness">Planes de Entrenamiento</label>
+                <input type="text" id="planes_fitness" name="planes_fitness" placeholder="Ej: Básico, Premium, Personalizado" />
+              </div>
+              <div class="field">
+                <label for="horarios_fitness">Horarios</label>
+                <input type="text" id="horarios_fitness" name="horarios_fitness" placeholder="Ej: Lunes a Sábado 6-22" />
+              </div>
+            </div>
+            <div class="field-grid two-columns">
+              <div class="field">
+                <label for="entrenadores">Entrenadores (opcional)</label>
+                <input type="text" id="entrenadores" name="entrenadores" placeholder="Ej: Personal trainers certificados" />
+              </div>
+              <div class="field">
+                <label for="instalaciones">Instalaciones (opcional)</label>
+                <input type="text" id="instalaciones" name="instalaciones" placeholder="Ej: Gimnasio completo, piscina" />
+              </div>
+            </div>
+            <div class="field">
+              <label for="precios">Precios (opcional)</label>
+              <input type="text" id="precios" name="precios" placeholder="Ej: Desde $5000/mes" />
+            </div>
+          </div>
+
+          <div id="campos-educacion" class="campos-rubro">
+            <div class="field-grid two-columns">
+              <div class="field">
+                <label for="cursos">Cursos Ofrecidos</label>
+                <input type="text" id="cursos" name="cursos" placeholder="Ej: Inglés, Programación, Diseño" />
+              </div>
+              <div class="field">
+                <label for="horarios_educacion">Horarios de Clases</label>
+                <input type="text" id="horarios_educacion" name="horarios_educacion" placeholder="Ej: Mañana, tarde, noche" />
+              </div>
+            </div>
+            <div class="field-grid two-columns">
+              <div class="field">
+                <label for="niveles_educacion">Niveles</label>
+                <input type="text" id="niveles_educacion" name="niveles_educacion" placeholder="Ej: Inicial, Intermedio, Avanzado" />
+              </div>
+              <div class="field">
+                <label for="profesores_educacion">Profesores (opcional)</label>
+                <input type="text" id="profesores_educacion" name="profesores_educacion" placeholder="Ej: Docentes certificados" />
+              </div>
+            </div>
+            <div class="field">
+              <label for="inscripcion">Forma de Inscripción</label>
+              <input type="text" id="inscripcion" name="inscripcion" placeholder="Ej: Online, presencial, WhatsApp" />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="form-section">
+        <h2>Personalización</h2>
+        <div class="field-grid two-columns">
+          <div class="field">
+            <label for="colores">Colores Preferidos</label>
+            <input type="text" id="colores" name="colores" placeholder="Ej: Azul y blanco, Naranja y negro" />
+            <small>Ejemplos: Azul y blanco, o Naranja y negro</small>
+          </div>
+          <div class="field">
+            <label for="tipografia">Tipografía Preferida (opcional)</label>
+            <select id="tipografia" name="tipografia">
+              <option value="">Seleccionar tipografía...</option>
+              <option value="Georgia">Georgia (Serif clásica)</option>
+              <option value="Inter">Inter (Moderno)</option>
+              <option value="Roboto">Roboto (Limpio)</option>
+              <option value="Montserrat">Montserrat (Elegante)</option>
+              <option value="Open Sans">Open Sans (Legible)</option>
+              <option value="Poppins">Poppins (Dinámico)</option>
+            </select>
+          </div>
+        </div>
+        <div class="field">
+          <label for="logo_url">Logo URL (opcional)</label>
+          <input type="url" id="logo_url" name="logo_url" placeholder="https://ejemplo.com/logo.png" />
+          <small>URL de tu logo existente, o déjalo vacío para usar texto.</small>
+        </div>
+        <div class="field">
+          <label for="descripcion">Descripción de lo que necesitas</label>
+          <textarea id="descripcion" name="descripcion" placeholder="Cuéntanos qué necesitas para tu sitio web..."></textarea>
+        </div>
+      </section>
+
+      <section class="form-section">
+        <h2>Redes Sociales (opcional)</h2>
+        <div class="field-grid two-columns">
+          <div class="field">
+            <label for="facebook">Facebook</label>
+            <input type="url" id="facebook" name="facebook" placeholder="https://facebook.com/mi-negocio" />
+          </div>
+          <div class="field">
+            <label for="instagram">Instagram</label>
+            <input type="url" id="instagram" name="instagram" placeholder="https://instagram.com/mi-negocio" />
+          </div>
+        </div>
+        <div class="field-grid two-columns">
+          <div class="field">
+            <label for="twitter">Twitter / X</label>
+            <input type="url" id="twitter" name="twitter" placeholder="https://twitter.com/mi-negocio" />
+          </div>
+          <div class="field">
+            <label for="whatsapp">WhatsApp</label>
+            <input type="text" id="whatsapp" name="whatsapp" placeholder="+54 9 11 2345-6789" />
+            <small>Número con código de país.</small>
+          </div>
+        </div>
+        <div class="field-grid two-columns">
+          <div class="field">
+            <label for="youtube">YouTube</label>
+            <input type="url" id="youtube" name="youtube" placeholder="https://youtube.com/@mi-negocio" />
+          </div>
+          <div class="field">
+            <label for="tiktok">TikTok</label>
+            <input type="url" id="tiktok" name="tiktok" placeholder="https://tiktok.com/@mi-negocio" />
+          </div>
+        </div>
+      </section>
+
+      <section class="form-section">
+        <h2>Dirección (opcional)</h2>
+        <div class="field-grid two-columns">
+          <div class="field">
+            <label for="direccion_calle">Calle y Número</label>
+            <input type="text" id="direccion_calle" name="direccion_calle" placeholder="Av. Corrientes 1234" />
+          </div>
+          <div class="field">
+            <label for="direccion_ciudad">Ciudad</label>
+            <input type="text" id="direccion_ciudad" name="direccion_ciudad" placeholder="Buenos Aires" />
+          </div>
+        </div>
+        <div class="field-grid two-columns">
+          <div class="field">
+            <label for="direccion_provincia">Provincia</label>
+            <input type="text" id="direccion_provincia" name="direccion_provincia" placeholder="CABA" />
+          </div>
+          <div class="field">
+            <label for="direccion_cp">Código Postal</label>
+            <input type="text" id="direccion_cp" name="direccion_cp" placeholder="C1234ABC" />
+          </div>
+        </div>
+      </section>
+
+      <section class="form-section">
+        <h2>Dominio</h2>
+        <div class="field">
+          <label for="dominio">Nombre de dominio preferido (opcional)</label>
+          <input type="text" id="dominio" name="dominio" placeholder="mi-negocio" />
+          <small>Se creará como: mi-negocio.gkachele.duckdns.org (si está disponible).</small>
+        </div>
+      </section>
+
+      <div class="actions">
+        <button type="submit" class="primary" id="submitButton">
+          <i class="fa-solid fa-circle-check"></i>
+          Enviar solicitud
+        </button>
+      </div>
+
+      <p class="status-message" id="statusMessage"></p>
+    </form>
+  </main>
+
+  <script>
+    (function() {
+      const rubroSelect = document.getElementById('rubro');
+      const rubroContainer = document.getElementById('campos-rubro-especificos');
+      const tituloRubro = document.getElementById('titulo-campos-rubro');
+      const rubrosData = {
+        restaurante: { colores: 'Rojo y naranja', tipografia: 'Roboto' },
+        danza: { colores: 'Rosa y magenta', tipografia: 'Poppins' },
+        cosmeticos: { colores: 'Morado y violeta', tipografia: 'Montserrat' },
+        politica: { colores: 'Azul y azul oscuro', tipografia: 'Georgia' },
+        fitness: { colores: 'Rojo y rojo oscuro', tipografia: 'Roboto' },
+        educacion: { colores: 'Azul y azul claro', tipografia: 'Open Sans' }
+      };
+
+      function actualizarCamposRubroAdmin() {
+        const rubro = rubroSelect.value;
+        document.querySelectorAll('.campos-rubro').forEach(el => el.style.display = 'none');
+
+        if (!rubro || rubro === 'base') {
+          rubroContainer.style.display = 'none';
+          return;
+        }
+
+        const section = document.getElementById(`campos-${rubro}`);
+        if (section) {
+          rubroContainer.style.display = 'block';
+          section.style.display = 'block';
+          const text = rubroSelect.selectedOptions[0]?.text || 'Rubro';
+          tituloRubro.textContent = `Información Específica - ${text}`;
+        }
+
+        if (rubrosData[rubro]) {
+          if (!document.getElementById('colores').value) {
+            document.getElementById('colores').value = rubrosData[rubro].colores;
+          }
+          if (!document.getElementById('tipografia').value) {
+            document.getElementById('tipografia').value = rubrosData[rubro].tipografia;
+          }
+        }
+      }
+
+      rubroSelect.addEventListener('change', actualizarCamposRubroAdmin);
+      actualizarCamposRubroAdmin();
+    })();
+  </script>
+  <script src="config.js"></script>
+  <script src="config-token.js"></script>
+  <script src="js/form-submit.js" type="module"></script>
+</body>
+</html>
+
