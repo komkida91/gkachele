@@ -1,0 +1,69 @@
+name: Approve or Cancel Request
+
+on:
+  workflow_dispatch:
+    inputs:
+      action:
+        required: true
+        type: string
+        description: "Acción a ejecutar (approve_request o cancel_request)"
+      payload:
+        required: false
+        type: string
+        description: "JSON con datos adicionales (slug, nombre, rubro, plan, redes)"
+
+permissions:
+  contents: write
+
+jobs:
+  handle:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+
+      - name: Instalar dependencias
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y jq
+
+      - name: Preparar datos del payload
+        id: datos
+        run: |
+          payload='${{ github.event.inputs.payload }}'
+          if [ -z "$payload" ] || [ "$payload" = "null" ]; then
+            payload='{"slug":"demo-site","nombre":"Cliente Demo","rubro":"base","plan":"base","redes":{}}'
+          fi
+
+          echo "$payload" > payload.json
+          slug=$(jq -r '.slug // "demo-site"' payload.json)
+          nombre=$(jq -r '.nombre // "Cliente Demo"' payload.json)
+          rubro=$(jq -r '.rubro // "base"' payload.json)
+          plan=$(jq -r '.plan // "base"' payload.json)
+          redes=$(jq -c '.redes // {}' payload.json)
+
+          echo "slug=$slug" >> "$GITHUB_OUTPUT"
+          echo "nombre=$nombre" >> "$GITHUB_OUTPUT"
+          echo "rubro=$rubro" >> "$GITHUB_OUTPUT"
+          echo "plan=$plan" >> "$GITHUB_OUTPUT"
+          echo "redes=$redes" >> "$GITHUB_OUTPUT"
+
+      - name: Ejecutar create-site.sh
+        if: ${{ github.event.inputs.action == 'approve_request' }}
+        env:
+          SLUG: ${{ steps.datos.outputs.slug }}
+          NOMBRE: ${{ steps.datos.outputs.nombre }}
+          RUBRO: ${{ steps.datos.outputs.rubro }}
+          PLAN: ${{ steps.datos.outputs.plan }}
+          REDES: ${{ steps.datos.outputs.redes }}
+        run: |
+          echo "Aprobando solicitud para $NOMBRE ($SLUG)..."
+          chmod +x core/scripts/create-site.sh
+          core/scripts/create-site.sh "$SLUG" "$NOMBRE" "$RUBRO" "$PLAN" "$REDES"
+
+      - name: Registrar cancelación
+        if: ${{ github.event.inputs.action == 'cancel_request' }}
+        run: |
+          echo "Cancelando solicitud (sin acciones adicionales)."
+

@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Panel de Aprobaciones</title>
+  <style>
+    body {
+      font-family: "Segoe UI", Arial, sans-serif;
+      text-align: center;
+      padding: 40px;
+      background: #0f1117;
+      color: #f5f7ff;
+    }
+
+    h1 {
+      margin-bottom: 0.5rem;
+    }
+
+    p {
+      margin-bottom: 2rem;
+      color: #a5acc4;
+    }
+
+    button {
+      padding: 12px 28px;
+      font-size: 16px;
+      margin: 10px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+    }
+
+    .approve {
+      background: #22c55e;
+      color: #ffffff;
+    }
+
+    .cancel {
+      background: #ef4444;
+      color: #ffffff;
+    }
+
+    .status {
+      margin-top: 2rem;
+      font-size: 0.95rem;
+      min-height: 1.5rem;
+    }
+  </style>
+</head>
+<body>
+  <h1>Panel de Aprobaciones</h1>
+  <p>Seleccioná una acción para la solicitud actual:</p>
+
+  <button class="approve" onclick="sendRequest('approve_request')">✅ Aceptar</button>
+  <button class="cancel" onclick="sendRequest('cancel_request')">❌ Cancelar</button>
+
+  <div class="status" id="status"></div>
+
+  <script>
+    const API_URL = "https://api.github.com/repos/komkida91/gkachele/dispatches";
+    const TOKEN_PLACEHOLDER = "ghp_token_placeholder";
+
+    const samplePayload = {
+      approve_request: {
+        slug: "demo-site",
+        nombre: "Cliente Demo",
+        rubro: "base",
+        plan: "base",
+        redes: {}
+      },
+      cancel_request: {}
+    };
+
+    function setStatus(message, type = "info") {
+      const statusEl = document.getElementById("status");
+      statusEl.textContent = message;
+      statusEl.style.color = type === "error" ? "#f87171" : "#34d399";
+    }
+
+    async function sendRequest(action) {
+      setStatus("Enviando solicitud...");
+
+      try {
+        const response = await fetch(API_URL, {
+          method: "POST",
+          headers: {
+            Accept: "application/vnd.github+json",
+            Authorization: `Bearer ${TOKEN_PLACEHOLDER}`,
+          },
+          body: JSON.stringify({
+            event_type: action,
+            client_payload: samplePayload[action] || {}
+          }),
+        });
+
+        if (!response.ok) {
+          const errorText = await response.text();
+          throw new Error(`${response.status} ${response.statusText}: ${errorText}`);
+        }
+
+        setStatus(`Solicitud enviada correctamente: ${action}`, "success");
+        alert(`Solicitud enviada correctamente: ${action}`);
+      } catch (error) {
+        console.error("Error al enviar la solicitud", error);
+        setStatus(`Error al enviar la solicitud: ${error.message}`, "error");
+        alert(`Error al enviar la solicitud: ${error.message}`);
+      }
+    }
+  </script>
+</body>
+</html>
+

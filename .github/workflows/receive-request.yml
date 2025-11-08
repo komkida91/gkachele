@@ -1,0 +1,30 @@
+name: Receive Request (Frontend Trigger)
+
+on:
+  repository_dispatch:
+    types: [approve_request, cancel_request]
+
+permissions:
+  actions: write
+  contents: read
+
+jobs:
+  forward:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Log Request
+        run: |
+          echo "Evento recibido: ${{ github.event.action }}"
+          echo "Payload: ${{ toJson(github.event.client_payload) }}"
+
+      - name: Trigger Secondary Workflow
+        uses: benc-uk/workflow-dispatch@v1
+        with:
+          workflow: approve-request.yml
+          ref: main
+          token: ${{ secrets.GITHUB_TOKEN }}
+          inputs: |
+            action=${{ github.event.action }}
+            payload=${{ toJson(github.event.client_payload) }}
+
