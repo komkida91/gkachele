@@ -4,6 +4,15 @@ const RAW_REQUESTS_URL = `https://raw.githubusercontent.com/${REPO_OWNER}/${REPO
 const DEPLOY_WORKFLOW_FILE = 'deploy-site.yml';
 const WORKFLOW_REF = 'main';
 
+const DISPATCH_URL = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/dispatches`;
+const DEFAULT_DISPATCH_PAYLOAD = {
+  slug: 'demo-site',
+  nombre: 'Cliente Demo',
+  rubro: 'base',
+  plan: 'base',
+  redes: {}
+};
+
 const SITES_DATA = [
   {
     nombre: 'GKACHELE',
@@ -52,7 +61,9 @@ const elements = {
   sitesOnline: document.getElementById('sitesOnline'),
   requestsStatusPill: document.getElementById('requestsStatusPill'),
   lastUpdateTime: document.getElementById('lastUpdateTime'),
-  sitesGrid: document.getElementById('sitesGrid')
+  sitesGrid: document.getElementById('sitesGrid'),
+  dispatchApproveButton: document.getElementById('dispatchApprove'),
+  dispatchCancelButton: document.getElementById('dispatchCancel')
 };
 
 const emptyRequestsTemplate = document.createElement('div');
@@ -165,7 +176,7 @@ function getEntrySlug(entry) {
 
 function copyPayload(payload = {}) {
   if (!navigator.clipboard || typeof navigator.clipboard.writeText !== 'function') {
-    setStatus('Copiá manualmente desde el modal JSON (clipboard no disponible).', 'error');
+    setStatus('Copiá manualmente desde el JSON (clipboard no disponible).', 'error');
     return Promise.reject(new Error('Clipboard API no disponible'));
   }
 
@@ -179,14 +190,36 @@ function copyPayload(payload = {}) {
     });
 }
 
-async function triggerDeployWorkflow(payload) {
+function buildDispatchPayload(entry = {}) {
+  const payload = entry?.payload || {};
+  const cliente = payload?.cliente || {};
+  const redes = payload?.redes_sociales || (() => {
+    try {
+      return JSON.parse(entry?.redes || '{}');
+    } catch {
+      return {};
+    }
+  })();
+
+  return {
+    slug: entry.slug || payload.slug || getEntrySlug(entry),
+    nombre: entry.nombre_cliente || cliente.nombre_completo || 'Cliente Demo',
+    rubro: entry.rubro || cliente.rubro || 'base',
+    plan: entry.plan || payload.plan || 'base',
+    redes
+  };
+}
+
+async function sendRepositoryDispatch(action = 'approve_request', entry = null) {
   const token = getToken();
 
   if (!token) {
     throw new Error('Debes configurar el token de GitHub en este navegador.');
   }
 
-  const response = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/actions/workflows/${DEPLOY_WORKFLOW_FILE}/dispatches`, {
+  const payload = entry ? buildDispatchPayload(entry) : DEFAULT_DISPATCH_PAYLOAD;
+
+  const response = await fetch(DISPATCH_URL, {
     method: 'POST',
     headers: {
       Accept: 'application/vnd.github+json',
@@ -194,48 +227,14 @@ async function triggerDeployWorkflow(payload) {
       'Content-Type': 'application/json'
     },
     body: JSON.stringify({
-      ref: WORKFLOW_REF,
-      inputs: payload
+      event_type: action,
+      client_payload: payload
     })
   });
 
   if (!response.ok) {
     const text = await response.text();
     throw new Error(`GitHub API respondió ${response.status}: ${text}`);
-  }
-}
-
-async function approveRequest(entry = {}, button) {
-  const payload = entry.payload || {};
-  const displayName = entry?.nombre_cliente || payload?.cliente?.nombre_completo || entry?.slug || 'solicitud';
-  const targetButton = button;
-
-  if (targetButton) {
-    targetButton.disabled = true;
-    targetButton.innerHTML = '<i class="fa-solid fa-gear fa-spin"></i> Procesando...';
-  }
-
-  setStatus(`Aprobando solicitud de ${displayName}...`);
-
-  try {
-    await triggerDeployWorkflow({
-      nombre_cliente: entry.nombre_cliente || payload?.cliente?.nombre_completo || displayName,
-      slug: getEntrySlug(entry),
-      rubro: entry.rubro || payload?.cliente?.rubro || '',
-      plan: entry.plan || payload?.plan || '',
-      redes: JSON.stringify(payload?.redes_sociales || {}),
-      payload: JSON.stringify(payload || {})
-    });
-
-    setStatus('✅ Workflow de despliegue disparado. Refrescá en unos minutos para ver el estado actualizado.', 'success');
-  } catch (error) {
-    console.error('deploy-site error', error);
-    setStatus(`❌ No se pudo aprobar la solicitud. ${error.message}`, 'error');
-  } finally {
-    if (targetButton) {
-      targetButton.disabled = false;
-      targetButton.innerHTML = '<i class="fa-solid fa-circle-check"></i> Aprobar';
-    }
   }
 }
 
@@ -334,14 +333,54 @@ function renderRequests(requests = []) {
     approveBtn.className = 'btn';
     approveBtn.innerHTML = '<i class="fa-solid fa-circle-check"></i> Aprobar';
     approveBtn.disabled = estado !== 'pendiente';
-    approveBtn.addEventListener('click', () => approveRequest(entry, approveBtn));
+    approveBtn.addEventListener('click', async () => {
+      if (estado !== 'pendiente') return;
+      const originalLabel = approveBtn.innerHTML;
+      approveBtn.disabled = true;
+      approveBtn.innerHTML = '<i class="fa-solid fa-gear fa-spin"></i> Enviando...';
+      setStatus(`Enviando approve_request para ${entry?.nombre_cliente || entry?.slug || 'solicitud'}...`);
+      try {
+        await sendRepositoryDispatch('approve_request', entry);
+        setStatus('✅ Acción approve_request enviada. Verifica los workflows en GitHub.', 'success');
+      } catch (error) {
+        console.error('approve dispatch error', error);
+        setStatus(`❌ ${error.message}`, 'error');
+        approveBtn.disabled = false;
+        approveBtn.innerHTML = originalLabel;
+        return;
+      }
+      approveBtn.innerHTML = originalLabel;
+    });
+
+    const cancelBtn = document.createElement('button');
+    cancelBtn.className = 'btn cancel';
+    cancelBtn.innerHTML = '<i class="fa-solid fa-ban"></i> Cancelar';
+    cancelBtn.disabled = estado !== 'pendiente';
+    cancelBtn.addEventListener('click', async () => {
+      if (estado !== 'pendiente') return;
+      const originalLabel = cancelBtn.innerHTML;
+      cancelBtn.disabled = true;
+      cancelBtn.innerHTML = '<i class="fa-solid fa-gear fa-spin"></i> Enviando...';
+      setStatus(`Enviando cancel_request para ${entry?.nombre_cliente || entry?.slug || 'solicitud'}...`);
+      try {
+        await sendRepositoryDispatch('cancel_request', entry);
+        setStatus('✅ Acción cancel_request enviada.', 'success');
+      } catch (error) {
+        console.error('cancel dispatch error', error);
+        setStatus(`❌ ${error.message}`, 'error');
+        cancelBtn.disabled = false;
+        cancelBtn.innerHTML = originalLabel;
+        return;
+      }
+      cancelBtn.innerHTML = originalLabel;
+    });
 
     const copyBtn = document.createElement('button');
     copyBtn.className = 'btn btn--secondary';
     copyBtn.innerHTML = '<i class="fa-solid fa-copy"></i> Copiar JSON';
     copyBtn.addEventListener('click', () => copyPayload(payload));
 
-    actions.append(approveBtn, copyBtn);
+    actions.append(approveBtn, cancelBtn, copyBtn);
     card.appendChild(actions);
 
     elements.requestsGrid.appendChild(card);
@@ -485,6 +524,32 @@ function init() {
 
   if (elements.logoutButton) {
     elements.logoutButton.addEventListener('click', logout);
+  }
+
+  if (elements.dispatchApproveButton) {
+    elements.dispatchApproveButton.addEventListener('click', async () => {
+      setStatus('Enviando approve_request manual...');
+      try {
+        await sendRepositoryDispatch('approve_request');
+        setStatus('✅ Acción approve_request enviada correctamente.', 'success');
+      } catch (error) {
+        console.error('manual approve dispatch error', error);
+        setStatus(`❌ ${error.message}`, 'error');
+      }
+    });
+  }
+
+  if (elements.dispatchCancelButton) {
+    elements.dispatchCancelButton.addEventListener('click', async () => {
+      setStatus('Enviando cancel_request manual...');
+      try {
+        await sendRepositoryDispatch('cancel_request');
+        setStatus('✅ Acción cancel_request enviada correctamente.', 'success');
+      } catch (error) {
+        console.error('manual cancel dispatch error', error);
+        setStatus(`❌ ${error.message}`, 'error');
+      }
+    });
   }
 
   refresh();
