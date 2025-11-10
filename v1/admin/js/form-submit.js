@@ -1,9 +1,16 @@
 const REPO_OWNER = 'komkida91';
 const REPO_NAME = 'gkachele';
-const WORKFLOW_FILE = 'save-request.yml';
-const WORKFLOW_REF = 'main';
+const WORKFLOW_TARGET_FILE = 'save-request.yml';
+const WORKFLOW_TARGET_REF = 'main';
 
-const workflowUrl = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/actions/workflows/${WORKFLOW_FILE}/dispatches`;
+const SESSION_STORAGE_KEY = 'gkachele_session';
+const SESSION_TOKEN_KEY = 'gkachele_session_token';
+
+const WORKFLOW_BACKEND_REPO = 'gkachele-requests';
+const WORKFLOW_BACKEND_FILE = 'submit-request-through-app.yml';
+const WORKFLOW_BACKEND_REF = 'main';
+
+const workflowBackendUrl = `https://api.github.com/repos/${REPO_OWNER}/${WORKFLOW_BACKEND_REPO}/actions/workflows/${WORKFLOW_BACKEND_FILE}/dispatches`;
 
 const statusMessage = document.getElementById('statusMessage');
 const submitButton = document.getElementById('submitButton');
@@ -31,41 +38,97 @@ function sanitize(value = '') {
   return value ? value.toString().trim() : '';
 }
 
-function getToken() {
-  if (typeof getDefaultToken === 'function') {
-    return getDefaultToken();
+function decodeToken(encoded = '') {
+  if (!encoded) return '';
+  try {
+    return decodeURIComponent(escape(atob(encoded)));
+  } catch (_) {
+    try {
+      return atob(encoded);
+    } catch {
+      return '';
+    }
   }
-
-  if (typeof window !== 'undefined' && window.GITHUB_TOKEN_DEFAULT) {
-    return window.GITHUB_TOKEN_DEFAULT;
-  }
-
-  return '';
 }
 
-async function triggerWorkflow(payload) {
-  const token = getToken();
+function getStoredValue(key) {
+  return localStorage.getItem(key) || sessionStorage.getItem(key);
+}
 
-  if (!token) {
-    throw new Error('Falta configurar el token de autenticación (usa localStorage.setItem).');
+function getSessionData() {
+  const rawData = getStoredValue(SESSION_STORAGE_KEY);
+  if (!rawData) return null;
+  try {
+    return JSON.parse(rawData);
+  } catch {
+    return null;
+  }
+}
+
+function getSessionToken() {
+  const encoded = getStoredValue(SESSION_TOKEN_KEY);
+  return decodeToken(encoded);
+}
+
+function redirectToLogin() {
+  window.location.href = 'login.html';
+}
+
+function ensureAuthenticated() {
+  const session = getSessionData();
+  const token = getSessionToken();
+
+  if (!session || !token) {
+    return false;
   }
 
-  const response = await fetch(workflowUrl, {
+  const ttl = 7 * 24 * 60 * 60 * 1000;
+  if (!session.timestamp || Date.now() - session.timestamp > ttl) {
+    return false;
+  }
+
+  return true;
+}
+
+function encodeToBase64(value = '') {
+  if (!value) return '';
+  try {
+    return btoa(unescape(encodeURIComponent(value)));
+  } catch (_) {
+    return btoa(value);
+  }
+}
+
+async function triggerWorkflow(inputs) {
+  const sessionToken = getSessionToken();
+
+  if (!sessionToken) {
+    throw new Error('Debes iniciar sesión para enviar solicitudes.');
+  }
+
+  const encodedInputs = encodeToBase64(JSON.stringify(inputs));
+
+  const response = await fetch(workflowBackendUrl, {
     method: 'POST',
     headers: {
       Accept: 'application/vnd.github+json',
-      Authorization: `Bearer ${token}`,
+      Authorization: `token ${sessionToken}`,
       'Content-Type': 'application/json'
     },
     body: JSON.stringify({
-      ref: WORKFLOW_REF,
-      inputs: payload
+      ref: WORKFLOW_BACKEND_REF,
+      inputs: {
+        session_token: sessionToken,
+        inputs_base64: encodedInputs,
+        workflow_file: WORKFLOW_TARGET_FILE,
+        workflow_ref: WORKFLOW_TARGET_REF
+      }
     })
   });
 
   if (!response.ok) {
     const errorBody = await response.text();
-    throw new Error(`GitHub API respondió ${response.status}: ${errorBody}`);
+    throw new Error(`Backend respondió ${response.status}: ${errorBody}`);
   }
 }
 
@@ -199,6 +262,12 @@ function buildWorkflowInputs(formData) {
 async function handleSubmit(event) {
   event.preventDefault();
 
+  if (!ensureAuthenticated()) {
+    setStatus('❌ Debes iniciar sesión para registrar solicitudes.', 'error');
+    setTimeout(() => redirectToLogin(), 1200);
+    return;
+  }
+
   const formData = new FormData(form);
   const workflowInputs = buildWorkflowInputs(formData);
 
@@ -212,8 +281,9 @@ async function handleSubmit(event) {
     setStatus('✅ Solicitud enviada correctamente. Un asesor te contactará a la brevedad.', 'success');
   } catch (error) {
     console.error('workflow_dispatch error', error);
-    if (/401|token/i.test(error.message)) {
-      setStatus('❌ No se pudo registrar la solicitud. Configurá tu token con localStorage.setItem("github_token", "...PAT...")', 'error');
+    if (/401|403/.test(error.message)) {
+      setStatus('❌ Sesión inválida o expirada. Iniciá sesión nuevamente.', 'error');
+      setTimeout(() => redirectToLogin(), 1500);
     } else {
       setStatus(`❌ No se pudo registrar la solicitud. ${error.message}`, 'error');
     }
@@ -224,6 +294,12 @@ async function handleSubmit(event) {
 }
 
 if (form) {
+  if (!ensureAuthenticated()) {
+    setStatus('🔒 Iniciá sesión para cargar nuevas solicitudes.', 'error');
+    submitButton.disabled = true;
+    submitButton.classList.add('loading');
+    setTimeout(() => redirectToLogin(), 1500);
+  }
   form.addEventListener('submit', handleSubmit);
 }
 

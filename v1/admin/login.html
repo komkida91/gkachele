@@ -275,55 +275,114 @@
     </div>
 
     <script>
-        // Credenciales (en producción estarían en backend)
+        // Configuración de credenciales (en producción se valida en backend)
         const VALID_USERS = {
             'gkachele91@gmail.com': 'GK@ch3l3-M1s10n3s-2025!#$'
         };
 
+        const SESSION_STORAGE_KEY = 'gkachele_session';
+        const SESSION_TOKEN_KEY = 'gkachele_session_token';
+        const SESSION_TTL_MS = 7 * 24 * 60 * 60 * 1000; // 7 días
+
         const form = document.getElementById('login-form');
         const errorMessage = document.getElementById('error-message');
 
-        // Verificar si ya está logueado
-        window.addEventListener('DOMContentLoaded', () => {
-            const session = localStorage.getItem('gkachele_session');
-            if (session) {
-                const sessionData = JSON.parse(session);
-                const now = new Date().getTime();
-                
-                // Sesión válida por 7 días
-                if (now - sessionData.timestamp < 7 * 24 * 60 * 60 * 1000) {
-                    window.location.href = 'index.html';
-                } else {
-                    localStorage.removeItem('gkachele_session');
+        const encodeToken = (token) => {
+            try {
+                return btoa(unescape(encodeURIComponent(token)));
+            } catch (_) {
+                return btoa(token);
+            }
+        };
+
+        const decodeToken = (encoded) => {
+            if (!encoded) return '';
+            try {
+                return decodeURIComponent(escape(atob(encoded)));
+            } catch (_) {
+                try {
+                    return atob(encoded);
+                } catch {
+                    return '';
                 }
+            }
+        };
+
+        const getStoredValue = (key) =>
+            localStorage.getItem(key) || sessionStorage.getItem(key);
+
+        const persistSession = (sessionPayload, encodedToken, remember) => {
+            sessionStorage.setItem(SESSION_STORAGE_KEY, sessionPayload);
+            sessionStorage.setItem(SESSION_TOKEN_KEY, encodedToken);
+
+            if (remember) {
+                localStorage.setItem(SESSION_STORAGE_KEY, sessionPayload);
+                localStorage.setItem(SESSION_TOKEN_KEY, encodedToken);
+            } else {
+                localStorage.removeItem(SESSION_STORAGE_KEY);
+                localStorage.removeItem(SESSION_TOKEN_KEY);
+            }
+        };
+
+        const clearSession = () => {
+            localStorage.removeItem(SESSION_STORAGE_KEY);
+            localStorage.removeItem(SESSION_TOKEN_KEY);
+            sessionStorage.removeItem(SESSION_STORAGE_KEY);
+            sessionStorage.removeItem(SESSION_TOKEN_KEY);
+        };
+
+        const hasValidSession = () => {
+            const rawSession =
+                getStoredValue(SESSION_STORAGE_KEY);
+            const rawToken =
+                getStoredValue(SESSION_TOKEN_KEY);
+
+            if (!rawSession || !rawToken) {
+                return false;
+            }
+
+            try {
+                const sessionData = JSON.parse(rawSession);
+                const now = Date.now();
+                if (!sessionData?.timestamp || now - sessionData.timestamp > SESSION_TTL_MS) {
+                    clearSession();
+                    return false;
+                }
+
+                return Boolean(decodeToken(rawToken));
+            } catch {
+                clearSession();
+                return false;
+            }
+        };
+
+        window.addEventListener('DOMContentLoaded', () => {
+            if (hasValidSession()) {
+                window.location.href = 'index.html';
             }
         });
 
-        form.addEventListener('submit', (e) => {
-            e.preventDefault();
-            
+        form.addEventListener('submit', (event) => {
+            event.preventDefault();
+
             const username = document.getElementById('username').value.trim();
             const password = document.getElementById('password').value;
             const remember = document.getElementById('remember').checked;
-            
-            // Validar credenciales
+
             if (VALID_USERS[username] && VALID_USERS[username] === password) {
-                // Login exitoso
-                if (remember) {
-                    const sessionData = {
-                        user: username,
-                        timestamp: new Date().getTime()
-                    };
-                    localStorage.setItem('gkachele_session', JSON.stringify(sessionData));
-                }
-                
-                // Redireccionar al dashboard
+                const sessionData = {
+                    user: username,
+                    timestamp: Date.now()
+                };
+
+                const encodedToken = encodeToken(password);
+                persistSession(JSON.stringify(sessionData), encodedToken, remember);
+
                 window.location.href = 'index.html';
             } else {
-                // Login fallido
                 errorMessage.classList.add('show');
                 document.getElementById('password').value = '';
-                
+
                 setTimeout(() => {
                     errorMessage.classList.remove('show');
                 }, 3000);

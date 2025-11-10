@@ -4,7 +4,13 @@ const RAW_REQUESTS_URL = `https://raw.githubusercontent.com/${REPO_OWNER}/${REPO
 const DEPLOY_WORKFLOW_FILE = 'deploy-site.yml';
 const WORKFLOW_REF = 'main';
 
-const DISPATCH_URL = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/dispatches`;
+const SESSION_STORAGE_KEY = 'gkachele_session';
+const SESSION_TOKEN_KEY = 'gkachele_session_token';
+
+const WORKFLOW_BACKEND_REPO = 'gkachele-requests';
+const WORKFLOW_FILE = 'dispatch-through-app.yml';
+const WORKFLOW_DISPATCH_URL = `https://api.github.com/repos/${REPO_OWNER}/${WORKFLOW_BACKEND_REPO}/actions/workflows/${WORKFLOW_FILE}/dispatches`;
+
 const DEFAULT_DISPATCH_PAYLOAD = {
   slug: 'demo-site',
   nombre: 'Cliente Demo',
@@ -70,16 +76,64 @@ const emptyRequestsTemplate = document.createElement('div');
 emptyRequestsTemplate.className = 'empty-state';
 emptyRequestsTemplate.innerHTML = 'No hay solicitudes registradas todavía.';
 
-function getToken() {
-  if (typeof getDefaultToken === 'function') {
-    return getDefaultToken();
+function decodeToken(encoded = '') {
+  if (!encoded) return '';
+  try {
+    return decodeURIComponent(escape(atob(encoded)));
+  } catch (error) {
+    try {
+      return atob(encoded);
+    } catch {
+      return '';
+    }
+  }
+}
+
+function getSessionData() {
+  const rawData = localStorage.getItem(SESSION_STORAGE_KEY) || sessionStorage.getItem(SESSION_STORAGE_KEY);
+  if (!rawData) return null;
+  try {
+    return JSON.parse(rawData);
+  } catch {
+    return null;
+  }
+}
+
+function getSessionToken() {
+  const encodedToken = localStorage.getItem(SESSION_TOKEN_KEY) || sessionStorage.getItem(SESSION_TOKEN_KEY);
+  return decodeToken(encodedToken);
+}
+
+function ensureAuthenticated() {
+  const session = getSessionData();
+  const token = getSessionToken();
+
+  if (!session || !token) {
+    redirectToLogin();
+    return false;
   }
 
-  if (typeof window !== 'undefined' && window.GITHUB_TOKEN_DEFAULT) {
-    return window.GITHUB_TOKEN_DEFAULT;
+  const { timestamp } = session;
+  const isExpired = !timestamp || Date.now() - timestamp > 7 * 24 * 60 * 60 * 1000;
+
+  if (isExpired) {
+    clearSessionData();
+    redirectToLogin();
+    return false;
   }
 
-  return '';
+  return true;
+}
+
+function redirectToLogin() {
+  window.location.href = 'login.html';
+}
+
+function clearSessionData() {
+  localStorage.removeItem(SESSION_STORAGE_KEY);
+  localStorage.removeItem(SESSION_TOKEN_KEY);
+  sessionStorage.removeItem(SESSION_STORAGE_KEY);
+  sessionStorage.removeItem(SESSION_TOKEN_KEY);
 }
 
 function setStatus(message = '', type = 'info') {
@@ -210,31 +264,36 @@ function buildDispatchPayload(entry = {}) {
   };
 }
 
-async function sendRepositoryDispatch(action = 'approve_request', entry = null) {
-  const token = getToken();
+async function triggerApprovalWorkflow(action = 'approve_request', entry = null) {
+  const sessionToken = getSessionToken();
 
-  if (!token) {
-    throw new Error('Debes configurar el token de GitHub en este navegador.');
+  if (!sessionToken) {
+    clearSessionData();
+    throw new Error('Debes iniciar sesión nuevamente para aprobar solicitudes.');
   }
 
   const payload = entry ? buildDispatchPayload(entry) : DEFAULT_DISPATCH_PAYLOAD;
 
-  const response = await fetch(DISPATCH_URL, {
+  const response = await fetch(WORKFLOW_DISPATCH_URL, {
     method: 'POST',
     headers: {
       Accept: 'application/vnd.github+json',
-      Authorization: `Bearer ${token}`,
+      Authorization: `token ${sessionToken}`,
       'Content-Type': 'application/json'
     },
     body: JSON.stringify({
-      event_type: action,
-      client_payload: payload
+      ref: WORKFLOW_REF,
+      inputs: {
+        session_token: sessionToken,
+        action,
+        payload: JSON.stringify(payload)
+      }
     })
   });
 
   if (!response.ok) {
     const text = await response.text();
-    throw new Error(`GitHub API respondió ${response.status}: ${text}`);
+    throw new Error(`Workflow dispatch falló (${response.status}): ${text}`);
   }
 }
 
@@ -338,10 +397,10 @@ function renderRequests(requests = []) {
       const originalLabel = approveBtn.innerHTML;
       approveBtn.disabled = true;
       approveBtn.innerHTML = '<i class="fa-solid fa-gear fa-spin"></i> Enviando...';
-      setStatus(`Enviando approve_request para ${entry?.nombre_cliente || entry?.slug || 'solicitud'}...`);
+      setStatus(`Enviando approve_request a través del backend seguro para ${entry?.nombre_cliente || entry?.slug || 'solicitud'}...`);
       try {
-        await sendRepositoryDispatch('approve_request', entry);
-        setStatus('✅ Acción approve_request enviada. Verifica los workflows en GitHub.', 'success');
+        await triggerApprovalWorkflow('approve_request', entry);
+        setStatus('✅ Workflow approve_request disparado. Revisá la pestaña Actions.', 'success');
       } catch (error) {
         console.error('approve dispatch error', error);
         setStatus(`❌ ${error.message}`, 'error');
@@ -361,10 +420,10 @@ function renderRequests(requests = []) {
       const originalLabel = cancelBtn.innerHTML;
       cancelBtn.disabled = true;
       cancelBtn.innerHTML = '<i class="fa-solid fa-gear fa-spin"></i> Enviando...';
-      setStatus(`Enviando cancel_request para ${entry?.nombre_cliente || entry?.slug || 'solicitud'}...`);
+      setStatus(`Enviando cancel_request mediante el backend seguro para ${entry?.nombre_cliente || entry?.slug || 'solicitud'}...`);
       try {
-        await sendRepositoryDispatch('cancel_request', entry);
-        setStatus('✅ Acción cancel_request enviada.', 'success');
+        await triggerApprovalWorkflow('cancel_request', entry);
+        setStatus('✅ Workflow cancel_request disparado correctamente.', 'success');
       } catch (error) {
         console.error('cancel dispatch error', error);
         setStatus(`❌ ${error.message}`, 'error');
@@ -477,12 +536,25 @@ function clearCache() {
   const confirmation = window.confirm('¿Limpiar cache local (sin cerrar sesión) y recargar el panel?');
   if (!confirmation) return;
 
-  const session = localStorage.getItem('gkachele_session');
+  const sessionLocal = localStorage.getItem(SESSION_STORAGE_KEY);
+  const tokenLocal = localStorage.getItem(SESSION_TOKEN_KEY);
   localStorage.clear();
-  if (session) {
-    localStorage.setItem('gkachele_session', session);
+  if (sessionLocal) {
+    localStorage.setItem(SESSION_STORAGE_KEY, sessionLocal);
   }
+  if (tokenLocal) {
+    localStorage.setItem(SESSION_TOKEN_KEY, tokenLocal);
+  }
+
+  const sessionTemp = sessionStorage.getItem(SESSION_STORAGE_KEY);
+  const tokenTemp = sessionStorage.getItem(SESSION_TOKEN_KEY);
   sessionStorage.clear();
+  if (sessionTemp) {
+    sessionStorage.setItem(SESSION_STORAGE_KEY, sessionTemp);
+  }
+  if (tokenTemp) {
+    sessionStorage.setItem(SESSION_TOKEN_KEY, tokenTemp);
+  }
   window.location.reload();
 }
 
@@ -490,8 +562,8 @@ function logout() {
   const confirmation = window.confirm('¿Cerrar sesión en el panel de administración?');
   if (!confirmation) return;
 
-  localStorage.removeItem('gkachele_session');
-  window.location.href = 'login.html';
+  clearSessionData();
+  redirectToLogin();
 }
 
 async function refresh() {
@@ -510,6 +582,10 @@ async function refresh() {
 }
 
 function init() {
+  if (!ensureAuthenticated()) {
+    return;
+  }
+
   renderSites();
   updateStats();
   updateLastUpdateTime();
@@ -528,10 +604,10 @@ function init() {
 
   if (elements.dispatchApproveButton) {
     elements.dispatchApproveButton.addEventListener('click', async () => {
-      setStatus('Enviando approve_request manual...');
+      setStatus('Enviando approve_request manual vía backend seguro...');
       try {
-        await sendRepositoryDispatch('approve_request');
-        setStatus('✅ Acción approve_request enviada correctamente.', 'success');
+        await triggerApprovalWorkflow('approve_request');
+        setStatus('✅ Workflow approve_request en ejecución.', 'success');
       } catch (error) {
         console.error('manual approve dispatch error', error);
         setStatus(`❌ ${error.message}`, 'error');
@@ -541,10 +617,10 @@ function init() {
 
   if (elements.dispatchCancelButton) {
     elements.dispatchCancelButton.addEventListener('click', async () => {
-      setStatus('Enviando cancel_request manual...');
+      setStatus('Enviando cancel_request manual vía backend seguro...');
       try {
-        await sendRepositoryDispatch('cancel_request');
-        setStatus('✅ Acción cancel_request enviada correctamente.', 'success');
+        await triggerApprovalWorkflow('cancel_request');
+        setStatus('✅ Workflow cancel_request en ejecución.', 'success');
       } catch (error) {
         console.error('manual cancel dispatch error', error);
         setStatus(`❌ ${error.message}`, 'error');
