@@ -280,6 +280,8 @@
             'gkachele91@gmail.com': 'GK@ch3l3-M1s10n3s-2025!#$'
         };
 
+        const TOKEN_STORAGE_KEY = 'github_token';
+
         const SESSION_STORAGE_KEY = 'gkachele_session';
         const SESSION_TOKEN_KEY = 'gkachele_session_token';
         const SESSION_TTL_MS = 7 * 24 * 60 * 60 * 1000; // 7 días
@@ -306,6 +308,28 @@
                     return '';
                 }
             }
+        };
+
+        const resolveAdminToken = () => {
+            let token = '';
+
+            if (typeof getDefaultToken === 'function') {
+                try {
+                    token = getDefaultToken() || '';
+                } catch (_) {
+                    token = '';
+                }
+            }
+
+            if (!token && typeof window !== 'undefined' && window.localStorage) {
+                token = window.localStorage.getItem(TOKEN_STORAGE_KEY) || '';
+            }
+
+            if (!token && typeof window !== 'undefined' && window.GITHUB_TOKEN_DEFAULT) {
+                token = window.GITHUB_TOKEN_DEFAULT || '';
+            }
+
+            return token ? token.trim() : '';
         };
 
         const getStoredValue = (key) =>
@@ -370,16 +394,25 @@
             const remember = document.getElementById('remember').checked;
 
             if (VALID_USERS[username] && VALID_USERS[username] === password) {
+                const adminToken = resolveAdminToken();
+
+                if (!adminToken) {
+                    errorMessage.textContent = 'Configura el token del administrador con localStorage.setItem("github_token", "TU_PAT").';
+                    errorMessage.classList.add('show');
+                    return;
+                }
+
                 const sessionData = {
                     user: username,
                     timestamp: Date.now()
                 };
 
-                const encodedToken = encodeToken(password);
+                const encodedToken = encodeToken(adminToken);
                 persistSession(JSON.stringify(sessionData), encodedToken, remember);
 
                 window.location.href = 'index.html';
             } else {
+                errorMessage.textContent = 'Usuario o contraseña incorrectos';
                 errorMessage.classList.add('show');
                 document.getElementById('password').value = '';
 
