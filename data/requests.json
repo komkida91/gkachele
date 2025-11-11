@@ -1,2 +1,23 @@
-[]
-
+[
+  {
+    "nombre_cliente": "puto",
+    "slug": "knklkln",
+    "rubro": "restaurante",
+    "plan": "base",
+    "contacto": {
+      "email": null,
+      "telefono": null
+    },
+    "personalizacion": {},
+    "redes_sociales": {},
+    "direccion": {},
+    "rubro_especifico": null,
+    "descripcion": "",
+    "dominio": {},
+    "payload": {
+      "slug": "knklkln"
+    },
+    "estado": "pendiente",
+    "created_at": "2025-11-11T14:10:06.194Z"
+  }
+]
