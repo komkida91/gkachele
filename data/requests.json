@@ -19,5 +19,95 @@
     },
     "estado": "pendiente",
     "created_at": "2025-11-11T14:10:06.194Z"
+  },
+  {
+    "nombre_cliente": "pepe",
+    "slug": "pepe",
+    "rubro": "restaurante",
+    "plan": "base",
+    "contacto": {
+      "email": "jaaja@gmail.com",
+      "telefono": "66666"
+    },
+    "personalizacion": {
+      "colores_preferidos": "Rojo y naranja",
+      "tipografia": "Roboto",
+      "logo_url": null,
+      "logo_upload": null
+    },
+    "redes_sociales": {
+      "facebook": "https://www.facebook.com/",
+      "instagram": "https://www.instagram.com/",
+      "twitter": null,
+      "whatsapp": "666666",
+      "youtube": null,
+      "tiktok": null,
+      "linkedin": null
+    },
+    "direccion": {
+      "calle": "caseres,360",
+      "ciudad": "posaadas",
+      "provincia": "misiones",
+      "codigo_postal": "3360",
+      "pais": "Argentina"
+    },
+    "rubro_especifico": {
+      "horarios": "lunes a lunes",
+      "reservas": "whatsapp",
+      "capacidad": "20",
+      "especialidad_culinaria": "italiana"
+    },
+    "descripcion": "",
+    "dominio": {
+      "preferido": "validacion",
+      "generado": "validacion.gkachele.duckdns.org"
+    },
+    "payload": {
+      "plan": "base",
+      "slug": "pepe",
+      "cliente": {
+        "nombre_completo": "pepe",
+        "email": "jaaja@gmail.com",
+        "telefono": "66666",
+        "rubro": "restaurante"
+      },
+      "personalizacion": {
+        "colores_preferidos": "Rojo y naranja",
+        "tipografia": "Roboto",
+        "logo_url": null,
+        "logo_upload": null
+      },
+      "redes_sociales": {
+        "facebook": "https://www.facebook.com/",
+        "instagram": "https://www.instagram.com/",
+        "twitter": null,
+        "whatsapp": "666666",
+        "youtube": null,
+        "tiktok": null,
+        "linkedin": null
+      },
+      "direccion": {
+        "calle": "caseres,360",
+        "ciudad": "posaadas",
+        "provincia": "misiones",
+        "codigo_postal": "3360",
+        "pais": "Argentina"
+      },
+      "rubro_especifico": {
+        "horarios": "lunes a lunes",
+        "reservas": "whatsapp",
+        "capacidad": "20",
+        "especialidad_culinaria": "italiana"
+      },
+      "dominio": {
+        "preferido": "validacion",
+        "generado": "validacion.gkachele.duckdns.org"
+      },
+      "descripcion": "",
+      "estado": "pendiente_pago",
+      "fecha_creacion": "2025-11-11T15:38:24.156Z"
+    },
+    "estado": "pendiente",
+    "created_at": "2025-11-11T15:38:24.156Z"
   }
 ]
