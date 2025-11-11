@@ -14,9 +14,13 @@
         try {
           var host = window.location.hostname || '';
           var path = window.location.pathname || '';
+          var lowerPath = path.toLowerCase();
           console.log('redirect-check host=', host, 'path=', path);
           // Solo redirigir si está en github.io, NO en DuckDNS
-          if ((host.includes('github.io') || host === 'komkida91.github.io') && path.startsWith('/gkachele')) {
+          var isGithub = host.includes('github.io') || host === 'komkida91.github.io';
+          var isProjectPath = lowerPath.startsWith('/gkachele');
+          var isStagingPath = lowerPath.startsWith('/gkachele/v1/');
+          if (isGithub && isProjectPath && !isStagingPath) {
             // Reemplaza la URL en el historial para no volver a la github.io
             window.location.replace('https://gkachele.duckdns.org/admin/');
           }
