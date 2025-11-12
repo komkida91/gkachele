@@ -109,5 +109,55 @@
     },
     "estado": "pendiente",
     "created_at": "2025-11-11T15:38:24.156Z"
+  },
+  {
+    "nombre_cliente": "Test Dashboard",
+    "slug": "test-dashboard",
+    "rubro": "base",
+    "plan": "base",
+    "contacto": {
+      "email": "cliente@example.com",
+      "telefono": "+54 9 11 0000-0000"
+    },
+    "personalizacion": {
+      "colores_preferidos": "#ff6b35, #1a1a1a",
+      "tipografia": "Montserrat"
+    },
+    "redes_sociales": {
+      "instagram": "https://instagram.com/cliente",
+      "facebook": "https://facebook.com/cliente"
+    },
+    "direccion": {},
+    "rubro_especifico": null,
+    "descripcion": "Solicitud de prueba para poblar requests.json",
+    "dominio": {
+      "preferido": "cliente-prueba.gkachele.duckdns.org"
+    },
+    "payload": {
+      "nombre_cliente": "Test Dashboard",
+      "slug": "test-dashboard",
+      "rubro": "base",
+      "plan": "base",
+      "descripcion": "Solicitud de prueba para poblar requests.json",
+      "cliente": {
+        "nombre_completo": "Cliente Dashboard",
+        "email": "cliente@example.com",
+        "telefono": "+54 9 11 0000-0000",
+        "rubro": "base"
+      },
+      "redes_sociales": {
+        "instagram": "https://instagram.com/cliente",
+        "facebook": "https://facebook.com/cliente"
+      },
+      "personalizacion": {
+        "colores_preferidos": "#ff6b35, #1a1a1a",
+        "tipografia": "Montserrat"
+      },
+      "dominio": {
+        "preferido": "cliente-prueba.gkachele.duckdns.org"
+      }
+    },
+    "estado": "pendiente",
+    "created_at": "2025-11-12T09:39:03.704749Z"
   }
 ]
