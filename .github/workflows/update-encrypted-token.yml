@@ -1,0 +1,54 @@
+name: Actualizar token cifrado del panel
+
+on:
+  workflow_dispatch:
+    inputs:
+      target_branch:
+        description: "Rama donde guardar el encrypted-token (por defecto dev)"
+        required: false
+        default: "dev"
+
+permissions:
+  contents: write
+
+jobs:
+  encrypt-token:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.inputs.target_branch || 'dev' }}
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Generar token cifrado
+        env:
+          PAT_PASSPHRASE: ${{ secrets.PAT_PASSPHRASE }}
+          ADMIN_PAT: ${{ secrets.ADMIN_PAT }}
+        run: |
+          if [ -z "$PAT_PASSPHRASE" ] || [ -z "$ADMIN_PAT" ]; then
+            echo "❌ Debes definir los secrets PAT_PASSPHRASE y ADMIN_PAT antes de ejecutar este workflow." >&2
+            exit 1
+          fi
+
+          node core/scripts/encrypt-pat.js > encrypted-token.json
+          mkdir -p v1/admin/config admin/config
+          cp encrypted-token.json v1/admin/config/encrypted-token.json
+          cp encrypted-token.json admin/config/encrypted-token.json
+          rm encrypted-token.json
+
+      - name: Confirmar cambios
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "chore: actualizar token cifrado del panel"
+          commit_options: "--no-verify"
+          file_pattern: |
+            v1/admin/config/encrypted-token.json
+            admin/config/encrypted-token.json
+          branch: ${{ github.event.inputs.target_branch || 'dev' }}
+
