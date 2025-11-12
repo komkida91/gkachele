@@ -92,6 +92,65 @@
             transition: all 0.3s;
         }
 
+        .token-helper {
+            background: rgba(255, 107, 53, 0.08);
+            border: 1px solid rgba(255, 107, 53, 0.3);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .token-helper h2 {
+            font-size: 1.1rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .token-helper__hint {
+            font-size: 0.85rem;
+            color: #bbb;
+            margin-bottom: 1rem;
+        }
+
+        .token-helper__row {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .token-helper__row input {
+            flex: 1 1 200px;
+        }
+
+        .token-helper__row button {
+            background: var(--naranja);
+            border: none;
+            color: #fff;
+            padding: 0.85rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: transform 0.2s, background 0.2s;
+        }
+
+        .token-helper__row button:hover {
+            background: var(--naranja-hover);
+            transform: translateY(-1px);
+        }
+
+        .token-helper__status {
+            margin-top: 0.75rem;
+            min-height: 1.2rem;
+            font-size: 0.85rem;
+        }
+
+        .token-helper__status.error {
+            color: #ff6b76;
+        }
+
+        .token-helper__status.success {
+            color: #7ef18a;
+        }
+
         input:focus {
             outline: none;
             border-color: var(--naranja);
@@ -227,6 +286,18 @@
         
         <div class="subtitle">Dashboard de Administración</div>
 
+        <div class="token-helper">
+            <h2>Configurar token cifrado</h2>
+            <p class="token-helper__hint">
+                Introduce la passphrase para descifrar el PAT almacenado de forma segura. Solo necesitas hacerlo una vez por dispositivo.
+            </p>
+            <div class="token-helper__row">
+                <input type="password" id="tokenPassphrase" placeholder="Passphrase" autocomplete="off">
+                <button type="button" id="decryptButton">Descifrar PAT</button>
+            </div>
+            <p id="passphraseStatus" class="token-helper__status"></p>
+        </div>
+
         <div class="error-message" id="error-message">
             <i class="fas fa-exclamation-circle"></i> Usuario o contraseña incorrectos
         </div>
@@ -276,12 +347,111 @@
 
     <script>
         // Credenciales (en producción estarían en backend)
-        const VALID_USERS = {
-            'gkachele91@gmail.com': 'GK@ch3l3-M1s10n3s-2025!#$'
+        const ALLOWED_USERS = ['gkachele91@gmail.com'];
+        const ADMIN_PASSWORD_STORAGE_KEY = 'gkachele_admin_password';
+        const ENCRYPTED_TOKEN_URL = 'config/encrypted-token.json';
+        const TOKEN_STORAGE_KEY = 'github_token';
+
+        const resolveAdminPassword = () => {
+            let password = '';
+
+            if (typeof getDefaultPassword === 'function') {
+                try {
+                    password = getDefaultPassword() || '';
+                } catch (_) {
+                    password = '';
+                }
+            }
+
+            if (!password && typeof window !== 'undefined' && window.localStorage) {
+                password = window.localStorage.getItem(ADMIN_PASSWORD_STORAGE_KEY) || '';
+            }
+
+            if (!password && typeof window !== 'undefined' && window.GKACHELE_ADMIN_PASSWORD) {
+                password = window.GKACHELE_ADMIN_PASSWORD || '';
+            }
+
+            return password ? password.trim() : '';
         };
 
         const form = document.getElementById('login-form');
         const errorMessage = document.getElementById('error-message');
+        const decryptButton = document.getElementById('decryptButton');
+        const passphraseInput = document.getElementById('tokenPassphrase');
+        const passphraseStatus = document.getElementById('passphraseStatus');
+
+        const base64ToArrayBuffer = (base64) => {
+            const binary = atob(base64);
+            const len = binary.length;
+            const bytes = new Uint8Array(len);
+            for (let i = 0; i < len; i += 1) {
+                bytes[i] = binary.charCodeAt(i);
+            }
+            return bytes.buffer;
+        };
+
+        const concatBuffers = (bufferA, bufferB) => {
+            const a = new Uint8Array(bufferA);
+            const b = new Uint8Array(bufferB);
+            const merged = new Uint8Array(a.length + b.length);
+            merged.set(a, 0);
+            merged.set(b, a.length);
+            return merged.buffer;
+        };
+
+        const deriveKey = async (passphrase, saltBuffer, iterations = 200000) => {
+            const encoder = new TextEncoder();
+            const keyMaterial = await window.crypto.subtle.importKey(
+                'raw',
+                encoder.encode(passphrase),
+                'PBKDF2',
+                false,
+                ['deriveKey']
+            );
+
+            return window.crypto.subtle.deriveKey(
+                {
+                    name: 'PBKDF2',
+                    salt: saltBuffer,
+                    iterations,
+                    hash: 'SHA-256'
+                },
+                keyMaterial,
+                { name: 'AES-GCM', length: 256 },
+                false,
+                ['decrypt']
+            );
+        };
+
+        const decryptEncryptedToken = async (passphrase) => {
+            const response = await fetch(`${ENCRYPTED_TOKEN_URL}?t=${Date.now()}`, { cache: 'no-store' });
+            if (!response.ok) {
+                throw new Error('No se pudo obtener encrypted-token.json');
+            }
+
+            const data = await response.json();
+            const saltBuffer = base64ToArrayBuffer(data.salt);
+            const ivBuffer = base64ToArrayBuffer(data.iv);
+            const ciphertextBuffer = base64ToArrayBuffer(data.ciphertext);
+            const tagBuffer = base64ToArrayBuffer(data.tag);
+            const combined = concatBuffers(ciphertextBuffer, tagBuffer);
+
+            const key = await deriveKey(passphrase, saltBuffer, data.iterations || 200000);
+            const decryptedBuffer = await window.crypto.subtle.decrypt(
+                {
+                    name: 'AES-GCM',
+                    iv: ivBuffer
+                },
+                key,
+                combined
+            );
+
+            const decoder = new TextDecoder();
+            return decoder.decode(decryptedBuffer);
+        };
+        const decryptButton = document.getElementById('decryptButton');
+        const passphraseInput = document.getElementById('tokenPassphrase');
+        const passphraseStatus = document.getElementById('passphraseStatus');
 
         // Verificar si ya está logueado
         window.addEventListener('DOMContentLoaded', () => {
@@ -307,7 +477,24 @@
             const remember = document.getElementById('remember').checked;
             
             // Validar credenciales
-            if (VALID_USERS[username] && VALID_USERS[username] === password) {
+            if (!ALLOWED_USERS.includes(username.toLowerCase())) {
+                errorMessage.classList.add('show');
+                document.getElementById('password').value = '';
+                setTimeout(() => {
+                    errorMessage.classList.remove('show');
+                }, 3000);
+                return;
+            }
+
+            const expectedPassword = resolveAdminPassword();
+
+            if (!expectedPassword) {
+                errorMessage.textContent = 'Configura la contraseña con localStorage.setItem("gkachele_admin_password", "TU_CONTRASEÑA_SEGURA").';
+                errorMessage.classList.add('show');
+                return;
+            }
+
+            if (password === expectedPassword) {
                 // Login exitoso
                 if (remember) {
                     const sessionData = {
@@ -327,6 +514,42 @@
                 setTimeout(() => {
                     errorMessage.classList.remove('show');
                 }, 3000);
+            }
+        });
+
+        const handleDecrypt = async () => {
+            const passphrase = passphraseInput.value.trim();
+            if (!passphrase) {
+                passphraseStatus.textContent = 'Ingresa la passphrase para descifrar el token.';
+                passphraseStatus.classList.add('error');
+                passphraseStatus.classList.remove('success');
+                return;
+            }
+
+            passphraseStatus.textContent = 'Descifrando token...';
+            passphraseStatus.classList.remove('error', 'success');
+
+            try {
+                const token = await decryptEncryptedToken(passphrase);
+                if (!token) {
+                    throw new Error('No se obtuvo token descifrado');
+                }
+                localStorage.setItem(TOKEN_STORAGE_KEY, token.trim());
+                passphraseStatus.textContent = '✅ Token almacenado correctamente en este dispositivo.';
+                passphraseStatus.classList.add('success');
+                passphraseInput.value = '';
+            } catch (error) {
+                console.error(error);
+                passphraseStatus.textContent = '❌ Passphrase incorrecta o token cifrado inválido.';
+                passphraseStatus.classList.add('error');
+            }
+        };
+
+        decryptButton.addEventListener('click', handleDecrypt);
+        passphraseInput.addEventListener('keypress', (event) => {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                handleDecrypt();
             }
         });
     </script>

@@ -647,7 +647,7 @@
     <section class="dispatch-card" aria-label="Acciones rápidas">
       <h2>Panel de Aprobaciones Rápidas</h2>
       <p>
-        Estas acciones disparan <strong>repository_dispatch</strong> (`approve_request` o `cancel_request`) usando el token cargado en el navegador (o el proxy).
+        Estas acciones activan el workflow <code>dispatch-through-app.yml</code> (repo <code>gkachele-requests</code>) usando tu sesión y la GitHub App segura.
       </p>
       <div class="dispatch-buttons">
         <button class="dispatch-btn approve" id="dispatchApprove">

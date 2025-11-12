@@ -1,0 +1,10 @@
+{
+  "algorithm": "aes-256-gcm",
+  "iterations": 200000,
+  "salt": "REEMPLAZAR_CON_SAL_GENERADA",
+  "iv": "REEMPLAZAR_CON_IV_GENERADO",
+  "tag": "REEMPLAZAR_CON_TAG_GENERADO",
+  "ciphertext": "REEMPLAZAR_CON_CIFRADO_GENERADO",
+  "created_at": "2025-11-12T00:00:00.000Z"
+}
+
