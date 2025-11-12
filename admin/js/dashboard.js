@@ -1,6 +1,5 @@
 const REPO_OWNER = 'komkida91';
 const REPO_NAME = 'gkachele';
-const RAW_REQUESTS_URL = `https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/main/data/requests.json`;
 const DEPLOY_WORKFLOW_FILE = 'deploy-site.yml';
 const WORKFLOW_REF = 'main';
 
@@ -20,6 +19,35 @@ const DEFAULT_DISPATCH_PAYLOAD = {
   redes: {}
 };
 
+const BRANCH_HINT = (() => {
+  const path = (window.location?.pathname || '').toLowerCase();
+  if (path.includes('/dev/')) return 'dev';
+  if (path.includes('/main/')) return 'main';
+  return 'main';
+})();
+
+const RELATIVE_REQUESTS_PATH = '../../data/requests.json';
+
+function buildRawGithubUrl(branch = 'main') {
+  return `https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/${branch}/data/requests.json`;
+}
+
+function buildRawGithackUrl(branch = 'main') {
+  return `https://rawcdn.githack.com/${REPO_OWNER}/${REPO_NAME}/${branch}/data/requests.json`;
+}
+
+const REQUESTS_SOURCES = [
+  RELATIVE_REQUESTS_PATH,
+  BRANCH_HINT !== 'main' ? buildRawGithubUrl(BRANCH_HINT) : null,
+  BRANCH_HINT !== 'main' ? buildRawGithackUrl(BRANCH_HINT) : null,
+  buildRawGithubUrl('main'),
+  buildRawGithackUrl('main')
+]
+  .filter(Boolean)
+  .filter((value, index, self) => self.indexOf(value) === index);
+
+let lastSuccessfulRequestsSource = '';
+
 function setStatus(message, type = 'info') {
   if (!statusBar) return;
   statusBar.textContent = message;
@@ -38,21 +66,63 @@ function getToken() {
   return '';
 }
 
+function withCacheBuster(url = '') {
+  const separator = url.includes('?') ? '&' : '?';
+  return `${url}${separator}t=${Date.now()}`;
+}
+
+function normalizeRequestsPayload(data) {
+  if (Array.isArray(data)) return data;
+  if (data && Array.isArray(data.requests)) return data.requests;
+  return [];
+}
+
+function describeSource(source = '') {
+  if (!source) return 'origen desconocido';
+  if (source.startsWith('../../')) return 'contenido estático del sitio';
+  if (source.includes('rawcdn.githack.com')) {
+    const match = source.match(/\/([^/]+)\/data\/requests\.json/i);
+    const branch = match?.[1] || 'rama';
+    return `githack (${branch})`;
+  }
+  if (source.includes('raw.githubusercontent.com')) {
+    const match = source.match(/\/([^/]+)\/data\/requests\.json/i);
+    const branch = match?.[1] || 'rama';
+    return `raw GitHub (${branch})`;
+  }
+  return source;
+}
+
 async function fetchRequests() {
   setStatus('Cargando solicitudes...');
 
-  const url = `${RAW_REQUESTS_URL}?cache=${Date.now()}`;
-  const response = await fetch(url, { cache: 'no-store' });
+  let lastError = null;
 
-  if (!response.ok) {
-    throw new Error(`Error al leer requests.json (${response.status})`);
+  for (const source of REQUESTS_SOURCES) {
+    try {
+      const response = await fetch(withCacheBuster(source), { cache: 'no-store' });
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+
+      const payload = await response.json();
+      const normalized = normalizeRequestsPayload(payload);
+
+      if (!Array.isArray(normalized)) {
+        throw new Error('La respuesta no contiene un array de solicitudes.');
+      }
+
+      lastSuccessfulRequestsSource = source;
+      return normalized;
+    } catch (error) {
+      lastError = error;
+      console.warn(`fetchRequests: fallo al usar ${source}`, error);
+    }
   }
 
-  try {
-    return await response.json();
-  } catch (error) {
-    throw new Error('El archivo requests.json está mal formado.');
-  }
+  const fallbackMessage = lastError ? lastError.message || String(lastError) : 'origen desconocido';
+  throw new Error(`No se pudo leer data/requests.json (${fallbackMessage}).`);
 }
 
 function createStatusTag(estado = 'pendiente') {
@@ -189,7 +259,6 @@ function renderTable(requests = []) {
   });
 
   pendingCounter.textContent = `${pending} pendiente${pending === 1 ? '' : 's'}`;
-  setStatus('');
 }
 
 async function triggerDeployWorkflow(payload) {
@@ -278,7 +347,15 @@ async function cancelRequest(entry = {}) {
 async function refresh() {
   try {
     const requests = await fetchRequests();
-    renderTable(Array.isArray(requests) ? requests : []);
+    const normalized = Array.isArray(requests) ? requests : [];
+    renderTable(normalized);
+
+    if (normalized.length === 0) {
+      setStatus('Sin solicitudes registradas.', 'info');
+    } else {
+      const sourceLabel = describeSource(lastSuccessfulRequestsSource);
+      setStatus(`Solicitudes cargadas (${sourceLabel}).`, 'success');
+    }
   } catch (error) {
     console.error('fetchRequests error', error);
     setStatus(`❌ ${error.message}`, 'error');

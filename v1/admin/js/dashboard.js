@@ -1,6 +1,5 @@
 const REPO_OWNER = 'komkida91';
 const REPO_NAME = 'gkachele';
-const RAW_REQUESTS_URL = `https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/main/data/requests.json`;
 const DEPLOY_WORKFLOW_FILE = 'deploy-site.yml';
 const WORKFLOW_REF = 'main';
 
@@ -18,6 +17,33 @@ const DEFAULT_DISPATCH_PAYLOAD = {
   plan: 'base',
   redes: {}
 };
+
+const BRANCH_HINT = (() => {
+  const path = (window.location?.pathname || '').toLowerCase();
+  if (path.includes('/dev/')) return 'dev';
+  if (path.includes('/main/')) return 'main';
+  return 'main';
+})();
+
+const RELATIVE_REQUESTS_PATH = '../../data/requests.json';
+
+function buildRawGithubUrl(branch = 'main') {
+  return `https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/${branch}/data/requests.json`;
+}
+
+function buildRawGithackUrl(branch = 'main') {
+  return `https://rawcdn.githack.com/${REPO_OWNER}/${REPO_NAME}/${branch}/data/requests.json`;
+}
+
+const REQUESTS_SOURCES = [
+  RELATIVE_REQUESTS_PATH,
+  BRANCH_HINT !== 'main' ? buildRawGithubUrl(BRANCH_HINT) : null,
+  BRANCH_HINT !== 'main' ? buildRawGithackUrl(BRANCH_HINT) : null,
+  buildRawGithubUrl('main'),
+  buildRawGithackUrl('main')
+]
+  .filter(Boolean)
+  .filter((value, index, self) => self.indexOf(value) === index);
 
 const SITES_DATA = [
   {
@@ -52,6 +78,8 @@ const SITES_DATA = [
 const state = {
   requests: []
 };
+
+let lastSuccessfulRequestsSource = '';
 
 const elements = {
   refreshButton: document.getElementById('refreshButton'),
@@ -153,21 +181,64 @@ function setRequestsStatusPill(status = 'pendiente', label = 'Pendiente') {
   `;
 }
 
+function withCacheBuster(url = '') {
+  const separator = url.includes('?') ? '&' : '?';
+  return `${url}${separator}t=${Date.now()}`;
+}
+
+function normalizeRequestsPayload(data) {
+  if (Array.isArray(data)) return data;
+  if (data && Array.isArray(data.requests)) return data.requests;
+  return [];
+}
+
+function describeSource(source = '') {
+  if (!source) return 'origen desconocido';
+  if (source.startsWith('../../')) return 'contenido estático del sitio';
+  if (source.includes('rawcdn.githack.com')) {
+    const match = source.match(/\/([^/]+)\/data\/requests\.json/i);
+    const branch = match?.[1] || 'rama';
+    return `githack (${branch})`;
+  }
+  if (source.includes('raw.githubusercontent.com')) {
+    const match = source.match(/\/([^/]+)\/data\/requests\.json/i);
+    const branch = match?.[1] || 'rama';
+    return `raw GitHub (${branch})`;
+  }
+  return source;
+}
+
 async function fetchRequests() {
   setStatus('Cargando solicitudes...');
   setRequestsStatusPill('pendiente', 'Cargando');
 
-  const response = await fetch(`${RAW_REQUESTS_URL}?t=${Date.now()}`, { cache: 'no-store' });
+  let lastError = null;
 
-  if (!response.ok) {
-    throw new Error(`Error al leer requests.json (HTTP ${response.status})`);
+  for (const source of REQUESTS_SOURCES) {
+    try {
+      const response = await fetch(withCacheBuster(source), { cache: 'no-store' });
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+
+      const data = await response.json();
+      const normalized = normalizeRequestsPayload(data);
+
+      if (!Array.isArray(normalized)) {
+        throw new Error('La respuesta no contiene un array de solicitudes.');
+      }
+
+      lastSuccessfulRequestsSource = source;
+      return normalized;
+    } catch (error) {
+      lastError = error;
+      console.warn(`fetchRequests: fallo al usar ${source}`, error);
+    }
   }
 
-  try {
-    return await response.json();
-  } catch (error) {
-    throw new Error('El archivo data/requests.json no contiene JSON válido.');
-  }
+  const fallbackMessage = lastError ? lastError.message || String(lastError) : 'origen desconocido';
+  throw new Error(`No se pudo leer data/requests.json (${fallbackMessage}).`);
 }
 
 function escapeHTML(value) {
@@ -278,7 +349,7 @@ async function triggerApprovalWorkflow(action = 'approve_request', entry = null)
     method: 'POST',
     headers: {
       Accept: 'application/vnd.github+json',
-      Authorization: `token ${sessionToken}`,
+      Authorization: `Bearer ${sessionToken}`,
       'Content-Type': 'application/json'
     },
     body: JSON.stringify({
@@ -573,7 +644,8 @@ async function refresh() {
     renderRequests(state.requests);
     updateStats();
     updateLastUpdateTime();
-    setStatus('Solicitudes actualizadas correctamente.', 'success');
+    const sourceLabel = describeSource(lastSuccessfulRequestsSource);
+    setStatus(`Solicitudes actualizadas correctamente (${sourceLabel}).`, 'success');
   } catch (error) {
     console.error('fetchRequests error', error);
     setStatus(`❌ ${error.message}`, 'error');
