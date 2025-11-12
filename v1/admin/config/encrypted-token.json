@@ -1,10 +1,9 @@
 {
   "algorithm": "aes-256-gcm",
   "iterations": 200000,
-  "salt": "REEMPLAZAR_CON_SAL_GENERADA",
-  "iv": "REEMPLAZAR_CON_IV_GENERADO",
-  "tag": "REEMPLAZAR_CON_TAG_GENERADO",
-  "ciphertext": "REEMPLAZAR_CON_CIFRADO_GENERADO",
-  "created_at": "2025-11-12T00:00:00.000Z"
+  "salt": "Trorcnv7W7r36fDgx8dAFw==",
+  "iv": "30CN44+8FKIYL6BZ",
+  "tag": "33xG5F4tWXqAVgdZJYQ3Nw==",
+  "ciphertext": "uI/Y0DFJOqgyFfpzZ1cgYiZc1AUVk5EF/aHLLSI0cLOzNnUuOyFPhl+F/bgwiP0gQ7dLsoCfa6Wxr/iDX5pvwAWNmY5efewwWtrCQmuMvi8cbD/BaNBOsYFOvdOZ",
+  "created_at": "2025-11-12T14:46:45.848Z"
 }
-
