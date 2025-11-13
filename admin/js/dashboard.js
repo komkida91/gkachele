@@ -147,6 +147,14 @@ function getSessionToken() {
   return decodeToken(encoded);
 }
 
+function buildAuthorizationHeader(token = '') {
+  if (!token) return '';
+  if (/^gh[oprsu]_/.test(token)) {
+    return `token ${token}`;
+  }
+  return `Bearer ${token}`;
+}
+
 function ensureAuthenticated() {
   const session = getSessionData();
   const token = getSessionToken();
@@ -381,7 +389,7 @@ async function triggerApprovalWorkflow(action = 'approve_request', entry = null)
     method: 'POST',
     headers: {
       Accept: 'application/vnd.github+json',
-      Authorization: `Bearer ${sessionToken}`,
+      Authorization: buildAuthorizationHeader(sessionToken),
       'Content-Type': 'application/json'
     },
     body: JSON.stringify({
