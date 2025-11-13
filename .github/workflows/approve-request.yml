@@ -34,17 +34,32 @@ jobs:
       - name: Preparar datos del payload
         id: datos
         run: |
+          action='${{ github.event.inputs.action }}'
           payload='${{ github.event.inputs.payload }}'
+
           if [ -z "$payload" ] || [ "$payload" = "null" ]; then
-            payload='{"slug":"demo-site","nombre":"Cliente Demo","rubro":"base","plan":"base","redes":{}}'
+            if [ "$action" = "approve_request" ]; then
+              payload='{"slug":"demo-site","nombre":"Cliente Demo","rubro":"base","plan":"base","redes":{}}'
+            else
+              echo "❌ El payload es obligatorio para $action"
+              exit 1
+            fi
           fi
 
           echo "$payload" > payload.json
+          slug_raw=$(jq -r '.slug // empty' payload.json)
           slug=$(jq -r '.slug // "demo-site"' payload.json)
           nombre=$(jq -r '.nombre // "Cliente Demo"' payload.json)
           rubro=$(jq -r '.rubro // "base"' payload.json)
           plan=$(jq -r '.plan // "base"' payload.json)
           redes=$(jq -c '.redes // {}' payload.json)
+
+          if [ "$action" = "cancel_request" ]; then
+            if [ -z "$slug_raw" ] || [ "$slug_raw" = "null" ]; then
+              echo "❌ No se pudo determinar el slug de la solicitud a cancelar."
+              exit 1
+            fi
+          fi
 
           echo "slug=$slug" >> "$GITHUB_OUTPUT"
           echo "nombre=$nombre" >> "$GITHUB_OUTPUT"
