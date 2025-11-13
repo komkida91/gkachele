@@ -389,8 +389,7 @@ async function triggerApprovalWorkflow(action = 'approve_request', entry = null)
       inputs: {
         session_token: sessionToken,
         action,
-        payload: encodedPayload,
-        payload_encoding: 'base64'
+        payload: encodedPayload
       }
     })
   });
