@@ -155,6 +155,21 @@ function buildAuthorizationHeader(token = '') {
   return `Bearer ${token}`;
 }
 
+function buildApiHeaders(sessionToken) {
+  const headers = {
+    Accept: 'application/vnd.github+json',
+    Authorization: buildAuthorizationHeader(sessionToken),
+    'Content-Type': 'application/json',
+    'X-GitHub-Api-Version': '2022-11-28'
+  };
+
+  if (!headers.Authorization) {
+    delete headers.Authorization;
+  }
+
+  return headers;
+}
+
 function ensureAuthenticated() {
   const session = getSessionData();
   const token = getSessionToken();
@@ -387,11 +402,7 @@ async function triggerApprovalWorkflow(action = 'approve_request', entry = null)
 
   const response = await fetch(WORKFLOW_DISPATCH_URL, {
     method: 'POST',
-    headers: {
-      Accept: 'application/vnd.github+json',
-      Authorization: buildAuthorizationHeader(sessionToken),
-      'Content-Type': 'application/json'
-    },
+    headers: buildApiHeaders(sessionToken),
     body: JSON.stringify({
       ref: WORKFLOW_REF,
       inputs: {
