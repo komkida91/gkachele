@@ -1,13 +1,14 @@
 const REPO_OWNER = 'komkida91';
 const REPO_NAME = 'gkachele';
-const DEPLOY_WORKFLOW_FILE = 'deploy-site.yml';
-const WORKFLOW_REF = 'main';
 
 const SESSION_STORAGE_KEY = 'gkachele_session';
 const SESSION_TOKEN_KEY = 'gkachele_session_token';
+const TOKEN_STORAGE_KEY = 'github_token';
+const SESSION_TTL_MS = 7 * 24 * 60 * 60 * 1000;
 
 const WORKFLOW_BACKEND_REPO = 'gkachele-requests';
 const WORKFLOW_FILE = 'dispatch-through-app.yml';
+const WORKFLOW_REF = 'main';
 const WORKFLOW_DISPATCH_URL = `https://api.github.com/repos/${REPO_OWNER}/${WORKFLOW_BACKEND_REPO}/actions/workflows/${WORKFLOW_FILE}/dispatches`;
 
 const DEFAULT_DISPATCH_PAYLOAD = {
@@ -104,6 +105,15 @@ const emptyRequestsTemplate = document.createElement('div');
 emptyRequestsTemplate.className = 'empty-state';
 emptyRequestsTemplate.innerHTML = 'No hay solicitudes registradas todavía.';
 
+function encodeToken(token = '') {
+  if (!token) return '';
+  try {
+    return btoa(unescape(encodeURIComponent(token)));
+  } catch (error) {
+    return btoa(token);
+  }
+}
+
 function decodeToken(encoded = '') {
   if (!encoded) return '';
   try {
@@ -118,18 +128,25 @@ function decodeToken(encoded = '') {
 }
 
 function getSessionData() {
-  const rawData = localStorage.getItem(SESSION_STORAGE_KEY) || sessionStorage.getItem(SESSION_STORAGE_KEY);
-  if (!rawData) return null;
+  const raw =
+    sessionStorage.getItem(SESSION_STORAGE_KEY) ||
+    localStorage.getItem(SESSION_STORAGE_KEY);
+  if (!raw) return null;
   try {
-    return JSON.parse(rawData);
+    return JSON.parse(raw);
   } catch {
+    clearSessionData();
     return null;
   }
 }
 
 function getSessionToken() {
-  const encodedToken = localStorage.getItem(SESSION_TOKEN_KEY) || sessionStorage.getItem(SESSION_TOKEN_KEY);
-  return decodeToken(encodedToken);
+  const encoded =
+    sessionStorage.getItem(SESSION_TOKEN_KEY) ||
+    localStorage.getItem(SESSION_TOKEN_KEY) ||
+    sessionStorage.getItem(TOKEN_STORAGE_KEY) ||
+    localStorage.getItem(TOKEN_STORAGE_KEY);
+  return decodeToken(encoded);
 }
 
 function ensureAuthenticated() {
@@ -141,11 +158,8 @@ function ensureAuthenticated() {
     return false;
   }
 
-  const { timestamp } = session;
-  const isExpired = !timestamp || Date.now() - timestamp > 7 * 24 * 60 * 60 * 1000;
-
-  if (isExpired) {
-    clearSessionData();
+  if (!session.timestamp || Date.now() - session.timestamp > SESSION_TTL_MS) {
+    clearSessionData({ keepToken: true });
     redirectToLogin();
     return false;
   }
@@ -157,11 +171,16 @@ function redirectToLogin() {
   window.location.href = 'login.html';
 }
 
-function clearSessionData() {
+function clearSessionData({ keepToken = false } = {}) {
   localStorage.removeItem(SESSION_STORAGE_KEY);
-  localStorage.removeItem(SESSION_TOKEN_KEY);
   sessionStorage.removeItem(SESSION_STORAGE_KEY);
-  sessionStorage.removeItem(SESSION_TOKEN_KEY);
+
+  if (!keepToken) {
+    localStorage.removeItem(SESSION_TOKEN_KEY);
+    localStorage.removeItem(TOKEN_STORAGE_KEY);
+    sessionStorage.removeItem(SESSION_TOKEN_KEY);
+    sessionStorage.removeItem(TOKEN_STORAGE_KEY);
+  }
 }
 
 function setStatus(message = '', type = 'info') {
@@ -335,15 +354,30 @@ function buildDispatchPayload(entry = {}) {
   };
 }
 
+function encodePayloadToBase64(payload) {
+  try {
+    const json = JSON.stringify(payload);
+    return btoa(unescape(encodeURIComponent(json)));
+  } catch (error) {
+    console.error('encodePayloadToBase64 error', error, payload);
+    throw new Error('No se pudo serializar el payload antes de enviarlo.');
+  }
+}
+
 async function triggerApprovalWorkflow(action = 'approve_request', entry = null) {
+  if (!ensureAuthenticated()) {
+    throw new Error('Sesión expirada. Iniciá sesión nuevamente.');
+  }
+
   const sessionToken = getSessionToken();
 
   if (!sessionToken) {
     clearSessionData();
-    throw new Error('Debes iniciar sesión nuevamente para aprobar solicitudes.');
+    throw new Error('No hay un token configurado en este dispositivo.');
   }
 
   const payload = entry ? buildDispatchPayload(entry) : DEFAULT_DISPATCH_PAYLOAD;
+  const encodedPayload = encodePayloadToBase64(payload);
 
   const response = await fetch(WORKFLOW_DISPATCH_URL, {
     method: 'POST',
@@ -357,7 +391,8 @@ async function triggerApprovalWorkflow(action = 'approve_request', entry = null)
       inputs: {
         session_token: sessionToken,
         action,
-        payload: JSON.stringify(payload)
+        payload: encodedPayload,
+        payload_encoding: 'base64'
       }
     })
   });
@@ -608,23 +643,27 @@ function clearCache() {
   if (!confirmation) return;
 
   const sessionLocal = localStorage.getItem(SESSION_STORAGE_KEY);
-  const tokenLocal = localStorage.getItem(SESSION_TOKEN_KEY);
+  const tokenLocal =
+    localStorage.getItem(SESSION_TOKEN_KEY) || localStorage.getItem(TOKEN_STORAGE_KEY);
   localStorage.clear();
   if (sessionLocal) {
     localStorage.setItem(SESSION_STORAGE_KEY, sessionLocal);
   }
   if (tokenLocal) {
     localStorage.setItem(SESSION_TOKEN_KEY, tokenLocal);
+    localStorage.setItem(TOKEN_STORAGE_KEY, tokenLocal);
   }
 
   const sessionTemp = sessionStorage.getItem(SESSION_STORAGE_KEY);
-  const tokenTemp = sessionStorage.getItem(SESSION_TOKEN_KEY);
+  const tokenTemp =
+    sessionStorage.getItem(SESSION_TOKEN_KEY) || sessionStorage.getItem(TOKEN_STORAGE_KEY);
   sessionStorage.clear();
   if (sessionTemp) {
     sessionStorage.setItem(SESSION_STORAGE_KEY, sessionTemp);
   }
   if (tokenTemp) {
     sessionStorage.setItem(SESSION_TOKEN_KEY, tokenTemp);
+    sessionStorage.setItem(TOKEN_STORAGE_KEY, tokenTemp);
   }
   window.location.reload();
 }
@@ -633,12 +672,15 @@ function logout() {
   const confirmation = window.confirm('¿Cerrar sesión en el panel de administración?');
   if (!confirmation) return;
 
-  clearSessionData();
+  clearSessionData({ keepToken: false });
   redirectToLogin();
 }
 
 async function refresh() {
   try {
+    const authenticated = await ensureAuthenticated();
+    if (!authenticated) return;
+
     const data = await fetchRequests();
     state.requests = Array.isArray(data) ? data : [];
     renderRequests(state.requests);
@@ -653,8 +695,9 @@ async function refresh() {
   }
 }
 
-function init() {
-  if (!ensureAuthenticated()) {
+async function init() {
+  const authenticated = await ensureAuthenticated();
+  if (!authenticated) {
     return;
   }
 
@@ -676,7 +719,7 @@ function init() {
 
   if (elements.dispatchApproveButton) {
     elements.dispatchApproveButton.addEventListener('click', async () => {
-      setStatus('Enviando approve_request manual vía backend seguro...');
+      setStatus('Enviando approve_request manual vía GitHub Actions...');
       try {
         await triggerApprovalWorkflow('approve_request');
         setStatus('✅ Workflow approve_request en ejecución.', 'success');
@@ -689,7 +732,7 @@ function init() {
 
   if (elements.dispatchCancelButton) {
     elements.dispatchCancelButton.addEventListener('click', async () => {
-      setStatus('Enviando cancel_request manual vía backend seguro...');
+      setStatus('Enviando cancel_request manual vía GitHub Actions...');
       try {
         await triggerApprovalWorkflow('cancel_request');
         setStatus('✅ Workflow cancel_request en ejecución.', 'success');
@@ -700,9 +743,14 @@ function init() {
     });
   }
 
-  refresh();
+  await refresh();
 }
 
-init();
+document.addEventListener('DOMContentLoaded', () => {
+  init().catch((error) => {
+    console.error('Error al iniciar el panel', error);
+    setStatus('No se pudo iniciar el panel. Reintentá más tarde.', 'error');
+  });
+});
 
 

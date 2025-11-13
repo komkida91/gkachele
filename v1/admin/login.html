@@ -287,51 +287,43 @@
         <div class="subtitle">Dashboard de Administración</div>
 
         <div class="token-helper">
-            <h2>Configurar token cifrado</h2>
+            <h2>Acceso rápido</h2>
             <p class="token-helper__hint">
-                Introduce la passphrase para descifrar el PAT almacenado de forma segura. Solo necesitas hacerlo una vez por dispositivo.
+                Usá el enlace con <code>#token=</code> o pegá tu token de sesión una sola vez por dispositivo.
             </p>
             <div class="token-helper__row">
-                <input type="password" id="tokenPassphrase" placeholder="Passphrase" autocomplete="off">
-                <button type="button" id="decryptButton">Descifrar PAT</button>
+                <input type="text" id="tokenInput" placeholder="gho_xxxxx o ghp_xxxxx" autocomplete="off" spellcheck="false">
+                <button type="button" id="detectToken">Detectar enlace</button>
+                <button type="button" id="clearToken">Borrar token</button>
             </div>
-            <p id="passphraseStatus" class="token-helper__status"></p>
+            <p id="tokenStatus" class="token-helper__status"></p>
         </div>
 
         <div class="error-message" id="error-message">
-            <i class="fas fa-exclamation-circle"></i> Usuario o contraseña incorrectos
+            <i class="fas fa-exclamation-circle"></i> No se pudo iniciar sesión. Verifica el token.
         </div>
 
         <form id="login-form">
             <div class="form-group">
-                <label for="username">
-                    <i class="fas fa-user"></i> Usuario (Email)
+                <label for="email">
+                    <i class="fas fa-user"></i> Correo (opcional)
                 </label>
                 <input 
                     type="email" 
-                    id="username" 
-                    placeholder="tu@email.com"
-                    required
-                    autocomplete="username"
-                >
-            </div>
-
-            <div class="form-group">
-                <label for="password">
-                    <i class="fas fa-lock"></i> Contraseña
-                </label>
-                <input 
-                    type="password" 
-                    id="password" 
-                    placeholder="••••••••••"
-                    required
-                    autocomplete="current-password"
+                    id="email" 
+                    placeholder="admin@tu-dominio"
+                    autocomplete="email"
                 >
             </div>
 
             <div class="remember-me">
-                <input type="checkbox" id="remember" checked>
-                <label for="remember">Recordar sesión (7 días)</label>
+                <input type="checkbox" id="rememberSession" checked>
+                <label for="rememberSession">Mantener sesión activa en este dispositivo</label>
+            </div>
+
+            <div class="remember-me">
+                <input type="checkbox" id="rememberToken" checked>
+                <label for="rememberToken">Guardar token en este navegador</label>
             </div>
 
             <button type="submit" class="btn-login">
@@ -345,301 +337,7 @@
         </div>
     </div>
 
-    <script>
-        // Configuración de credenciales (en producción se valida en backend)
-        const ALLOWED_USERS = ['gkachele91@gmail.com'];
-        const ADMIN_PASSWORD_STORAGE_KEY = 'gkachele_admin_password';
-        const ENCRYPTED_TOKEN_URL = 'config/encrypted-token.json';
-        const TOKEN_STORAGE_KEY = 'github_token';
-
-        const SESSION_STORAGE_KEY = 'gkachele_session';
-        const SESSION_TOKEN_KEY = 'gkachele_session_token';
-        const SESSION_TTL_MS = 7 * 24 * 60 * 60 * 1000; // 7 días
-
-        const form = document.getElementById('login-form');
-        const errorMessage = document.getElementById('error-message');
-        const decryptButton = document.getElementById('decryptButton');
-        const passphraseInput = document.getElementById('tokenPassphrase');
-        const passphraseStatus = document.getElementById('passphraseStatus');
-
-        const encodeToken = (token) => {
-            try {
-                return btoa(unescape(encodeURIComponent(token)));
-            } catch (_) {
-                return btoa(token);
-            }
-        };
-
-        const decodeToken = (encoded) => {
-            if (!encoded) return '';
-            try {
-                return decodeURIComponent(escape(atob(encoded)));
-            } catch (_) {
-                try {
-                    return atob(encoded);
-                } catch {
-                    return '';
-                }
-            }
-        };
-
-        const resolveAdminToken = () => {
-            let token = '';
-
-            if (typeof getDefaultToken === 'function') {
-                try {
-                    token = getDefaultToken() || '';
-                } catch (_) {
-                    token = '';
-                }
-            }
-
-            if (!token && typeof window !== 'undefined' && window.localStorage) {
-                token = window.localStorage.getItem(TOKEN_STORAGE_KEY) || '';
-            }
-
-            if (!token && typeof window !== 'undefined' && window.GITHUB_TOKEN_DEFAULT) {
-                token = window.GITHUB_TOKEN_DEFAULT || '';
-            }
-
-            return token ? token.trim() : '';
-        };
-
-        const resolveAdminPassword = () => {
-            let password = '';
-
-            if (typeof getDefaultPassword === 'function') {
-                try {
-                    password = getDefaultPassword() || '';
-                } catch (_) {
-                    password = '';
-                }
-            }
-
-            if (!password && typeof window !== 'undefined' && window.localStorage) {
-                password = window.localStorage.getItem(ADMIN_PASSWORD_STORAGE_KEY) || '';
-            }
-
-            if (!password && typeof window !== 'undefined' && window.GKACHELE_ADMIN_PASSWORD) {
-                password = window.GKACHELE_ADMIN_PASSWORD || '';
-            }
-
-            return password ? password.trim() : '';
-        };
-
-        const base64ToArrayBuffer = (base64) => {
-            const binary = atob(base64);
-            const len = binary.length;
-            const bytes = new Uint8Array(len);
-            for (let i = 0; i < len; i += 1) {
-                bytes[i] = binary.charCodeAt(i);
-            }
-            return bytes.buffer;
-        };
-
-        const concatBuffers = (bufferA, bufferB) => {
-            const a = new Uint8Array(bufferA);
-            const b = new Uint8Array(bufferB);
-            const merged = new Uint8Array(a.length + b.length);
-            merged.set(a, 0);
-            merged.set(b, a.length);
-            return merged.buffer;
-        };
-
-        const deriveKey = async (passphrase, saltBuffer, iterations = 200000) => {
-            const encoder = new TextEncoder();
-            const keyMaterial = await window.crypto.subtle.importKey(
-                'raw',
-                encoder.encode(passphrase),
-                'PBKDF2',
-                false,
-                ['deriveKey']
-            );
-
-            return window.crypto.subtle.deriveKey(
-                {
-                    name: 'PBKDF2',
-                    salt: saltBuffer,
-                    iterations,
-                    hash: 'SHA-256'
-                },
-                keyMaterial,
-                { name: 'AES-GCM', length: 256 },
-                false,
-                ['decrypt']
-            );
-        };
-
-        const decryptEncryptedToken = async (passphrase) => {
-            const response = await fetch(`${ENCRYPTED_TOKEN_URL}?t=${Date.now()}`, { cache: 'no-store' });
-            if (!response.ok) {
-                throw new Error('No se pudo obtener encrypted-token.json');
-            }
-
-            const data = await response.json();
-            const saltBuffer = base64ToArrayBuffer(data.salt);
-            const ivBuffer = base64ToArrayBuffer(data.iv);
-            const ciphertextBuffer = base64ToArrayBuffer(data.ciphertext);
-            const tagBuffer = base64ToArrayBuffer(data.tag);
-            const combined = concatBuffers(ciphertextBuffer, tagBuffer);
-
-            const key = await deriveKey(passphrase, saltBuffer, data.iterations || 200000);
-            const decryptedBuffer = await window.crypto.subtle.decrypt(
-                {
-                    name: 'AES-GCM',
-                    iv: ivBuffer
-                },
-                key,
-                combined
-            );
-
-            const decoder = new TextDecoder();
-            return decoder.decode(decryptedBuffer);
-        };
-
-        const getStoredValue = (key) =>
-            localStorage.getItem(key) || sessionStorage.getItem(key);
-
-        const persistSession = (sessionPayload, encodedToken, remember) => {
-            sessionStorage.setItem(SESSION_STORAGE_KEY, sessionPayload);
-            sessionStorage.setItem(SESSION_TOKEN_KEY, encodedToken);
-
-            if (remember) {
-                localStorage.setItem(SESSION_STORAGE_KEY, sessionPayload);
-                localStorage.setItem(SESSION_TOKEN_KEY, encodedToken);
-            } else {
-                localStorage.removeItem(SESSION_STORAGE_KEY);
-                localStorage.removeItem(SESSION_TOKEN_KEY);
-            }
-        };
-
-        const clearSession = () => {
-            localStorage.removeItem(SESSION_STORAGE_KEY);
-            localStorage.removeItem(SESSION_TOKEN_KEY);
-            sessionStorage.removeItem(SESSION_STORAGE_KEY);
-            sessionStorage.removeItem(SESSION_TOKEN_KEY);
-        };
-
-        const hasValidSession = () => {
-            const rawSession =
-                getStoredValue(SESSION_STORAGE_KEY);
-            const rawToken =
-                getStoredValue(SESSION_TOKEN_KEY);
-
-            if (!rawSession || !rawToken) {
-                return false;
-            }
-
-            try {
-                const sessionData = JSON.parse(rawSession);
-                const now = Date.now();
-                if (!sessionData?.timestamp || now - sessionData.timestamp > SESSION_TTL_MS) {
-                    clearSession();
-                    return false;
-                }
-
-                return Boolean(decodeToken(rawToken));
-            } catch {
-                clearSession();
-                return false;
-            }
-        };
-
-        window.addEventListener('DOMContentLoaded', () => {
-            if (hasValidSession()) {
-                window.location.href = 'index.html';
-            }
-        });
-
-        form.addEventListener('submit', (event) => {
-            event.preventDefault();
-
-            const username = document.getElementById('username').value.trim();
-            const password = document.getElementById('password').value;
-            const remember = document.getElementById('remember').checked;
-
-            if (!ALLOWED_USERS.includes(username.toLowerCase())) {
-                errorMessage.textContent = 'Usuario o contraseña incorrectos';
-                errorMessage.classList.add('show');
-                document.getElementById('password').value = '';
-                setTimeout(() => {
-                    errorMessage.classList.remove('show');
-                }, 3000);
-                return;
-            }
-
-            const expectedPassword = resolveAdminPassword();
-
-            if (!expectedPassword) {
-                errorMessage.textContent = 'Configura la contraseña con localStorage.setItem("gkachele_admin_password", "TU_CONTRASEÑA_SEGURA").';
-                errorMessage.classList.add('show');
-                return;
-            }
-
-            if (password === expectedPassword) {
-                const adminToken = resolveAdminToken();
-
-                if (!adminToken) {
-                    errorMessage.textContent = 'Configura el token del administrador con localStorage.setItem("github_token", "TU_PAT").';
-                    errorMessage.classList.add('show');
-                    return;
-                }
-
-                const sessionData = {
-                    user: username,
-                    timestamp: Date.now()
-                };
-
-                const encodedToken = encodeToken(adminToken);
-                persistSession(JSON.stringify(sessionData), encodedToken, remember);
-
-                window.location.href = 'index.html';
-            } else {
-                errorMessage.textContent = 'Usuario o contraseña incorrectos';
-                errorMessage.classList.add('show');
-                document.getElementById('password').value = '';
-                setTimeout(() => {
-                    errorMessage.classList.remove('show');
-                }, 3000);
-            }
-        });
-
-        const handleDecrypt = async () => {
-            const passphrase = passphraseInput.value.trim();
-            if (!passphrase) {
-                passphraseStatus.textContent = 'Ingresa la passphrase para descifrar el token.';
-                passphraseStatus.classList.add('error');
-                passphraseStatus.classList.remove('success');
-                return;
-            }
-
-            passphraseStatus.textContent = 'Descifrando token...';
-            passphraseStatus.classList.remove('error', 'success');
-
-            try {
-                const token = await decryptEncryptedToken(passphrase);
-                if (!token) {
-                    throw new Error('No se obtuvo token tras descifrar');
-                }
-                localStorage.setItem(TOKEN_STORAGE_KEY, token.trim());
-                passphraseStatus.textContent = '✅ Token almacenado correctamente en este dispositivo.';
-                passphraseStatus.classList.add('success');
-                passphraseInput.value = '';
-            } catch (error) {
-                console.error(error);
-                passphraseStatus.textContent = '❌ Passphrase incorrecta o token cifrado inválido.';
-                passphraseStatus.classList.add('error');
-            }
-        };
-
-        decryptButton.addEventListener('click', handleDecrypt);
-        passphraseInput.addEventListener('keypress', (event) => {
-            if (event.key === 'Enter') {
-                event.preventDefault();
-                handleDecrypt();
-            }
-        });
-    </script>
+    <script src="js/login.js" type="module"></script>
 </body>
 </html>
 
