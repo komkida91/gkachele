@@ -184,13 +184,15 @@ if (personalizacion.colores_preferidos) {
 
 process.stdout.write(JSON.stringify(replacements));
 NODE
+)
 
+export REPLACEMENTS_JSON="$REPLACEMENTS"
 export SITE_DIR="$SITE_DIR"
 node <<'NODE'
 const fs = require('fs');
 const path = require('path');
 
-const replacements = JSON.parse(process.argv[1]);
+const replacements = JSON.parse(process.env.REPLACEMENTS_JSON || '{}');
 const siteDir = process.env.SITE_DIR;
 
 const replaceInFile = (filePath) => {
@@ -216,7 +218,6 @@ const walk = (dir) => {
 
 walk(siteDir);
 NODE
-"$REPLACEMENTS"
 
 if [[ -n "${PAYLOAD_JSON}" ]]; then
   echo "$PAYLOAD_JSON" > "$SITE_DIR/config.json"
