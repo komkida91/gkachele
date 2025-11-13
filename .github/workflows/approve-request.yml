@@ -112,13 +112,18 @@ jobs:
           popd >/dev/null
 
           echo "⚙️  Configurando GitHub Pages"
-          gh api -X PUT "repos/$OWNER/$REPO_NAME/pages" -f source[branch]=main -f source[path]=/
+          if ! gh api -X POST "repos/$OWNER/$REPO_NAME/pages" -f source[branch]=main -f source[path]=/ >/dev/null 2>&1; then
+            echo "ℹ️  La creación via POST falló (posiblemente ya existe). Probando actualización."
+            gh api -X PUT "repos/$OWNER/$REPO_NAME/pages" -f source[branch]=main -f source[path]=/ >/dev/null
+          fi
 
           if [ -n "${RAW_PAYLOAD:-}" ] && [ "${RAW_PAYLOAD}" != "null" ]; then
             DOMAIN=$(echo "$RAW_PAYLOAD" | jq -r '.dominio.preferido // empty')
             if [ -n "$DOMAIN" ]; then
               echo "📛 Configurando dominio personalizado: $DOMAIN"
-              gh api -X PUT "repos/$OWNER/$REPO_NAME/pages" -F source[branch]=main -F source[path]=/ -F cname="$DOMAIN" || true
+              if ! gh api -X PUT "repos/$OWNER/$REPO_NAME/pages" -F source[branch]=main -F source[path]=/ -F cname="$DOMAIN" >/dev/null 2>&1; then
+                echo "⚠️  No se pudo establecer el CNAME por API (puede requerir verificación manual)."
+              fi
             fi
           fi
 
