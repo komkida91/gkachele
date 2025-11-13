@@ -22,6 +22,9 @@ jobs:
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v4
+        with:
+          ref: dev
+          token: ${{ secrets.ADMIN_TOKEN }}
 
       - name: Instalar dependencias
         run: |
@@ -57,13 +60,94 @@ jobs:
           RUBRO: ${{ steps.datos.outputs.rubro }}
           PLAN: ${{ steps.datos.outputs.plan }}
           REDES: ${{ steps.datos.outputs.redes }}
+          PAYLOAD_JSON: ${{ github.event.inputs.payload }}
         run: |
           echo "Aprobando solicitud para $NOMBRE ($SLUG)..."
           chmod +x core/scripts/create-site.sh
           core/scripts/create-site.sh "$SLUG" "$NOMBRE" "$RUBRO" "$PLAN" "$REDES"
 
+      - name: Crear repositorio y publicar en Pages
+        if: ${{ github.event.inputs.action == 'approve_request' }}
+        env:
+          GH_TOKEN: ${{ secrets.ADMIN_TOKEN }}
+          OWNER: komkida91
+          SLUG: ${{ steps.datos.outputs.slug }}
+          NOMBRE: ${{ steps.datos.outputs.nombre }}
+          RUBRO: ${{ steps.datos.outputs.rubro }}
+          PLAN: ${{ steps.datos.outputs.plan }}
+          RAW_PAYLOAD: ${{ github.event.inputs.payload }}
+        run: |
+          set -euo pipefail
+
+          REPO_NAME="$SLUG"
+          DESCRIPTION="Sitio de $NOMBRE - $RUBRO ($PLAN) generado automáticamente"
+
+          echo "🔍 Verificando si existe el repositorio $OWNER/$REPO_NAME..."
+          if ! gh repo view "$OWNER/$REPO_NAME" >/dev/null 2>&1; then
+            echo "🆕 Creando repositorio público $OWNER/$REPO_NAME"
+            gh repo create "$OWNER/$REPO_NAME" --public --description "$DESCRIPTION" --confirm
+          else
+            echo "ℹ️  El repositorio ya existe. Se sobrescribirá el contenido."
+          fi
+
+          SITE_DIR="proyectos/$SLUG"
+          if [ ! -d "$SITE_DIR" ]; then
+            echo "❌ Carpeta $SITE_DIR no encontrada. Abortando."
+            exit 1
+          fi
+
+          pushd "$SITE_DIR" >/dev/null
+          git init
+          git config user.name "GKACHELE Bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add .
+          if git diff --cached --quiet; then
+            echo "⚠️  No hay cambios para publicar."
+          else
+            git commit -m "Publicación inicial del sitio $NOMBRE"
+          fi
+          git branch -M main
+          git remote add origin "https://$OWNER:${GH_TOKEN}@github.com/$OWNER/$REPO_NAME.git" || git remote set-url origin "https://$OWNER:${GH_TOKEN}@github.com/$OWNER/$REPO_NAME.git"
+          git push --force origin main
+          popd >/dev/null
+
+          echo "⚙️  Configurando GitHub Pages"
+          gh api -X PUT "repos/$OWNER/$REPO_NAME/pages" -f source[branch]=main -f source[path]=/
+
+          if [ -n "${RAW_PAYLOAD:-}" ] && [ "${RAW_PAYLOAD}" != "null" ]; then
+            DOMAIN=$(echo "$RAW_PAYLOAD" | jq -r '.dominio.preferido // empty')
+            if [ -n "$DOMAIN" ]; then
+              echo "📛 Configurando dominio personalizado: $DOMAIN"
+              gh api -X PUT "repos/$OWNER/$REPO_NAME/pages" -F source[branch]=main -F source[path]=/ -F cname="$DOMAIN" || true
+            fi
+          fi
+
       - name: Registrar cancelación
         if: ${{ github.event.inputs.action == 'cancel_request' }}
         run: |
           echo "Cancelando solicitud (sin acciones adicionales)."
+
+      - name: Actualizar solicitudes
+        if: ${{ github.event.inputs.action == 'approve_request' || github.event.inputs.action == 'cancel_request' }}
+        env:
+          ACTION: ${{ github.event.inputs.action }}
+          SLUG: ${{ steps.datos.outputs.slug }}
+        run: |
+          set -euo pipefail
+          echo "🧹 Removiendo solicitud $SLUG de data/requests.json"
+          tmp_file=$(mktemp)
+          jq --arg slug "$SLUG" 'map(select(.slug != $slug))' data/requests.json > "$tmp_file"
+          mv "$tmp_file" data/requests.json
+
+          git config user.name "GKACHELE Bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add data/requests.json
+
+          if git diff --cached --quiet; then
+            echo "ℹ️  data/requests.json ya estaba limpio."
+            exit 0
+          fi
+
+          git commit -m "Actualizar solicitudes tras ${ACTION} de $SLUG"
+          git push origin HEAD:dev
 
