@@ -1,1108 +1,316 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <title>🎯 GKACHELE Dashboard</title>
-
-    <!-- Redirección solo para github.io (NO para DuckDNS) -->
-    <script>
-      (function(){
-        try {
-          var host = window.location.hostname || '';
-          var path = window.location.pathname || '';
-          console.log('redirect-check host=', host, 'path=', path);
-          // Solo redirigir si está en github.io, NO en DuckDNS
-          if ((host.includes('github.io') || host === 'komkida91.github.io') && path.startsWith('/gkachele')) {
-            // Reemplaza la URL en el historial para no volver a la github.io
-            window.location.replace('https://gkachele.duckdns.org/admin/');
-          }
-        } catch(e){ console.error('redirect error', e); }
-      })();
-    </script>
-
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Token de GitHub - Se carga desde GitHub Secrets vía API segura -->
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        :root {
-            --bg-dark: #0a0a0a;
-            --bg-card: #1a1a1a;
-            --accent: #ff6b35;
-            --accent-hover: #ff8555;
-            --text: #ffffff;
-            --text-muted: #888;
-            --success: #10b981;
-            --warning: #f59e0b;
-            --danger: #ef4444;
-            --border: #2a2a2a;
-        }
-
-        body {
-            font-family: 'Segoe UI', system-ui, sans-serif;
-            background: var(--bg-dark);
-            color: var(--text);
-            min-height: 100vh;
-            padding: 0;
-        }
-
-        /* Header */
-        .header {
-            background: var(--bg-card);
-            border-bottom: 2px solid var(--accent);
-            padding: 1rem;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            box-shadow: 0 4px 20px rgba(255, 107, 53, 0.1);
-        }
-
-        .header-content {
-            max-width: 1400px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .logo {
-            font-size: 1.5rem;
-            font-weight: bold;
-            background: linear-gradient(135deg, var(--accent), #ff8555);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .refresh-btn {
-            background: var(--accent);
-            border: none;
-            color: white;
-            padding: 0.6rem 1.2rem;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            transition: all 0.3s;
-        }
-
-        .refresh-btn:hover {
-            background: var(--accent-hover);
-            transform: translateY(-2px);
-        }
-
-        .refresh-btn:active {
-            transform: translateY(0);
-        }
-
-        /* Container */
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 1.5rem;
-        }
-
-        /* Stats Grid */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 2rem;
-        }
-
-        .stat-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 1.5rem;
-            transition: all 0.3s;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .stat-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, var(--accent), transparent);
-        }
-
-        .stat-card:hover {
-            transform: translateY(-4px);
-            border-color: var(--accent);
-            box-shadow: 0 8px 30px rgba(255, 107, 53, 0.2);
-        }
-
-        .stat-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1rem;
-        }
-
-        .stat-icon {
-            font-size: 2rem;
-            opacity: 0.8;
-        }
-
-        .stat-value {
-            font-size: 2.5rem;
-            font-weight: bold;
-            background: linear-gradient(135deg, var(--accent), #ff8555);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .stat-label {
-            color: var(--text-muted);
-            font-size: 0.9rem;
-            margin-top: 0.5rem;
-        }
-
-        /* Sites Grid */
-        .sites-section {
-            margin-top: 2rem;
-        }
-
-        .section-title {
-            font-size: 1.5rem;
-            margin-bottom: 1.5rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .sites-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: 1.5rem;
-        }
-
-        .site-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 1.5rem;
-            transition: all 0.3s;
-        }
-
-        .site-card:hover {
-            transform: translateY(-4px);
-            border-color: var(--accent);
-            box-shadow: 0 8px 30px rgba(255, 107, 53, 0.2);
-        }
-
-        .site-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: start;
-            margin-bottom: 1rem;
-        }
-
-        .site-name {
-            font-size: 1.2rem;
-            font-weight: 600;
-        }
-
-        .site-status {
-            padding: 0.3rem 0.8rem;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 0.3rem;
-        }
-
-        .status-online {
-            background: rgba(16, 185, 129, 0.2);
-            color: var(--success);
-        }
-
-        .status-offline {
-            background: rgba(239, 68, 68, 0.2);
-            color: var(--danger);
-        }
-
-        .site-info {
-            display: flex;
-            flex-direction: column;
-            gap: 0.8rem;
-            margin: 1rem 0;
-        }
-
-        .info-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 0.9rem;
-        }
-
-        .info-label {
-            color: var(--text-muted);
-        }
-
-        .info-value {
-            color: var(--text);
-            font-weight: 500;
-        }
-
-        .badge {
-            padding: 0.2rem 0.6rem;
-            border-radius: 6px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            text-transform: uppercase;
-        }
-
-        .badge-premium {
-            background: linear-gradient(135deg, #ff6b35, #ff8555);
-            color: white;
-        }
-
-        .badge-pro {
-            background: linear-gradient(135deg, #3b82f6, #60a5fa);
-            color: white;
-        }
-
-        .badge-base {
-            background: rgba(255, 255, 255, 0.1);
-            color: var(--text-muted);
-        }
-
-        .site-actions {
-            display: flex;
-            gap: 0.5rem;
-            margin-top: 1rem;
-        }
-
-        .action-btn {
-            flex: 1;
-            padding: 0.6rem;
-            border: 1px solid var(--border);
-            background: transparent;
-            color: var(--text);
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 0.85rem;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.3rem;
-        }
-
-        .action-btn:hover {
-            background: var(--accent);
-            border-color: var(--accent);
-            transform: translateY(-2px);
-        }
-        
-        .approve-btn {
-            background: #10b981;
-            border-color: #10b981;
-            color: white;
-        }
-        
-        .approve-btn:hover {
-            background: #059669;
-            border-color: #059669;
-            transform: translateY(-2px);
-        }
-        
-        .reject-btn {
-            background: #ef4444;
-            border-color: #ef4444;
-            color: white;
-        }
-        
-        .reject-btn:hover {
-            background: #dc2626;
-            border-color: #dc2626;
-            transform: translateY(-2px);
-        }
-        
-        .request-card {
-            background: var(--card-bg);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 1.5rem;
-            transition: all 0.3s;
-        }
-        
-        .request-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-        }
-        
-        .request-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1rem;
-        }
-        
-        .request-name {
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: var(--text);
-        }
-        
-        .request-status {
-            display: flex;
-            align-items: center;
-            gap: 0.3rem;
-            font-size: 0.85rem;
-            padding: 0.3rem 0.8rem;
-            border-radius: 20px;
-            background: rgba(251, 191, 36, 0.1);
-            color: #f59e0b;
-        }
-        
-        .status-pending {
-            background: rgba(251, 191, 36, 0.1);
-            color: #f59e0b;
-        }
-        
-        .request-actions {
-            display: flex;
-            gap: 0.5rem;
-            margin-top: 1rem;
-        }
-        
-        .no-requests {
-            text-align: center;
-            color: var(--text-muted);
-            padding: 2rem;
-        }
-
-        /* Loading */
-        .loading {
-            text-align: center;
-            padding: 3rem;
-            color: var(--text-muted);
-        }
-
-        .spinner {
-            border: 3px solid var(--border);
-            border-top: 3px solid var(--accent);
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 1rem;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        /* Responsive - Mobile First */
-        
-        /* Móvil pequeño (hasta 480px) */
-        @media screen and (max-width: 480px) {
-            .container {
-                padding: 0.75rem;
-            }
-
-            .header {
-                padding: 0.75rem;
-            }
-
-            .header-content {
-                flex-direction: column;
-                gap: 0.5rem;
-                align-items: stretch;
-            }
-
-            .header-content > div {
-                display: flex;
-                gap: 0.5rem;
-                flex-wrap: wrap;
-            }
-
-            .refresh-btn {
-                flex: 1;
-                min-width: auto;
-                padding: 0.5rem 0.75rem;
-                font-size: 0.8rem;
-            }
-
-            .stats-grid {
-                grid-template-columns: 1fr;
-                gap: 1rem;
-            }
-
-            .sites-grid {
-                grid-template-columns: 1fr;
-                gap: 1rem;
-            }
-
-            .stat-value {
-                font-size: 1.8rem;
-            }
-
-            .logo {
-                font-size: 1.1rem;
-            }
-
-            .site-card {
-                padding: 1rem;
-            }
-        }
-
-        /* Móvil y Tablet (481px a 768px) */
-        @media screen and (min-width: 481px) and (max-width: 768px) {
-            .container {
-                padding: 1rem;
-            }
-
-            .stats-grid {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 1rem;
-            }
-
-            .sites-grid {
-                grid-template-columns: 1fr;
-                gap: 1rem;
-            }
-
-            .stat-value {
-                font-size: 2rem;
-            }
-
-            .logo {
-                font-size: 1.2rem;
-            }
-        }
-
-        /* Tablet (769px a 1024px) */
-        @media screen and (min-width: 769px) and (max-width: 1024px) {
-            .stats-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-
-            .sites-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-
-        /* Orientación Landscape en móvil */
-        @media screen and (max-width: 768px) and (orientation: landscape) {
-            .header {
-                padding: 0.5rem 1rem;
-            }
-
-            .stats-grid {
-                grid-template-columns: repeat(4, 1fr);
-                gap: 0.75rem;
-            }
-
-            .stat-value {
-                font-size: 1.5rem;
-            }
-
-            .logo {
-                font-size: 1rem;
-            }
-        }
-
-        /* Desktop pequeño (1025px a 1400px) */
-        @media screen and (min-width: 1025px) and (max-width: 1400px) {
-            .sites-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-
-        /* Compatibilidad navegadores antiguos */
-        @supports not (display: grid) {
-            .stats-grid {
-                display: flex;
-                flex-wrap: wrap;
-            }
-
-            .stat-card {
-                flex: 1 1 280px;
-                min-width: 280px;
-            }
-
-            .sites-grid {
-                display: flex;
-                flex-wrap: wrap;
-            }
-
-            .site-card {
-                flex: 1 1 320px;
-                min-width: 320px;
-            }
-        }
-
-        /* Footer */
-        .footer {
-            text-align: center;
-            padding: 2rem 1rem;
-            color: var(--text-muted);
-            font-size: 0.9rem;
-            border-top: 1px solid var(--border);
-            margin-top: 3rem;
-        }
-
-        .footer strong {
-            color: var(--accent);
-        }
-
-        /* Last update */
-        .last-update {
-            text-align: center;
-            color: var(--text-muted);
-            font-size: 0.85rem;
-            margin-top: 1rem;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Panel de Solicitudes · GKACHELE</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-pVnXN8pGf2c1wMek9hbSAVnX1soxO0hX9B5yA1sJfTbsnzx1GawDg5n0pYht3e1JgKp1IsfRSAU1PP0o7pC8Ug==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <style>
+    :root {
+      --bg: #08080b;
+      --card: rgba(20, 22, 30, 0.95);
+      --accent: #ff6b35;
+      --accent-soft: rgba(255, 107, 53, 0.12);
+      --text: #f0f3ff;
+      --muted: #9191a1;
+      --border: rgba(255, 255, 255, 0.08);
+      --success: #36f3b2;
+      --pending: #ffd166;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: "Segoe UI", system-ui, sans-serif;
+      background: linear-gradient(160deg, rgba(255, 107, 53, 0.08), transparent 45%),
+                  linear-gradient(320deg, rgba(69, 123, 157, 0.08), transparent 35%),
+                  var(--bg);
+      min-height: 100vh;
+      color: var(--text);
+      padding: 3.5rem 1.25rem;
+    }
+
+    header {
+      max-width: 1220px;
+      margin: 0 auto 2rem auto;
+      display: flex;
+      flex-direction: column;
+      gap: 0.45rem;
+    }
+
+    header h1 {
+      font-size: 2.1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.9rem;
+    }
+
+    header h1 i { color: var(--accent); }
+
+    header p { color: var(--muted); }
+
+    .card {
+      max-width: 1220px;
+      margin: 0 auto;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 1.8rem 2rem;
+      box-shadow: 0 25px 55px rgba(0, 0, 0, 0.35);
+      backdrop-filter: blur(16px);
+    }
+
+    .action-card {
+      max-width: 1220px;
+      margin: 0 auto 2.2rem auto;
+      padding: 1.8rem 2rem;
+      border-radius: 18px;
+      border: 1px solid var(--border);
+      background: rgba(15, 17, 24, 0.92);
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
+      text-align: center;
+    }
+
+    .action-card h2 {
+      font-size: 1.65rem;
+      font-weight: 700;
+    }
+
+    .action-card p {
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .dispatch-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .dispatch-button {
+      all: unset;
+      padding: 0.85rem 2.4rem;
+      border-radius: 12px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .dispatch-button:hover {
+      transform: translateY(-2px);
+    }
+
+    .dispatch-button.approve {
+      background: #22c55e;
+      color: #fff;
+      box-shadow: 0 16px 30px rgba(34, 197, 94, 0.25);
+    }
+
+    .dispatch-button.cancel {
+      background: #ef4444;
+      color: #fff;
+      box-shadow: 0 16px 30px rgba(239, 68, 68, 0.25);
+    }
+
+    .toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .toolbar button {
+      all: unset;
+      padding: 0.75rem 1.6rem;
+      border-radius: 999px;
+      background: var(--accent);
+      color: #fff;
+      cursor: pointer;
+      display: inline-flex;
+      gap: 0.6rem;
+      align-items: center;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .toolbar button:hover { transform: translateY(-2px); box-shadow: 0 16px 35px rgba(255, 107, 53, 0.28); }
+
+    table {
+      width: 100%;
+      border-spacing: 0;
+      color: inherit;
+    }
+
+    thead {
+      background: rgba(255, 255, 255, 0.04);
+      border-radius: 12px;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    th, td {
+      padding: 0.95rem 0.9rem;
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+    }
+
+    tbody tr:hover { background: rgba(255, 255, 255, 0.03); }
+
+    .status-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      padding: 0.35rem 0.75rem;
+      border-radius: 999px;
+      font-weight: 600;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .status-tag.pending {
+      background: rgba(255, 209, 102, 0.12);
+      color: var(--pending);
+    }
+
+    .status-tag.approved {
+      background: rgba(54, 243, 178, 0.14);
+      color: var(--success);
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 2.2rem 1rem;
+      color: var(--muted);
+    }
+
+    .row-actions {
+      display: inline-flex;
+      gap: 0.6rem;
+      flex-wrap: wrap;
+    }
+
+    .row-btn {
+      all: unset;
+      cursor: pointer;
+      padding: 0.55rem 1.3rem;
+      border-radius: 999px;
+      background: var(--accent);
+      color: #fff;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      transition: transform 0.2s ease;
+    }
+
+    .row-btn.cancel {
+      background: #ef4444;
+    }
+
+    .row-btn:hover { transform: translateY(-2px); }
+    .row-btn[disabled] { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+    .status-bar {
+      margin-top: 1.5rem;
+      font-size: 0.95rem;
+      min-height: 1.4rem;
+      color: var(--muted);
+    }
+
+    .status-bar.success { color: var(--success); }
+    .status-bar.error { color: #ff8d7a; }
+
+    @media (max-width: 780px) {
+      table, thead, tbody, th, td, tr { display: block; }
+      thead { display: none; }
+      tr { margin-bottom: 1.2rem; border: 1px solid var(--border); border-radius: 12px; padding: 1rem; }
+      td { border: none; padding: 0.5rem 0; }
+      td::before {
+        content: attr(data-label);
+        display: block;
+        font-weight: 600;
+        color: var(--muted);
+        margin-bottom: 0.35rem;
+      }
+      .row-actions { width: 100%; justify-content: stretch; }
+      .row-btn { flex: 1; justify-content: center; }
+    }
+  </style>
 </head>
 <body>
-    <!-- Header -->
-    <div class="header">
-        <div class="header-content">
-            <div class="logo">
-                <i class="fas fa-chart-line"></i> GKACHELE Dashboard
-            </div>
-            <div style="display: flex; gap: 0.5rem;">
-                <button class="refresh-btn" onclick="refreshData()">
-                    <i class="fas fa-sync-alt"></i> Actualizar
-                </button>
-                <button class="refresh-btn" onclick="clearCache()" style="background: #f59e0b;">
-                    <i class="fas fa-broom"></i> Limpiar Cache
-                </button>
-                <button class="refresh-btn" onclick="logout()" style="background: #ef4444;">
-                    <i class="fas fa-sign-out-alt"></i> Salir
-                </button>
-            </div>
-        </div>
+  <header>
+    <h1><i class="fa-solid fa-chart-line"></i> Panel de Solicitudes</h1>
+    <p>Revisa las solicitudes pendientes y aprueba aquellas que deban avanzar a producción.</p>
+  </header>
+
+  <section class="action-card">
+    <h2>Panel de Aprobaciones Rápidas</h2>
+    <p>Usá estos botones para disparar las actions <strong>approve_request</strong> o <strong>cancel_request</strong> directamente vía GitHub.</p>
+    <div class="dispatch-buttons">
+      <button class="dispatch-button approve" id="dispatchApprove">
+        <i class="fa-solid fa-circle-check"></i>
+        Aprobar (dispatch)
+      </button>
+      <button class="dispatch-button cancel" id="dispatchCancel">
+        <i class="fa-solid fa-ban"></i>
+        Cancelar (dispatch)
+      </button>
+    </div>
+    <p>
+      Requiere tener configurado el token en localStorage (o via proxy). El payload se completa automáticamente con los datos de la solicitud seleccionada o uno de prueba.
+    </p>
+  </section>
+
+  <section class="card">
+    <div class="toolbar">
+      <div>
+        <strong id="pendingCounter">0 pendientes</strong>
+      </div>
+      <button id="refreshButton" type="button">
+        <i class="fa-solid fa-rotate"></i>
+        Actualizar
+      </button>
     </div>
 
-    <!-- Container -->
-    <div class="container">
-        <!-- Stats Grid -->
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-header">
-                    <span class="stat-icon">🌐</span>
-                </div>
-                <div class="stat-value" id="total-sites">3</div>
-                <div class="stat-label">Sitios Activos</div>
-            </div>
-
-            <div class="stat-card">
-                <div class="stat-header">
-                    <span class="stat-icon">✅</span>
-                </div>
-                <div class="stat-value" id="sites-online">3</div>
-                <div class="stat-label">Online</div>
-            </div>
-
-            <div class="stat-card">
-                <div class="stat-header">
-                    <span class="stat-icon">👥</span>
-                </div>
-                <div class="stat-value" id="total-clients">3</div>
-                <div class="stat-label">Clientes</div>
-            </div>
-
-            <div class="stat-card">
-                <div class="stat-header">
-                    <span class="stat-icon">📈</span>
-                </div>
-                <div class="stat-value">100%</div>
-                <div class="stat-label">Uptime</div>
-            </div>
-        </div>
-
-        <!-- Centro de Solicitudes -->
-        <div class="sites-section" id="token-section">
-            <h2 class="section-title">
-                <i class="fas fa-database"></i> Centro de Solicitudes (Google Sheets)
-            </h2>
-            <div style="background: var(--card-bg); padding: 1.5rem; border-radius: 8px; margin-bottom: 2rem;">
-                <p style="color: var(--text-primary); margin-bottom: 1rem;">
-                    ✅ Las solicitudes del formulario se guardan en Google Sheets automáticamente.
-                    No se necesita token de GitHub. Usa el botón de abajo para actualizar manualmente.
-                </p>
-                <button 
-                    onclick="loadPendingRequests(true)" 
-                    class="action-btn"
-                    style="padding: 0.75rem 1.5rem;"
-                >
-                    <i class="fas fa-sync"></i> Actualizar solicitudes
-                </button>
-            </div>
-        </div>
-
-        <!-- Solicitudes Pendientes Section -->
-        <div class="sites-section">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                <h2 class="section-title" style="margin: 0;">
-                    <i class="fas fa-clock"></i> Solicitudes Pendientes
-                </h2>
-                <button 
-                    onclick="procesarSolicitudesLocal()" 
-                    class="action-btn"
-                    style="padding: 0.5rem 1rem; font-size: 0.9rem;"
-                    title="Actualizar solicitudes desde Google Sheets"
-                >
-                    <i class="fas fa-sync"></i> Actualizar
-                </button>
-            </div>
-            <div class="sites-grid" id="pending-requests-container">
-                <!-- Solicitudes pendientes se cargarán aquí -->
-            </div>
-        </div>
-
-        <!-- Sites Section -->
-        <div class="sites-section">
-            <h2 class="section-title">
-                <i class="fas fa-globe"></i> Sitios Web Activos
-            </h2>
-            <div class="sites-grid" id="sites-container">
-                <!-- Sites will be loaded here -->
-            </div>
-        </div>
-
-        <div class="last-update" id="last-update">
-            Última actualización: <span id="update-time">--:--:--</span>
-        </div>
+    <div class="table-wrapper">
+      <table id="requestsTable">
+        <thead>
+          <tr>
+            <th>Cliente</th>
+            <th>Rubro</th>
+            <th>Plan</th>
+            <th>Redes</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody id="requestsBody">
+          <tr class="empty-state" id="emptyStateRow">
+            <td data-label="Aviso">No hay solicitudes registradas.</td>
+          </tr>
+        </tbody>
+      </table>
     </div>
 
-    <!-- Footer -->
-    <div class="footer">
-        <strong>GKACHELE™</strong> Dashboard | Sistema de Control Centralizado
-    </div>
+    <div class="status-bar" id="dashboardStatus"></div>
+  </section>
 
-    <script>
-        // 🔐 VERIFICAR AUTENTICACIÓN - OBLIGATORIO
-        (function checkAuth() {
-            const session = localStorage.getItem('gkachele_session');
-            
-            if (!session) {
-                window.location.href = 'login.html';
-                return;
-            }
-            
-            const sessionData = JSON.parse(session);
-            const now = new Date().getTime();
-            const sevenDays = 7 * 24 * 60 * 60 * 1000;
-            
-            // Verificar si la sesión expiró
-            if (now - sessionData.timestamp > sevenDays) {
-                localStorage.removeItem('gkachele_session');
-                window.location.href = 'login.html';
-                return;
-            }
-            
-            // Sesión válida
-            console.log('✅ Sesión válida:', sessionData.user);
-        })();
-
-        // Función para cerrar sesión
-        function logout() {
-            if (confirm('¿Cerrar sesión?')) {
-                localStorage.removeItem('gkachele_session');
-                window.location.href = 'login.html';
-            }
-        }
-
-        // Datos de los sitios (activos)
-        const sitiosData = [
-            {
-                nombre: "GKACHELE",
-                url: "https://gkachele.duckdns.org",
-                rubro: "Portafolio",
-                plan: "premium",
-                version: "v1.2.0",
-                fecha: "2025-10-15",
-                status: "online"
-            },
-            {
-                nombre: "Blow Dance",
-                url: "https://blowdance.duckdns.org",
-                rubro: "Danza",
-                plan: "pro",
-                version: "v1.0.2",
-                fecha: "2025-10-20",
-                status: "online"
-            },
-            {
-                nombre: "Dalmau Intendente",
-                url: "https://dalmau-intendente.duckdns.org",
-                rubro: "Política",
-                plan: "base",
-                version: "v1.0.1",
-                fecha: "2025-10-25",
-                status: "online"
-            }
-        ];
-        
-        // Solicitudes pendientes (desde Issues de gkachele-requests)
-        const solicitudesPendientes = [
-            // Estas se cargarían desde Issues de GitHub
-            // Por ahora, ejemplo estático
-        ];
-
-        // Actualizar métricas reales
-        function updateMetrics() {
-            const totalSites = sitiosData.length;
-            const sitesOnline = sitiosData.filter(s => s.status === 'online').length;
-            const totalClients = sitiosData.length;
-            
-            // Calcular uptime (simplificado - sería mejor con datos reales)
-            const uptime = totalSites > 0 ? Math.round((sitesOnline / totalSites) * 100) : 0;
-            
-            document.getElementById('total-sites').textContent = totalSites;
-            document.getElementById('sites-online').textContent = sitesOnline;
-            document.getElementById('total-clients').textContent = totalClients;
-            
-            // Actualizar uptime (el 4to card)
-            const uptimeElement = document.querySelector('.stats-grid').children[3].querySelector('.stat-value');
-            if (uptimeElement) {
-                uptimeElement.textContent = uptime + '%';
-            }
-        }
-
-        // Cargar sitios
-        function loadSites() {
-            const container = document.getElementById('sites-container');
-            container.innerHTML = '';
-
-            sitiosData.forEach(sitio => {
-                const card = document.createElement('div');
-                card.className = 'site-card';
-                card.innerHTML = `
-                    <div class="site-header">
-                        <div class="site-name">${sitio.nombre}</div>
-                        <div class="site-status status-${sitio.status}">
-                            <i class="fas fa-circle"></i> ${sitio.status === 'online' ? 'Online' : 'Offline'}
-                        </div>
-                    </div>
-                    <div class="site-info">
-                        <div class="info-row">
-                            <span class="info-label">Rubro:</span>
-                            <span class="info-value">${sitio.rubro}</span>
-                        </div>
-                        <div class="info-row">
-                            <span class="info-label">Plan:</span>
-                            <span class="badge badge-${sitio.plan}">${sitio.plan}</span>
-                        </div>
-                        <div class="info-row">
-                            <span class="info-label">Versión:</span>
-                            <span class="info-value">${sitio.version}</span>
-                        </div>
-                        <div class="info-row">
-                            <span class="info-label">Creado:</span>
-                            <span class="info-value">${sitio.fecha}</span>
-                        </div>
-                    </div>
-                    <div class="site-actions">
-                        <button class="action-btn" onclick="window.open('${sitio.url}', '_blank')">
-                            <i class="fas fa-external-link-alt"></i> Ver
-                        </button>
-                        <button class="action-btn" onclick="checkStatus('${sitio.url}')">
-                            <i class="fas fa-heartbeat"></i> Test
-                        </button>
-                    </div>
-                `;
-                container.appendChild(card);
-            });
-            
-            // Cargar solicitudes pendientes
-            loadPendingRequests();
-            
-            // Actualizar métricas después de cargar sitios
-            updateMetrics();
-        }
-        
-        const SHEETS_ENDPOINT = 'https://script.google.com/macros/s/AKfycbwg6iTfHRflIGnGxOmwf9sExwtbbE1hI8SzYBOPIFkl3nNWfzlfu7_zRcZsIJ8a30VZ/exec';
-
-        function safeJSONParse(value) {
-            try {
-                return value ? JSON.parse(value) : null;
-            } catch (error) {
-                console.warn('JSON inválido:', error);
-                return null;
-            }
-        }
-
-        function escapeHTML(value) {
-            if (value === null || value === undefined) return '';
-            return String(value)
-                .replace(/&/g, '&amp;')
-                .replace(/</g, '&lt;')
-                .replace(/>/g, '&gt;')
-                .replace(/"/g, '&quot;')
-                .replace(/'/g, '&#39;');
-        }
-
-        function normalizarNumero(numero) {
-            if (!numero) return '';
-            return String(numero).replace(/[^0-9]/g, '');
-        }
-
-        async function procesarSolicitudesLocal() {
-            await loadPendingRequests(true);
-        }
-
-        async function loadPendingRequests(force = false) {
-            const container = document.getElementById('pending-requests-container');
-            if (!container) return;
-
-            container.innerHTML = '<p class="no-requests">Cargando solicitudes...</p>';
-
-            try {
-                const response = await fetch(SHEETS_ENDPOINT, {
-                    method: 'GET',
-                    headers: { 'Cache-Control': force ? 'no-cache' : 'max-age=60' }
-                });
-
-                if (!response.ok) {
-                    throw new Error(`HTTP ${response.status}`);
-                }
-
-                const result = await response.json();
-                if (!result.success) {
-                    throw new Error(result.error || 'Error desconocido');
-                }
-
-                const rows = Array.isArray(result.rows) ? result.rows : [];
-
-                if (rows.length === 0) {
-                    container.innerHTML = '<p class="no-requests">No hay solicitudes pendientes.</p>';
-                    return;
-                }
-
-                container.innerHTML = '';
-
-                rows.reverse().forEach(row => {
-                    const plan = (row.plan || 'base').toLowerCase();
-                    const redes = safeJSONParse(row.redes) || {};
-                    const redesHTML = Object.entries(redes)
-                        .filter(([, url]) => url)
-                        .map(([nombre, url]) => `<a href="${escapeHTML(url)}" target="_blank">${escapeHTML(nombre)}</a>`)
-                        .join(' • ') || 'Sin redes';
-
-                    const rubroExtra = safeJSONParse(row.rubro_especifico) || {};
-                    const rubroDetalle = Object.entries(rubroExtra)
-                        .filter(([, valor]) => valor)
-                        .map(([clave, valor]) => `${escapeHTML(clave)}: ${escapeHTML(valor)}`)
-                        .join(' · ') || 'Sin datos adicionales';
-
-                    const fecha = row.timestamp ? new Date(row.timestamp).toLocaleString('es-AR') : 'Sin fecha';
-                    const jsonString = typeof row.json_completo === 'string'
-                        ? row.json_completo
-                        : JSON.stringify(row.json_completo || {}, null, 2);
-                    const encodedJSON = encodeURIComponent(jsonString);
-
-                    const card = document.createElement('div');
-                    card.className = 'site-card';
-                    card.innerHTML = `
-                        <div class="site-header">
-                            <div class="site-name">${escapeHTML(row.nombre || 'Sin nombre')}</div>
-                            <div class="site-status status-pending">
-                                <i class="fas fa-layer-group"></i> ${escapeHTML(plan.toUpperCase())}
-                            </div>
-                        </div>
-                        <div class="site-info">
-                            <div class="info-row">
-                                <span class="info-label">Rubro:</span>
-                                <span class="info-value">${escapeHTML(row.rubro || 'Sin rubro')}</span>
-                            </div>
-                            <div class="info-row">
-                                <span class="info-label">Email:</span>
-                                <span class="info-value">${escapeHTML(row.email || 'Sin email')}</span>
-                            </div>
-                            <div class="info-row">
-                                <span class="info-label">Teléfono:</span>
-                                <span class="info-value">${escapeHTML(row.telefono || 'Sin teléfono')}</span>
-                            </div>
-                            <div class="info-row">
-                                <span class="info-label">Dominio:</span>
-                                <span class="info-value">${escapeHTML(row.dominio || 'Sin dominio')}</span>
-                            </div>
-                            <div class="info-row">
-                                <span class="info-label">Colores:</span>
-                                <span class="info-value">${escapeHTML(row.colores || 'Sin especificar')}</span>
-                            </div>
-                            <div class="info-row">
-                                <span class="info-label">Tipografía:</span>
-                                <span class="info-value">${escapeHTML(row.tipografia || 'Por definir')}</span>
-                            </div>
-                            <div class="info-row">
-                                <span class="info-label">Redes:</span>
-                                <span class="info-value">${redesHTML}</span>
-                            </div>
-                            <div class="info-row">
-                                <span class="info-label">Datos rubro:</span>
-                                <span class="info-value">${rubroDetalle}</span>
-                            </div>
-                            <div class="info-row">
-                                <span class="info-label">Descripción:</span>
-                                <span class="info-value">${escapeHTML(row.descripcion || 'Sin descripción')}</span>
-                            </div>
-                            <div class="info-row">
-                                <span class="info-label">Recibido:</span>
-                                <span class="info-value">${escapeHTML(fecha)}</span>
-                            </div>
-                        </div>
-                        <div class="site-actions">
-                            <button class="action-btn" onclick="copySolicitudJSON(this)" data-json="${encodedJSON}">
-                                <i class="fas fa-copy"></i> Copiar JSON
-                            </button>
-                            <button class="action-btn" onclick="abrirWhatsApp('${normalizarNumero(row.whatsapp)}')" ${row.whatsapp ? '' : 'disabled'}>
-                                <i class="fab fa-whatsapp"></i> WhatsApp
-                            </button>
-                            <button class="action-btn" onclick="abrirEmail('${escapeHTML(row.email || '')}', '${escapeHTML(`Solicitud ${plan.toUpperCase()} - ${row.nombre || ''}`)}')" ${row.email ? '' : 'disabled'}>
-                                <i class="fas fa-envelope"></i> Email
-                            </button>
-                        </div>
-                    `;
-
-                    container.appendChild(card);
-                });
-
-            } catch (error) {
-                console.error('Error al cargar solicitudes:', error);
-                container.innerHTML = `<p class="no-requests">❌ Error al cargar solicitudes: ${escapeHTML(error.message)}</p>`;
-            }
-        }
-
-        function copySolicitudJSON(button) {
-            const jsonData = decodeURIComponent(button.getAttribute('data-json') || '');
-            navigator.clipboard.writeText(jsonData)
-                .then(() => {
-                    button.textContent = 'Copiado ✓';
-                    setTimeout(() => { button.innerHTML = '<i class="fas fa-copy"></i> Copiar JSON'; }, 1500);
-                })
-                .catch(() => alert('No se pudo copiar el JSON.'));
-        }
-
-        function abrirWhatsApp(numero) {
-            if (!numero) return;
-            window.open(`https://wa.me/${numero}`, '_blank');
-        }
-
-        function abrirEmail(email, subject) {
-            if (!email) return;
-            const enlace = `mailto:${email}?subject=${encodeURIComponent(subject)}`;
-            window.location.href = enlace;
-        }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            loadSites();
-            loadPendingRequests();
-            updateTime();
-            updateMetrics();
-
-            setInterval(() => {
-                loadSites();
-                loadPendingRequests();
-                updateTime();
-                updateMetrics();
-            }, 300000);
-        });
-
-        // Chequear status de un sitio
-        async function checkStatus(url) {
-            try {
-                const response = await fetch(url, { method: 'HEAD', mode: 'no-cors' });
-                alert(`✅ ${url}\n\nEstado: Online`);
-            } catch (error) {
-                alert(`⚠️ ${url}\n\nEstado: Verificando...`);
-            }
-        }
-
-        // Limpiar cache
-        function clearCache() {
-            if (confirm('¿Limpiar cache del navegador y recargar?')) {
-                // Limpiar localStorage (excepto sesión)
-                const session = localStorage.getItem('gkachele_session');
-                localStorage.clear();
-                if (session) {
-                    localStorage.setItem('gkachele_session', session);
-                }
-                
-                // Limpiar sessionStorage
-                sessionStorage.clear();
-                
-                // Forzar recarga sin cache
-                window.location.reload(true);
-            }
-        }
-
-        // Refrescar datos
-        function refreshData() {
-            const btn = document.querySelector('.refresh-btn i');
-            if (btn) btn.style.animation = 'spin 1s linear infinite';
-            
-            setTimeout(() => {
-                loadSites();
-                updateTime();
-                if (btn) btn.style.animation = '';
-                
-                // Notificación
-                const notification = document.createElement('div');
-                notification.style.cssText = `
-                    position: fixed;
-                    top: 80px;
-                    right: 20px;
-                    background: #10b981;
-                    color: white;
-                    padding: 1rem 1.5rem;
-                    border-radius: 8px;
-                    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-                    z-index: 1000;
-                    animation: slideIn 0.3s ease;
-                `;
-                notification.innerHTML = '<i class="fas fa-check-circle"></i> Datos actualizados';
-                document.body.appendChild(notification);
-                
-                setTimeout(() => notification.remove(), 3000);
-            }, 1000);
-        }
-
-        // Actualizar tiempo
-        function updateTime() {
-            const now = new Date();
-            const time = now.toLocaleTimeString('es-AR');
-            document.getElementById('update-time').textContent = time;
-        }
-
-        // Animación para notificaciones
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes slideIn {
-                from {
-                    transform: translateX(400px);
-                    opacity: 0;
-                }
-                to {
-                    transform: translateX(0);
-                    opacity: 1;
-                }
-            }
-        `;
-        document.head.appendChild(style);
-    </script>
+  <script src="config.js"></script>
+  <script src="config-token.js"></script>
+  <script src="js/dashboard.js" type="module"></script>
 </body>
 </html>
 
