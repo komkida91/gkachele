@@ -72,44 +72,51 @@ const payload = (() => {
 
 if (payload.redes_sociales && Object.keys(payload.redes_sociales).length) {
   process.stdout.write(JSON.stringify(payload.redes_sociales));
-  return;
+  process.exit(0);
 }
 
 const raw = process.env.REDES_INPUT || '';
-try {
-  const parsed = JSON.parse(raw);
-  if (parsed && typeof parsed === 'object') {
-    process.stdout.write(JSON.stringify(parsed));
-    return;
+if (raw) {
+  try {
+    const parsed = JSON.parse(raw);
+    if (parsed && typeof parsed === 'object') {
+      process.stdout.write(JSON.stringify(parsed));
+      process.exit(0);
+    }
+  } catch (error) {
+    // Ignored; fall back to heuristic parsing
   }
-} catch (error) {}
 
-const lines = raw.replace(/\r/g, '').split(/\n+/).map(line => line.trim()).filter(Boolean);
-const socials = {
-  facebook: '#',
-  instagram: '#',
-  twitter: '#',
-  whatsapp: '#'
-};
+  const lines = raw.replace(/\r/g, '').split(/\n+/).map((line) => line.trim()).filter(Boolean);
+  const socials = {
+    facebook: '#',
+    instagram: '#',
+    twitter: '#',
+    whatsapp: '#'
+  };
 
-const patterns = {
-  facebook: /facebook\.com|fb\.com|@facebook/i,
-  instagram: /instagram\.com|insta\.|@/i,
-  twitter: /twitter\.com|x\.com|@/i,
-  whatsapp: /wa\.me|whatsapp\.com/i
-};
+  const patterns = {
+    facebook: /facebook\.com|fb\.com|@facebook/i,
+    instagram: /instagram\.com|insta\.|@/i,
+    twitter: /twitter\.com|x\.com|@/i,
+    whatsapp: /wa\.me|whatsapp\.com/i
+  };
 
-for (const line of lines) {
-  const lower = line.toLowerCase();
-  for (const [key, regex] of Object.entries(patterns)) {
-    if (regex.test(lower)) {
-      const match = line.match(/https?:\/\/[^\s]+/i);
-      socials[key] = match ? match[0] : line.replace(/^[^:]+:\s*/i, '').trim();
+  for (const line of lines) {
+    const lower = line.toLowerCase();
+    for (const [key, regex] of Object.entries(patterns)) {
+      if (regex.test(lower)) {
+        const match = line.match(/https?:\/\/[^\s]+/i);
+        socials[key] = match ? match[0] : line.replace(/^[^:]+:\s*/i, '').trim();
+      }
     }
   }
+
+  process.stdout.write(JSON.stringify(socials));
+  process.exit(0);
 }
 
-process.stdout.write(JSON.stringify(socials));
+process.stdout.write(JSON.stringify({}));
 NODE
 )
 
