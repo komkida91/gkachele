@@ -30,5 +30,37 @@
     },
     "estado": "pendiente",
     "created_at": "2025-11-14T10:09:39Z"
+  },
+  {
+    "nombre_cliente": "Dashboard UI Cancel 2025-11-14",
+    "slug": "dashboard-ui-cancel-20251114",
+    "rubro": "base",
+    "plan": "base",
+    "contacto": {
+      "email": null,
+      "telefono": null
+    },
+    "personalizacion": {},
+    "redes_sociales": {
+      "instagram": "https://instagram.com/gkachele",
+      "whatsapp": "https://wa.me/5491112345678"
+    },
+    "direccion": {},
+    "rubro_especifico": null,
+    "descripcion": "",
+    "dominio": {
+      "preferido": ""
+    },
+    "payload": {
+      "slug": "dashboard-ui-cancel-20251114",
+      "nombre": "Dashboard UI Cancel 2025-11-14",
+      "rubro": "base",
+      "plan": "base",
+      "dominio": {
+        "preferido": ""
+      }
+    },
+    "estado": "pendiente",
+    "created_at": "2025-11-14T10:44:59Z"
   }
 ]
