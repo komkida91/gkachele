@@ -19,12 +19,51 @@ jobs:
           echo "Payload: ${{ toJson(github.event.client_payload) }}"
 
       - name: Trigger Secondary Workflow
-        uses: benc-uk/workflow-dispatch@v1
-        with:
-          workflow: approve-request.yml
-          ref: main
-          token: ${{ secrets.GITHUB_TOKEN }}
-          inputs: |
-            action=${{ github.event.action }}
-            payload=${{ toJson(github.event.client_payload) }}
+        env:
+          ADMIN_TOKEN: ${{ secrets.ADMIN_TOKEN }}
+          ACTION: ${{ github.event.action }}
+          PAYLOAD_JSON: ${{ toJson(github.event.client_payload) }}
+        run: |
+          if [ -z "$ADMIN_TOKEN" ]; then
+            echo "❌ Falta configurar el secret ADMIN_TOKEN"
+            exit 1
+          fi
+
+          python3 <<'PY'
+import json
+import os
+import urllib.request
+import urllib.error
+
+token = os.environ["ADMIN_TOKEN"]
+action = os.environ["ACTION"]
+payload = json.loads(os.environ["PAYLOAD_JSON"])
+
+body = json.dumps({
+    "ref": "dev",
+    "inputs": {
+        "action": action,
+        "payload": json.dumps(payload)
+    }
+}).encode()
+
+req = urllib.request.Request(
+    "https://api.github.com/repos/komkida91/gkachele/actions/workflows/approve-request.yml/dispatches",
+    data=body,
+    headers={
+        "Accept": "application/vnd.github+json",
+        "Authorization": f"token {token}",
+        "Content-Type": "application/json",
+    },
+    method="POST",
+)
+
+try:
+    with urllib.request.urlopen(req) as resp:
+        print("✅ Disparo enviado", resp.status)
+except urllib.error.HTTPError as e:
+    print("❌ Error al despachar", e.code)
+    print(e.read().decode())
+    raise SystemExit(1)
+PY
 
