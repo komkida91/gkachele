@@ -249,5 +249,37 @@
     },
     "estado": "pendiente",
     "created_at": "2025-11-12T16:36:17.110Z"
+  },
+  {
+    "nombre_cliente": "Dashboard QA 2025-11-14",
+    "slug": "dashboard-qa-20251114",
+    "rubro": "base",
+    "plan": "base",
+    "contacto": {
+      "email": null,
+      "telefono": null
+    },
+    "personalizacion": {},
+    "redes_sociales": {
+      "instagram": "https://instagram.com/gkachele",
+      "whatsapp": "https://wa.me/5491112345678"
+    },
+    "direccion": {},
+    "rubro_especifico": null,
+    "descripcion": "",
+    "dominio": {
+      "preferido": ""
+    },
+    "payload": {
+      "slug": "dashboard-qa-20251114",
+      "nombre": "Dashboard QA 2025-11-14",
+      "rubro": "base",
+      "plan": "base",
+      "dominio": {
+        "preferido": ""
+      }
+    },
+    "estado": "pendiente",
+    "created_at": "2025-11-14T09:17:28Z"
   }
 ]
