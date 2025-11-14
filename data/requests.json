@@ -371,5 +371,93 @@
     },
     "estado": "pendiente",
     "created_at": "2025-11-14T20:39:22.211Z"
+  },
+  {
+    "nombre_cliente": "jacinto",
+    "slug": "jacinto",
+    "rubro": "restaurante",
+    "plan": "base",
+    "contacto": {
+      "email": "jaaja@gmail.com",
+      "telefono": "66666"
+    },
+    "personalizacion": {
+      "colores_preferidos": "Rojo y naranja",
+      "tipografia": "Georgia",
+      "logo_url": null,
+      "logo_upload": null
+    },
+    "redes_sociales": {
+      "facebook": "https://www.facebook.com/",
+      "instagram": "https://www.instagram.com/",
+      "twitter": null,
+      "whatsapp": "666666",
+      "youtube": null,
+      "tiktok": null,
+      "linkedin": null
+    },
+    "direccion": {
+      "calle": "caseres,360",
+      "ciudad": "posaadas",
+      "provincia": "misiones",
+      "codigo_postal": "3360",
+      "pais": "Argentina"
+    },
+    "rubro_especifico": {
+      "horarios": "lunes a lunes",
+      "capacidad": "20",
+      "especialidad_culinaria": "italiana"
+    },
+    "descripcion": "",
+    "dominio": {
+      "preferido": "7dias",
+      "generado": "7dias.gkachele.duckdns.org"
+    },
+    "payload": {
+      "plan": "base",
+      "slug": "jacinto",
+      "cliente": {
+        "nombre_completo": "jacinto",
+        "email": "jaaja@gmail.com",
+        "telefono": "66666",
+        "rubro": "restaurante"
+      },
+      "personalizacion": {
+        "colores_preferidos": "Rojo y naranja",
+        "tipografia": "Georgia",
+        "logo_url": null,
+        "logo_upload": null
+      },
+      "redes_sociales": {
+        "facebook": "https://www.facebook.com/",
+        "instagram": "https://www.instagram.com/",
+        "twitter": null,
+        "whatsapp": "666666",
+        "youtube": null,
+        "tiktok": null,
+        "linkedin": null
+      },
+      "direccion": {
+        "calle": "caseres,360",
+        "ciudad": "posaadas",
+        "provincia": "misiones",
+        "codigo_postal": "3360",
+        "pais": "Argentina"
+      },
+      "rubro_especifico": {
+        "horarios": "lunes a lunes",
+        "capacidad": "20",
+        "especialidad_culinaria": "italiana"
+      },
+      "dominio": {
+        "preferido": "7dias",
+        "generado": "7dias.gkachele.duckdns.org"
+      },
+      "descripcion": "",
+      "estado": "pendiente_pago",
+      "fecha_creacion": "2025-11-14T21:34:18.714Z"
+    },
+    "estado": "pendiente",
+    "created_at": "2025-11-14T21:34:18.714Z"
   }
 ]
